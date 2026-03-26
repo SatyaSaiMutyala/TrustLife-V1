@@ -1,31 +1,31 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, useWindowDimensions} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, useWindowDimensions, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
-import Emoji from '../shared/Emoji';
 import SectionTitle from '../shared/SectionTitle';
 
 const G = Colors.lightGreen, A = Colors.amber, R = Colors.red;
 
 const trackers = [
   {
-    icon: '🏃', iconBg: Colors.tealBg, name: 'Fitness', statusText: 'In progress', statusStyle: 'part',
+    image: require('../../assets/img/exercise-track.png'), iconBg: Colors.tealBg, name: 'Fitness', statusText: 'In progress', statusStyle: 'part',
     val: '8,240', unit: 'steps today · 1,760 to go', progW: '82%', progC: Colors.teal,
     bars: [{h:14,c:G},{h:16,c:G},{h:10,c:A},{h:9,c:A},{h:7,c:R},{h:9,c:A},{h:8,c:R}],
   },
   {
-    icon: '😴', iconBg: Colors.blueBg, name: 'Sleep', statusText: 'Below target', statusStyle: 'miss',
+    image: require('../../assets/img/sleep-track.png'), iconBg: Colors.blueBg, name: 'Sleep', statusText: 'Below target', statusStyle: 'miss',
     val: '5.8', valSuffix: ' hrs', unit: 'last night · 7.5 target', progW: '77%', progC: Colors.red,
     bars: [{h:16,c:G},{h:7,c:R},{h:8,c:R},{h:6,c:R},{h:9,c:A},{h:7,c:R},{h:7,c:R}],
   },
   {
-    icon: '🍽️', iconBg: Colors.pinkBg, name: 'Food', statusText: '2 of 3', statusStyle: 'part',
+    image: require('../../assets/img/food-track.png'), iconBg: Colors.pinkBg, name: 'Food', statusText: '2 of 3', statusStyle: 'part',
     val: '1,420', valSuffix: ' kcal', unit: 'logged · dinner pending', progW: '67%', progC: Colors.amber,
     addBtn: '+ Log dinner',
   },
   {
-    icon: '💊', iconBg: Colors.purpleBg, name: 'Medication', statusText: '1 of 2', statusStyle: 'part',
+    image: require('../../assets/img/medical-track.png'), iconBg: Colors.purpleBg, name: 'Medication', statusText: '1 of 2', statusStyle: 'part',
     val: 'AM ✓ · PM pending', valSmall: true, unit: 'Metformin · due 8:00 PM', progW: '50%', progC: Colors.amber,
     addBtn: '+ Log PM dose',
   },
@@ -37,8 +37,16 @@ const statusMap = {
   miss: {bg: Colors.redBg, color: Colors.redDark},
 };
 
+const ROUTE_MAP = {
+  Fitness: 'FitnessTracker',
+  Sleep: 'SleepTracker',
+  Food: 'FoodTracker',
+  Medication: 'MedicationTracker',
+};
+
 const TrackerGrid = () => {
   const {width} = useWindowDimensions();
+  const navigation = useNavigation();
   const cardW = (width - s(12) * 2 - s(8)) / 2;
 
   return (
@@ -46,11 +54,9 @@ const TrackerGrid = () => {
       <SectionTitle title="Daily Trackers" />
       <View style={styles.grid}>
         {trackers.map((t, i) => (
-          <TouchableOpacity key={i} style={[styles.card, {width: cardW}]} activeOpacity={0.7}>
+          <TouchableOpacity key={i} style={[styles.card, {width: cardW}]} activeOpacity={0.7} onPress={() => ROUTE_MAP[t.name] && navigation.navigate(ROUTE_MAP[t.name])}>
             <View style={styles.cardTop}>
-              <View style={[styles.icon, {backgroundColor: t.iconBg}]}>
-                <Emoji icon={t.icon} size={17} />
-              </View>
+              <Image source={t.image} style={styles.img} resizeMode="contain" />
               <View style={[styles.status, {backgroundColor: statusMap[t.statusStyle].bg}]}>
                 <AppText variant="caption" color={statusMap[t.statusStyle].color} style={styles.statusText}>{t.statusText}</AppText>
               </View>
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
   card: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(13)},
   cardTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: vs(10)},
   icon: {width: ms(36), height: ms(36), borderRadius: ms(10), alignItems: 'center', justifyContent: 'center'},
+  img: {width: ms(36), height: ms(36), borderRadius: ms(10)},
   status: {paddingVertical: vs(2), paddingHorizontal: s(7), borderRadius: ms(20)},
   statusText: {fontWeight: '500'},
   name: {fontSize: ms(12), marginBottom: vs(4)},

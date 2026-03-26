@@ -1,16 +1,15 @@
 import React from 'react';
-import {View, StyleSheet, useWindowDimensions} from 'react-native';
+import {View, StyleSheet, useWindowDimensions, Image} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import SectionTitle from '../shared/SectionTitle';
-import Emoji from '../shared/Emoji';
 import AppText from '../shared/AppText';
 
 const organs = [
-  {icon: '🫀', name: 'Heart', status: 'Monitor', ss: 'watch', metric: 'BP:', mv: '138 / 88 mmHg', bw: '72%', bc: Colors.amber, note: 'Slightly elevated. Dyslipidaemia adds cardiovascular risk.'},
-  {icon: '🫘', name: 'Kidneys', status: 'Monitor', ss: 'watch', metric: 'eGFR:', mv: '74 mL/min', bw: '74%', bc: Colors.amber, note: 'Mild reduction. Hydration critical. Next check in 3 months.'},
-  {icon: '👁️', name: 'Eyes', status: 'At risk', ss: 'risk', metric: 'Last eye exam:', mv: '14 months ago', bw: '35%', bc: Colors.red, note: 'Overdue for diabetic retinopathy screening. Book now.'},
-  {icon: '🫁', name: 'Liver', status: 'Good', ss: 'good', metric: 'ALT:', mv: '28 U/L', bw: '82%', bc: Colors.teal, note: 'Within normal range. Metformin well tolerated.'},
+  {image: require('../../assets/img/human-heart.png'), name: 'Heart', status: 'Monitor', ss: 'watch', metric: 'BP:', mv: '138 / 88 mmHg', bw: '72%', bc: Colors.amber, note: 'Slightly elevated. Dyslipidaemia adds cardiovascular risk.'},
+  {image: require('../../assets/img/human-kidneys.png'), name: 'Kidneys', status: 'Monitor', ss: 'watch', metric: 'eGFR:', mv: '74 mL/min', bw: '74%', bc: Colors.amber, note: 'Mild reduction. Hydration critical. Next check in 3 months.'},
+  {image: require('../../assets/img/human-eye.png'), name: 'Eyes', status: 'At risk', ss: 'risk', metric: 'Last eye exam:', mv: '14 months ago', bw: '35%', bc: Colors.red, note: 'Overdue for diabetic retinopathy screening. Book now.'},
+  {image: require('../../assets/img/human-liver.png'), name: 'Liver', status: 'Good', ss: 'good', metric: 'ALT:', mv: '28 U/L', bw: '82%', bc: Colors.teal, note: 'Within normal range. Metformin well tolerated.'},
 ];
 
 const sm = {good: {bg: Colors.tealBg, c: Colors.tealText}, watch: {bg: Colors.amberBg, c: Colors.amberDark}, risk: {bg: Colors.redBg, c: Colors.redDark}};
@@ -26,7 +25,7 @@ const OrganHealthGrid = () => {
         {organs.map((o, i) => (
           <View key={i} style={[styles.card, {width: cardW}]}>
             <View style={styles.top}>
-              <Emoji icon={o.icon} size={20} />
+              <Image source={o.image} style={styles.organImg} resizeMode="contain" />
               <AppText variant="bodyBold" color={Colors.textPrimary} style={styles.name}>{o.name}</AppText>
               <View style={[styles.statusBadge, {backgroundColor: sm[o.ss].bg}]}>
                 <AppText variant="small" color={sm[o.ss].c} style={styles.statusText}>{o.status}</AppText>
@@ -48,6 +47,7 @@ const styles = StyleSheet.create({
   grid: {flexDirection: 'row', flexWrap: 'wrap', gap: ms(8), marginBottom: vs(18)},
   card: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(12)},
   top: {flexDirection: 'row', alignItems: 'center', gap: s(6), marginBottom: vs(8)},
+  organImg: {width: ms(24), height: ms(24)},
   name: {flex: 1},
   statusBadge: {paddingVertical: vs(2), paddingHorizontal: s(7), borderRadius: ms(20)},
   statusText: {fontWeight: '500'},

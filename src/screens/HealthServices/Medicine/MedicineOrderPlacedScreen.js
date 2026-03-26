@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
@@ -37,6 +38,7 @@ const orderItems = [
 ];
 
 const MedicineOrderPlacedScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   return (
@@ -48,7 +50,7 @@ const MedicineOrderPlacedScreen = () => {
         showsVerticalScrollIndicator={false}>
 
         {/* Top Section */}
-        <View style={styles.topSection}>
+        <View style={[styles.topSection, {paddingTop: insets.top}]}>
           <View style={styles.checkCircle}>
             <Icon family="Ionicons" name="checkmark" size={36} color={Colors.white} />
           </View>
@@ -157,7 +159,6 @@ const styles = StyleSheet.create({
   },
   topSection: {
     alignItems: 'center',
-    paddingTop: vs(40),
     paddingBottom: vs(24),
     paddingHorizontal: s(16),
   },

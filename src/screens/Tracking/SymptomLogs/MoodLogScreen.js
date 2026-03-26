@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   scale as s,
   verticalScale as vs,
@@ -98,6 +99,7 @@ const MoodBanner = () => (
 // ──────────────────────────────────────────────
 
 const MoodLogScreen = ({navigation}) => {
+  const insets = useSafeAreaInsets();
   const [activeMode, setActiveMode] = useState('manual');
   const [activeCtx, setActiveCtx] = useState('morning');
 
@@ -106,7 +108,7 @@ const MoodLogScreen = ({navigation}) => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Compact Header (fixed) ── */}
-      <View style={styles.header}>
+      <View style={[styles.header, {paddingTop: insets.top}]}>
         <View style={styles.topRow}>
           <View style={styles.topRowLeft}>
             <TouchableOpacity
@@ -255,7 +257,6 @@ const styles = StyleSheet.create({
   // Header (compact)
   header: {
     backgroundColor: Colors.primary,
-    paddingTop: Platform.OS === 'ios' ? vs(50) : vs(10),
     paddingHorizontal: s(13),
     paddingBottom: vs(8),
   },

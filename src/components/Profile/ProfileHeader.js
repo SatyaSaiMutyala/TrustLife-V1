@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
@@ -18,7 +19,9 @@ const quickTiles = [
   {icon: '💬', label: 'Support'},
 ];
 
-const ProfileHeader = ({onBack}) => (
+const ProfileHeader = ({onBack}) => {
+  const navigation = useNavigation();
+  return (
   <View style={styles.header}>
     <View style={styles.top}>
       <TouchableOpacity onPress={onBack} style={styles.backBtn}>
@@ -31,7 +34,7 @@ const ProfileHeader = ({onBack}) => (
         <AppText variant="header" color={Colors.white}>{`Priya Reddy`}</AppText>
         <AppText variant="small" color={Colors.heroTextMuted} style={styles.sub}>38 yrs · Female · B+ · Hyderabad</AppText>
       </View>
-      <TouchableOpacity style={styles.editBtn}>
+      <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditProfile')}>
         <AppText variant="small" color={Colors.white} style={styles.editText}>Edit ›</AppText>
       </TouchableOpacity>
     </View>
@@ -59,7 +62,8 @@ const ProfileHeader = ({onBack}) => (
       ))}
     </View>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingTop: vs(14), paddingBottom: vs(24)},

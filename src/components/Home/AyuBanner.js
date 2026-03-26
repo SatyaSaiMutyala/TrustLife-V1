@@ -1,14 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
-import Emoji from '../shared/Emoji';
 import AppText from '../shared/AppText';
 
 const AyuBanner = () => (
   <TouchableOpacity style={styles.banner} activeOpacity={0.7}>
     <View style={styles.avatar}>
-      <Emoji icon="🤖" size={20} />
+      <Image source={require('../../assets/img/ayu-nb.gif')} style={styles.ayuImg} resizeMode="contain" />
       <View style={styles.onlineDot} />
     </View>
     <View style={styles.body}>
@@ -21,7 +20,8 @@ const AyuBanner = () => (
 
 const styles = StyleSheet.create({
   banner: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(13), flexDirection: 'row', alignItems: 'center', gap: s(12), marginBottom: vs(18)},
-  avatar: {width: ms(44), height: ms(44), borderRadius: ms(22), backgroundColor: Colors.tealBg, alignItems: 'center', justifyContent: 'center'},
+  avatar: {width: ms(44), height: ms(44), borderRadius: ms(22), backgroundColor: Colors.tealBg, alignItems: 'center', justifyContent: 'center', overflow: 'hidden'},
+  ayuImg: {width: ms(40), height: ms(40), borderRadius: ms(20)},
   onlineDot: {position: 'absolute', bottom: ms(1), right: ms(1), width: ms(10), height: ms(10), backgroundColor: Colors.teal, borderRadius: ms(5), borderWidth: 1.5, borderColor: Colors.white},
   body: {flex: 1},
   msg: {marginTop: vs(2), lineHeight: ms(16)},

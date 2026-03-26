@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
@@ -13,6 +14,7 @@ import AppText from '../../../components/shared/AppText';
 import Icon from '../../../components/shared/Icons';
 
 const AppointmentConfirmedScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const route = useRoute();
   const {appointment} = route.params || {};
@@ -29,7 +31,7 @@ const AppointmentConfirmedScreen = () => {
         showsVerticalScrollIndicator={false}>
 
         {/* Top Green Block */}
-        <View style={styles.topBlock}>
+        <View style={[styles.topBlock, {paddingTop: insets.top}]}>
           <View style={styles.checkCircle}>
             <Icon family="Ionicons" name="checkmark" size={40} color={Colors.white} />
           </View>
@@ -140,7 +142,6 @@ const styles = StyleSheet.create({
   topBlock: {
     backgroundColor: Colors.tealBg,
     alignItems: 'center',
-    paddingTop: vs(40),
     paddingBottom: vs(24),
     paddingHorizontal: s(24),
   },

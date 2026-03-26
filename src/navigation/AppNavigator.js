@@ -3,6 +3,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import BottomTabNavigator from './BottomTabNavigator';
 import ViewAllScreen from '../screens/Home/ViewAllScreen';
 import ProfileScreen from '../screens/Home/ProfileScreen';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
+import GoalsScreen from '../screens/Profile/GoalsScreen';
 import HPSReportScreen from '../screens/Progress/HPSReportScreen';
 import AyuChatScreen from '../screens/HealthCoach/AyuChatScreen';
 import CapabilityDetailScreen from '../screens/HealthCoach/CapabilityDetailScreen';
@@ -74,7 +76,16 @@ import MoodLogScreen from '../screens/Tracking/SymptomLogs/MoodLogScreen';
 import AnemiaLogScreen from '../screens/Tracking/SymptomLogs/AnemiaLogScreen';
 import MenstrualLogScreen from '../screens/Tracking/SymptomLogs/MenstrualLogScreen';
 import SymptomsLogScreen from '../screens/Tracking/SymptomLogs/SymptomsLogScreen';
-// LifestyleScreen removed — lifestyle tabs render inline in IndividualRecordsTab
+import FitnessTrackerScreen from '../screens/Tracking/Fitness/FitnessTrackerScreen';
+import FitnessCategoryScreen from '../screens/Tracking/Fitness/FitnessCategoryScreen';
+import StrengthTrainingScreen from '../screens/Tracking/Fitness/StrengthTrainingScreen';
+import MovementScreen from '../screens/Tracking/Fitness/MovementScreen';
+import LifestyleScreen from '../screens/Tracking/Fitness/LifestyleScreen';
+import SleepScreen from '../screens/Tracking/Fitness/SleepScreen';
+import FoodScreen from '../screens/Tracking/Fitness/FoodScreen';
+import MedicationScreen from '../screens/Tracking/Fitness/MedicationScreen';
+import MedDetailScreen from '../screens/Tracking/Fitness/MedDetailScreen';
+import CycleScreen from '../screens/Tracking/SymptomLogs/CycleScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -440,6 +451,66 @@ const AppNavigator = () => {
       <Stack.Screen
         name="AnemiaLog"
         component={AnemiaLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FitnessTracker"
+        component={FitnessTrackerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FitnessCategory"
+        component={FitnessCategoryScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="StrengthTraining"
+        component={StrengthTrainingScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="MovementTracker"
+        component={MovementScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="LifestyleActivity"
+        component={LifestyleScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="SleepTracker"
+        component={SleepScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FoodTracker"
+        component={FoodScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="MedicationTracker"
+        component={MedicationScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="MedDetail"
+        component={MedDetailScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="CycleTracker"
+        component={CycleScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Goals"
+        component={GoalsScreen}
         options={{animation: 'slide_from_right'}}
       />
     </Stack.Navigator>

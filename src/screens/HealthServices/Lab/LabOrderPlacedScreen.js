@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
@@ -28,6 +29,7 @@ const testItems = [
 ];
 
 const LabOrderPlacedScreen = () => {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   return (
@@ -39,7 +41,7 @@ const LabOrderPlacedScreen = () => {
         showsVerticalScrollIndicator={false}>
 
         {/* Success Section */}
-        <View style={styles.successSection}>
+        <View style={[styles.successSection, {paddingTop: insets.top}]}>
           <View style={styles.checkCircle}>
             <Icon family="Ionicons" name="checkmark" size={ms(36)} color={Colors.white} />
           </View>
@@ -157,7 +159,6 @@ const styles = StyleSheet.create({
   },
   successSection: {
     alignItems: 'center',
-    paddingTop: vs(40),
     paddingBottom: vs(20),
     paddingHorizontal: s(16),
   },

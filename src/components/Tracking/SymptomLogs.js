@@ -1,29 +1,28 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity, useWindowDimensions} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, useWindowDimensions, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
-import Emoji from '../shared/Emoji';
 import SectionTitle from '../shared/SectionTitle';
 
 const logs = [
-  {icon: '🩸', bg: Colors.redBg, name: 'Blood glucose', last: '8.4 · 7AM'},
-  {icon: '🫀', bg: Colors.tealBg, name: 'Blood pressure', last: '138/88 · 8AM'},
-  {icon: '💓', bg: Colors.pinkBg, name: 'Heart rate', last: '74 bpm · 8AM'},
-  {icon: '⚖️', bg: Colors.blueBg, name: 'Weight', last: '68.4 kg · 3d ago'},
-  {icon: '🌡️', bg: Colors.amberBg, name: 'Temperature', last: '36.6°C · 2d ago'},
-  {icon: '📈', bg: Colors.purpleBg, name: 'ECG', last: 'Normal · 12d ago'},
-  {icon: '🌸', bg: Colors.pinkBg, name: 'Menstrual cycle', last: 'Day 14'},
-  {icon: '🧠', bg: Colors.amberBg, name: 'Migraine', last: 'No episode · 7d'},
-  {icon: '🫁', bg: Colors.blueBg, name: 'Asthma', last: 'No episode · 14d'},
-  {icon: '🦴', bg: Colors.tealBg, name: 'Musculoskeletal', last: 'Mild pain · 2d ago'},
-  {icon: '💉', bg: '#EAF3DE', name: 'Vaccination', last: 'Flu · Sep 2025'},
-  {icon: '🧘', bg: Colors.purpleBg, name: 'Stress & mood', last: 'Neutral · 5/10'},
-  {icon: '🩸', bg: '#FEF0F0', name: 'Anemia', last: 'Hb 10.8 · Mild'},
-  {icon: '', bg: '', name: 'Coming soon', last: '', soon: true},
-  {icon: '', bg: '', name: 'Coming soon', last: '', soon: true},
-  {icon: '', bg: '', name: 'Coming soon', last: '', soon: true},
+  {image: require('../../assets/img/glucose.png'), bg: Colors.redBg, name: 'Blood glucose', last: '8.4 · 7AM'},
+  {image: require('../../assets/img/blood_pressure.png'), bg: Colors.tealBg, name: 'Blood pressure', last: '138/88 · 8AM'},
+  {image: require('../../assets/img/heartRate.png'), bg: Colors.pinkBg, name: 'Heart rate', last: '74 bpm · 8AM'},
+  {image: require('../../assets/img/weightmanagement.png'), bg: Colors.blueBg, name: 'Weight', last: '68.4 kg · 3d ago'},
+  {image: require('../../assets/img/temprature.png'), bg: Colors.amberBg, name: 'Temperature', last: '36.6°C · 2d ago'},
+  {image: require('../../assets/img/ecg-track.png'), bg: Colors.purpleBg, name: 'ECG', last: 'Normal · 12d ago'},
+  {image: require('../../assets/img/menstrualcycle.png'), bg: Colors.pinkBg, name: 'Menstrual cycle', last: 'Day 14'},
+  {image: require('../../assets/img/migraine.png'), bg: Colors.amberBg, name: 'Migraine', last: 'No episode · 7d'},
+  {image: require('../../assets/img/astama.png'), bg: Colors.blueBg, name: 'Asthma', last: 'No episode · 14d'},
+  {image: require('../../assets/img/skeletal.png'), bg: Colors.tealBg, name: 'Musculoskeletal', last: 'Mild pain · 2d ago'},
+  {image: require('../../assets/img/Vaccination.png'), bg: '#EAF3DE', name: 'Vaccination', last: 'Flu · Sep 2025'},
+  {image: require('../../assets/img/stress.png'), bg: Colors.purpleBg, name: 'Stress & mood', last: 'Neutral · 5/10'},
+  {image: require('../../assets/img/anemia.png'), bg: '#FEF0F0', name: 'Anemia', last: 'Hb 10.8 · Mild'},
+  {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
+  {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
+  {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
 ];
 
 const SymptomLogs = () => {
@@ -51,7 +50,7 @@ const SymptomLogs = () => {
     } else if (log.name === 'Blood pressure') {
       navigation.navigate('BPLog');
     } else if (log.name === 'Menstrual cycle') {
-      navigation.navigate('MenstrualLog');
+      navigation.navigate('CycleTracker');
     } else if (log.name === 'Stress & mood') {
       navigation.navigate('MoodLog');
     } else if (log.name === 'Heart rate') {
@@ -72,8 +71,8 @@ const SymptomLogs = () => {
             activeOpacity={l.soon ? 1 : 0.7}
             onPress={() => !l.soon && handlePress(l)}
             disabled={!!l.soon}>
-            <View style={[styles.ico, {backgroundColor: l.bg}]}>
-              <Emoji icon={l.icon} size={18} />
+            <View style={styles.ico}>
+              {l.image && <Image source={l.image} style={styles.img} resizeMode="contain" />}
             </View>
             <AppText variant="caption" color={l.soon ? Colors.textTertiary : Colors.textSecondary} style={styles.name} numberOfLines={2}>{l.name}</AppText>
           </TouchableOpacity>
@@ -96,7 +95,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: vs(5),
   },
-  ico: {width: ms(36), height: ms(36), borderRadius: ms(11), alignItems: 'center', justifyContent: 'center'},
+  ico: {width: ms(36), height: ms(36), borderRadius: ms(18), alignItems: 'center', justifyContent: 'center', backgroundColor: '#F0F0F0'},
+  img: {width: ms(22), height: ms(22), borderRadius: ms(6)},
   name: {textAlign: 'center', lineHeight: ms(13)},
   last: {textAlign: 'center', marginTop: vs(1)},
 });

@@ -28,8 +28,15 @@ const AppText = ({variant = 'body', color, style, children, ...rest}) => {
   const variantStyle = Typography[variant] || Typography.body;
   const textColor = color || Colors.textPrimary;
 
+  // If custom style overrides fontSize larger than variant lineHeight,
+  // remove variant lineHeight to prevent clipping
+  const flat = StyleSheet.flatten(style) || {};
+  const base = flat.fontSize && flat.fontSize > (variantStyle.lineHeight || 0)
+    ? {...variantStyle, lineHeight: undefined}
+    : variantStyle;
+
   return (
-    <Text style={[variantStyle, {color: textColor}, style]} {...rest}>
+    <Text style={[base, {color: textColor}, style]} {...rest}>
       {children}
     </Text>
   );
