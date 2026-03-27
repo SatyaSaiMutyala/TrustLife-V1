@@ -46,7 +46,7 @@ const NUTRITION_GOALS = {
 };
 
 /* ───────────────────────────────────────────────────────────────
-   3. FOOD_DB — 34 food items keyed by id
+   3. FOOD_DB — 116 food items keyed by id
       Nutrient keys:
         n    = name          cat  = category       ico = emoji
         w    = weight (g)    u    = unit name
@@ -860,6 +860,118 @@ const FOOD_DB = {
     folate: 7,
     vitA: 0,
   },
+
+  /* ── South Indian (additional) ──────────────────────────────── */
+  pesarattu: {n:'Pesarattu (Moong Dosa)', cat:'South Indian', ico:'🥞', w:80, u:'piece', cal:110, pro:5.5, carb:15.0, fat:3.0, fib:2.0, sug:0.8, sod:160, pot:120, cal_m:18, iron:1.2, mag:22, vitC:1, vitD:0, vitB12:0, folate:40, vitA:3},
+  rava_idli: {n:'Rava Idli', cat:'South Indian', ico:'🫓', w:45, u:'piece', cal:72, pro:2.0, carb:12.5, fat:1.5, fib:0.4, sug:0.3, sod:155, pot:30, cal_m:10, iron:0.5, mag:8, vitC:0, vitD:0, vitB12:0, folate:6, vitA:1},
+  uttapam: {n:'Uttapam', cat:'South Indian', ico:'🥞', w:120, u:'piece', cal:180, pro:4.5, carb:28.0, fat:5.5, fib:1.5, sug:1.2, sod:240, pot:95, cal_m:20, iron:1.0, mag:18, vitC:3, vitD:0, vitB12:0, folate:15, vitA:8},
+  medu_vada: {n:'Medu Vada', cat:'South Indian', ico:'🍩', w:55, u:'piece', cal:150, pro:5.0, carb:14.0, fat:8.0, fib:1.5, sug:0.5, sod:200, pot:110, cal_m:15, iron:1.3, mag:20, vitC:0, vitD:0, vitB12:0, folate:35, vitA:2},
+  pongal: {n:'Pongal', cat:'South Indian', ico:'🍚', w:200, u:'serving', cal:250, pro:6.5, carb:35.0, fat:9.0, fib:2.0, sug:1.0, sod:320, pot:140, cal_m:22, iron:1.5, mag:25, vitC:1, vitD:0, vitB12:0, folate:20, vitA:5},
+  curd_rice: {n:'Curd Rice', cat:'South Indian', ico:'🍚', w:200, u:'serving', cal:205, pro:5.5, carb:32.0, fat:5.5, fib:0.5, sug:3.0, sod:180, pot:160, cal_m:90, iron:0.8, mag:18, vitC:1, vitD:2, vitB12:0.3, folate:12, vitA:20},
+  tamarind_rice: {n:'Tamarind Rice', cat:'South Indian', ico:'🍚', w:200, u:'serving', cal:240, pro:4.0, carb:42.0, fat:6.0, fib:1.5, sug:3.5, sod:350, pot:100, cal_m:15, iron:1.2, mag:16, vitC:2, vitD:0, vitB12:0, folate:10, vitA:4},
+  avial: {n:'Avial', cat:'South Indian', ico:'🥗', w:150, u:'katori', cal:130, pro:3.0, carb:10.0, fat:8.5, fib:3.5, sug:2.5, sod:250, pot:280, cal_m:35, iron:1.0, mag:28, vitC:10, vitD:0, vitB12:0, folate:25, vitA:40},
+
+  /* ── North Indian (additional) ──────────────────────────────── */
+  chole: {n:'Chole', cat:'North Indian', ico:'🫘', w:200, u:'serving', cal:260, pro:12.0, carb:34.0, fat:8.5, fib:8.0, sug:4.0, sod:480, pot:380, cal_m:55, iron:3.5, mag:50, vitC:3, vitD:0, vitB12:0, folate:105, vitA:10},
+  palak_paneer: {n:'Palak Paneer', cat:'North Indian', ico:'🥬', w:200, u:'serving', cal:270, pro:14.0, carb:10.0, fat:20.0, fib:3.0, sug:2.5, sod:480, pot:380, cal_m:320, iron:3.8, mag:75, vitC:12, vitD:8, vitB12:0.4, folate:100, vitA:450},
+  butter_chicken: {n:'Butter Chicken', cat:'North Indian', ico:'🍗', w:200, u:'serving', cal:340, pro:24.0, carb:10.0, fat:22.0, fib:1.0, sug:3.5, sod:620, pot:320, cal_m:45, iron:1.8, mag:30, vitC:5, vitD:8, vitB12:0.6, folate:15, vitA:95},
+  tandoori_roti: {n:'Tandoori Roti', cat:'North Indian', ico:'🫓', w:50, u:'piece', cal:120, pro:3.8, carb:22.0, fat:1.8, fib:2.5, sug:0.4, sod:180, pot:65, cal_m:15, iron:1.2, mag:22, vitC:0, vitD:0, vitB12:0, folate:12, vitA:0},
+  naan: {n:'Naan', cat:'North Indian', ico:'🫓', w:90, u:'piece', cal:260, pro:7.5, carb:42.0, fat:6.5, fib:1.8, sug:2.0, sod:380, pot:68, cal_m:52, iron:2.5, mag:20, vitC:0, vitD:0, vitB12:0, folate:18, vitA:3},
+  pulao: {n:'Pulao', cat:'North Indian', ico:'🍚', w:200, u:'serving', cal:270, pro:5.5, carb:44.0, fat:7.5, fib:1.5, sug:1.5, sod:380, pot:120, cal_m:20, iron:1.5, mag:20, vitC:3, vitD:0, vitB12:0, folate:16, vitA:18},
+  raita: {n:'Raita', cat:'North Indian', ico:'🥒', w:100, u:'katori', cal:55, pro:2.5, carb:5.0, fat:2.8, fib:0.3, sug:4.0, sod:120, pot:140, cal_m:95, iron:0.2, mag:10, vitC:2, vitD:1, vitB12:0.3, folate:6, vitA:22},
+  khichdi: {n:'Khichdi', cat:'North Indian', ico:'🍚', w:200, u:'serving', cal:210, pro:7.0, carb:34.0, fat:4.5, fib:3.0, sug:1.0, sod:280, pot:200, cal_m:25, iron:2.0, mag:30, vitC:1, vitD:0, vitB12:0, folate:50, vitA:5},
+  poha: {n:'Poha', cat:'North Indian', ico:'🍚', w:200, u:'serving', cal:250, pro:5.0, carb:40.0, fat:7.0, fib:2.0, sug:2.5, sod:320, pot:130, cal_m:15, iron:6.0, mag:18, vitC:4, vitD:0, vitB12:0, folate:12, vitA:8},
+  aloo_paratha: {n:'Aloo Paratha', cat:'North Indian', ico:'🫓', w:120, u:'piece', cal:300, pro:6.5, carb:40.0, fat:12.5, fib:3.0, sug:1.5, sod:350, pot:180, cal_m:25, iron:2.0, mag:25, vitC:6, vitD:0, vitB12:0, folate:18, vitA:5},
+
+  /* ── Vegetables (additional) ────────────────────────────────── */
+  carrots: {n:'Carrots', cat:'Vegetables', ico:'🥕', w:100, u:'100g', cal:41, pro:0.9, carb:9.6, fat:0.2, fib:2.8, sug:4.7, sod:69, pot:320, cal_m:33, iron:0.3, mag:12, vitC:6, vitD:0, vitB12:0, folate:19, vitA:835},
+  cauliflower: {n:'Cauliflower', cat:'Vegetables', ico:'🥦', w:100, u:'100g', cal:25, pro:1.9, carb:5.0, fat:0.3, fib:2.0, sug:1.9, sod:30, pot:299, cal_m:22, iron:0.4, mag:15, vitC:48, vitD:0, vitB12:0, folate:57, vitA:0},
+  potato: {n:'Potato', cat:'Vegetables', ico:'🥔', w:100, u:'100g', cal:77, pro:2.0, carb:17.0, fat:0.1, fib:2.2, sug:0.8, sod:6, pot:421, cal_m:12, iron:0.8, mag:23, vitC:20, vitD:0, vitB12:0, folate:15, vitA:0},
+  peas: {n:'Peas', cat:'Vegetables', ico:'🟢', w:100, u:'100g', cal:81, pro:5.4, carb:14.5, fat:0.4, fib:5.1, sug:5.7, sod:5, pot:244, cal_m:25, iron:1.5, mag:33, vitC:40, vitD:0, vitB12:0, folate:65, vitA:38},
+  drumstick: {n:'Drumstick (Moringa)', cat:'Vegetables', ico:'🥒', w:100, u:'100g', cal:37, pro:2.1, carb:8.5, fat:0.2, fib:3.2, sug:0.5, sod:42, pot:461, cal_m:30, iron:0.4, mag:45, vitC:141, vitD:0, vitB12:0, folate:44, vitA:4},
+  ridge_gourd: {n:'Ridge Gourd', cat:'Vegetables', ico:'🥒', w:100, u:'100g', cal:20, pro:1.2, carb:3.4, fat:0.3, fib:1.6, sug:1.8, sod:3, pot:150, cal_m:18, iron:0.4, mag:14, vitC:12, vitD:0, vitB12:0, folate:22, vitA:5},
+  bottle_gourd: {n:'Bottle Gourd', cat:'Vegetables', ico:'🥒', w:100, u:'100g', cal:15, pro:0.6, carb:3.4, fat:0.1, fib:0.5, sug:2.0, sod:2, pot:150, cal_m:26, iron:0.2, mag:11, vitC:10, vitD:0, vitB12:0, folate:6, vitA:8},
+  onion: {n:'Onion', cat:'Vegetables', ico:'🧅', w:100, u:'100g', cal:40, pro:1.1, carb:9.3, fat:0.1, fib:1.7, sug:4.2, sod:4, pot:146, cal_m:23, iron:0.2, mag:10, vitC:7, vitD:0, vitB12:0, folate:19, vitA:0},
+
+  /* ── Proteins (additional) ──────────────────────────────────── */
+  chicken_breast: {n:'Chicken Breast (cooked)', cat:'Protein', ico:'🍗', w:100, u:'100g', cal:165, pro:31.0, carb:0, fat:3.6, fib:0, sug:0, sod:74, pot:256, cal_m:15, iron:1.0, mag:29, vitC:0, vitD:5, vitB12:0.3, folate:4, vitA:6},
+  egg_white: {n:'Egg White', cat:'Protein', ico:'🥚', w:33, u:'piece', cal:17, pro:3.6, carb:0.2, fat:0.1, fib:0, sug:0.2, sod:55, pot:54, cal_m:2, iron:0, mag:4, vitC:0, vitD:0, vitB12:0, folate:1, vitA:0},
+  boiled_egg: {n:'Boiled Egg (whole)', cat:'Protein', ico:'🥚', w:50, u:'piece', cal:78, pro:6.3, carb:0.6, fat:5.3, fib:0, sug:0.6, sod:62, pot:63, cal_m:25, iron:0.9, mag:5, vitC:0, vitD:44, vitB12:0.6, folate:22, vitA:75},
+  prawn_curry: {n:'Prawn Curry', cat:'Protein', ico:'🦐', w:150, u:'serving', cal:180, pro:18.0, carb:6.0, fat:9.0, fib:0.8, sug:1.5, sod:520, pot:240, cal_m:55, iron:2.0, mag:32, vitC:4, vitD:2, vitB12:1.5, folate:18, vitA:45},
+  soya_chunks: {n:'Soya Chunks (cooked)', cat:'Protein', ico:'🫘', w:100, u:'100g', cal:345, pro:52.0, carb:33.0, fat:0.5, fib:13.0, sug:0, sod:1, pot:2490, cal_m:350, iron:20.0, mag:290, vitC:0, vitD:0, vitB12:0, folate:305, vitA:0},
+  tofu: {n:'Tofu', cat:'Protein', ico:'🧊', w:100, u:'100g', cal:76, pro:8.0, carb:1.9, fat:4.8, fib:0.3, sug:0.6, sod:7, pot:121, cal_m:350, iron:5.4, mag:30, vitC:0, vitD:0, vitB12:0, folate:15, vitA:0},
+
+  /* ── Fruits (additional) ────────────────────────────────────── */
+  mango: {n:'Mango', cat:'Fruits', ico:'🥭', w:100, u:'100g', cal:60, pro:0.8, carb:15.0, fat:0.4, fib:1.6, sug:13.7, sod:1, pot:168, cal_m:11, iron:0.2, mag:10, vitC:36, vitD:0, vitB12:0, folate:43, vitA:54},
+  apple: {n:'Apple', cat:'Fruits', ico:'🍎', w:100, u:'100g', cal:52, pro:0.3, carb:13.8, fat:0.2, fib:2.4, sug:10.4, sod:1, pot:107, cal_m:6, iron:0.1, mag:5, vitC:5, vitD:0, vitB12:0, folate:3, vitA:3},
+  orange: {n:'Orange', cat:'Fruits', ico:'🍊', w:130, u:'piece', cal:62, pro:1.3, carb:15.4, fat:0.2, fib:3.1, sug:12.2, sod:0, pot:237, cal_m:52, iron:0.1, mag:13, vitC:70, vitD:0, vitB12:0, folate:39, vitA:14},
+  watermelon: {n:'Watermelon', cat:'Fruits', ico:'🍉', w:200, u:'serving', cal:60, pro:1.2, carb:15.2, fat:0.3, fib:0.8, sug:12.4, sod:2, pot:224, cal_m:14, iron:0.5, mag:20, vitC:16, vitD:0, vitB12:0, folate:6, vitA:57},
+
+  /* ── Grains (additional) ────────────────────────────────────── */
+  chapati_multigrain: {n:'Multigrain Chapati', cat:'Grains', ico:'🫓', w:45, u:'piece', cal:120, pro:4.0, carb:20.0, fat:2.5, fib:3.0, sug:0.5, sod:140, pot:80, cal_m:18, iron:1.5, mag:28, vitC:0, vitD:0, vitB12:0, folate:14, vitA:0},
+  jowar_roti: {n:'Jowar Roti', cat:'Grains', ico:'🫓', w:45, u:'piece', cal:105, pro:3.5, carb:22.0, fat:1.0, fib:2.5, sug:0.3, sod:2, pot:70, cal_m:10, iron:1.8, mag:25, vitC:0, vitD:0, vitB12:0, folate:10, vitA:0},
+  bajra_roti: {n:'Bajra Roti', cat:'Grains', ico:'🫓', w:45, u:'piece', cal:110, pro:3.2, carb:21.0, fat:1.5, fib:2.8, sug:0.3, sod:3, pot:85, cal_m:12, iron:2.5, mag:30, vitC:0, vitD:0, vitB12:0, folate:12, vitA:0},
+  quinoa: {n:'Quinoa (cooked)', cat:'Grains', ico:'🍚', w:185, u:'katori', cal:222, pro:8.1, carb:39.4, fat:3.6, fib:5.2, sug:1.6, sod:13, pot:318, cal_m:31, iron:2.8, mag:118, vitC:0, vitD:0, vitB12:0, folate:78, vitA:0},
+  muesli: {n:'Muesli', cat:'Grains', ico:'🥣', w:50, u:'serving', cal:190, pro:5.0, carb:33.0, fat:4.5, fib:3.5, sug:11.0, sod:60, pot:180, cal_m:30, iron:2.8, mag:45, vitC:0, vitD:0, vitB12:0, folate:22, vitA:0},
+  cornflakes: {n:'Cornflakes', cat:'Grains', ico:'🥣', w:30, u:'serving', cal:112, pro:2.0, carb:25.0, fat:0.3, fib:0.9, sug:3.0, sod:200, pot:26, cal_m:1, iron:4.5, mag:4, vitC:0, vitD:40, vitB12:0.6, folate:100, vitA:150},
+
+  /* ── Nuts & Seeds (additional) ──────────────────────────────── */
+  walnuts: {n:'Walnuts', cat:'Nuts & Seeds', ico:'🌰', w:28, u:'handful', cal:185, pro:4.3, carb:3.9, fat:18.5, fib:1.9, sug:0.7, sod:1, pot:125, cal_m:28, iron:0.8, mag:45, vitC:0, vitD:0, vitB12:0, folate:28, vitA:0},
+  peanuts: {n:'Peanuts', cat:'Nuts & Seeds', ico:'🥜', w:28, u:'handful', cal:161, pro:7.3, carb:4.6, fat:14.0, fib:2.4, sug:1.1, sod:5, pot:200, cal_m:26, iron:1.3, mag:48, vitC:0, vitD:0, vitB12:0, folate:68, vitA:0},
+  cashews: {n:'Cashews', cat:'Nuts & Seeds', ico:'🌰', w:28, u:'handful', cal:157, pro:5.2, carb:8.6, fat:12.4, fib:0.9, sug:1.7, sod:3, pot:187, cal_m:10, iron:1.9, mag:83, vitC:0, vitD:0, vitB12:0, folate:7, vitA:0},
+  flaxseeds: {n:'Flaxseeds', cat:'Nuts & Seeds', ico:'🌱', w:15, u:'tbsp', cal:80, pro:2.7, carb:4.3, fat:6.3, fib:4.1, sug:0.2, sod:5, pot:122, cal_m:38, iron:0.9, mag:59, vitC:0, vitD:0, vitB12:0, folate:13, vitA:0},
+  chia_seeds: {n:'Chia Seeds', cat:'Nuts & Seeds', ico:'🌱', w:15, u:'tbsp', cal:73, pro:2.5, carb:6.4, fat:4.6, fib:5.2, sug:0, sod:2, pot:58, cal_m:95, iron:1.2, mag:50, vitC:0, vitD:0, vitB12:0, folate:7, vitA:0},
+  pumpkin_seeds: {n:'Pumpkin Seeds', cat:'Nuts & Seeds', ico:'🌱', w:28, u:'handful', cal:151, pro:7.0, carb:5.0, fat:13.0, fib:1.1, sug:0.4, sod:5, pot:229, cal_m:13, iron:2.5, mag:150, vitC:0, vitD:0, vitB12:0, folate:16, vitA:1},
+
+  /* ── Dairy (additional) ─────────────────────────────────────── */
+  buttermilk: {n:'Buttermilk', cat:'Dairy', ico:'🥛', w:200, u:'glass', cal:40, pro:3.3, carb:4.8, fat:0.9, fib:0, sug:4.8, sod:260, pot:260, cal_m:116, iron:0.1, mag:20, vitC:1, vitD:0, vitB12:0.2, folate:5, vitA:10},
+  ghee: {n:'Ghee', cat:'Dairy', ico:'🧈', w:10, u:'tsp', cal:90, pro:0, carb:0, fat:10.0, fib:0, sug:0, sod:0, pot:0, cal_m:0, iron:0, mag:0, vitC:0, vitD:0, vitB12:0, folate:0, vitA:34},
+  cheese_cheddar: {n:'Cheddar Cheese', cat:'Dairy', ico:'🧀', w:30, u:'slice', cal:120, pro:7.0, carb:0.4, fat:10.0, fib:0, sug:0.1, sod:185, pot:22, cal_m:204, iron:0.2, mag:8, vitC:0, vitD:8, vitB12:0.3, folate:5, vitA:100},
+  skimmed_milk: {n:'Skimmed Milk', cat:'Dairy', ico:'🥛', w:200, u:'glass', cal:70, pro:7.0, carb:10.0, fat:0.2, fib:0, sug:10.0, sod:100, pot:300, cal_m:250, iron:0.1, mag:22, vitC:0, vitD:100, vitB12:0.9, folate:10, vitA:5},
+
+  /* ── Beverages (additional) ─────────────────────────────────── */
+  green_tea: {n:'Green Tea', cat:'Beverages', ico:'🍵', w:240, u:'cup', cal:2, pro:0, carb:0, fat:0, fib:0, sug:0, sod:2, pot:20, cal_m:0, iron:0, mag:2, vitC:0, vitD:0, vitB12:0, folate:0, vitA:0},
+  orange_juice: {n:'Orange Juice', cat:'Beverages', ico:'🍊', w:240, u:'glass', cal:112, pro:1.7, carb:25.8, fat:0.5, fib:0.5, sug:20.8, sod:2, pot:496, cal_m:27, iron:0.5, mag:27, vitC:124, vitD:0, vitB12:0, folate:74, vitA:25},
+  nimbu_pani: {n:'Nimbu Pani (Lemonade)', cat:'Beverages', ico:'🍋', w:240, u:'glass', cal:45, pro:0.2, carb:12.0, fat:0, fib:0, sug:10.0, sod:180, pot:40, cal_m:5, iron:0.1, mag:3, vitC:15, vitD:0, vitB12:0, folate:2, vitA:0},
+  turmeric_milk: {n:'Turmeric Milk (Haldi Doodh)', cat:'Beverages', ico:'🥛', w:200, u:'glass', cal:135, pro:6.5, carb:10.0, fat:7.5, fib:0.2, sug:9.0, sod:95, pot:260, cal_m:230, iron:0.5, mag:24, vitC:0, vitD:100, vitB12:0.9, folate:10, vitA:65},
+  coffee_black: {n:'Black Coffee', cat:'Beverages', ico:'☕', w:240, u:'cup', cal:2, pro:0.3, carb:0, fat:0, fib:0, sug:0, sod:5, pot:116, cal_m:5, iron:0, mag:7, vitC:0, vitD:0, vitB12:0, folate:0, vitA:0},
+
+  /* ── Sweets & Chocolate (8) ─────────────────────────────────── */
+  dark_chocolate: {n:'Dark Chocolate', cat:'Sweets & Chocolate', ico:'🍫', w:30, u:'piece', cal:170, pro:2.2, carb:13.0, fat:12.0, fib:3.1, sug:7.0, sod:6, pot:200, cal_m:21, iron:3.4, mag:64, vitC:0, vitD:0, vitB12:0, folate:3, vitA:0},
+  milk_chocolate: {n:'Milk Chocolate', cat:'Sweets & Chocolate', ico:'🍫', w:30, u:'piece', cal:160, pro:2.1, carb:17.0, fat:9.0, fib:0.6, sug:15.5, sod:23, pot:107, cal_m:54, iron:0.4, mag:16, vitC:0, vitD:3, vitB12:0.2, folate:3, vitA:17},
+  gulab_jamun: {n:'Gulab Jamun', cat:'Sweets & Chocolate', ico:'🟤', w:50, u:'piece', cal:175, pro:2.5, carb:28.0, fat:6.0, fib:0.2, sug:22.0, sod:35, pot:40, cal_m:30, iron:0.3, mag:6, vitC:0, vitD:0, vitB12:0, folate:4, vitA:15},
+  kheer: {n:'Kheer', cat:'Sweets & Chocolate', ico:'🍚', w:150, u:'katori', cal:220, pro:6.0, carb:32.0, fat:8.0, fib:0.3, sug:22.0, sod:70, pot:180, cal_m:140, iron:0.4, mag:15, vitC:1, vitD:5, vitB12:0.4, folate:8, vitA:50},
+  jalebi: {n:'Jalebi', cat:'Sweets & Chocolate', ico:'🥨', w:50, u:'piece', cal:190, pro:1.5, carb:30.0, fat:7.5, fib:0.1, sug:25.0, sod:15, pot:18, cal_m:8, iron:0.3, mag:3, vitC:0, vitD:0, vitB12:0, folate:2, vitA:2},
+  halwa_sooji: {n:'Sooji Halwa', cat:'Sweets & Chocolate', ico:'🟡', w:100, u:'serving', cal:280, pro:3.5, carb:38.0, fat:13.0, fib:0.8, sug:20.0, sod:40, pot:45, cal_m:18, iron:1.0, mag:8, vitC:0, vitD:2, vitB12:0, folate:10, vitA:40},
+  barfi: {n:'Barfi', cat:'Sweets & Chocolate', ico:'🟫', w:30, u:'piece', cal:130, pro:2.5, carb:16.0, fat:6.5, fib:0.2, sug:14.0, sod:15, pot:50, cal_m:40, iron:0.2, mag:8, vitC:0, vitD:0, vitB12:0.1, folate:3, vitA:20},
+  icecream_vanilla: {n:'Vanilla Ice Cream', cat:'Sweets & Chocolate', ico:'🍦', w:100, u:'scoop', cal:207, pro:3.5, carb:24.0, fat:11.0, fib:0, sug:21.0, sod:80, pot:199, cal_m:128, iron:0.1, mag:14, vitC:1, vitD:5, vitB12:0.4, folate:5, vitA:78},
+
+  /* ── Snacks (additional) ────────────────────────────────────── */
+  samosa: {n:'Samosa', cat:'Snacks', ico:'🔺', w:80, u:'piece', cal:240, pro:4.0, carb:24.0, fat:14.0, fib:1.5, sug:1.5, sod:280, pot:110, cal_m:15, iron:1.2, mag:14, vitC:3, vitD:0, vitB12:0, folate:10, vitA:4},
+  vada_pav: {n:'Vada Pav', cat:'Snacks', ico:'🍔', w:150, u:'piece', cal:310, pro:6.5, carb:38.0, fat:14.5, fib:2.5, sug:3.0, sod:420, pot:200, cal_m:20, iron:1.8, mag:18, vitC:5, vitD:0, vitB12:0, folate:15, vitA:4},
+  oreo: {n:'Oreo Cookie', cat:'Snacks', ico:'🍪', w:34, u:'serving', cal:160, pro:1.5, carb:25.0, fat:7.0, fib:0.8, sug:14.0, sod:135, pot:48, cal_m:8, iron:3.0, mag:12, vitC:0, vitD:0, vitB12:0, folate:5, vitA:0},
+  parle_g: {n:'Parle-G Biscuit', cat:'Snacks', ico:'🍪', w:25, u:'biscuit', cal:110, pro:1.5, carb:18.0, fat:3.5, fib:0.3, sug:7.5, sod:80, pot:20, cal_m:10, iron:0.8, mag:5, vitC:0, vitD:0, vitB12:0, folate:5, vitA:0},
+
+  /* ── Condiments (3) ─────────────────────────────────────────── */
+  honey: {n:'Honey', cat:'Condiments', ico:'🍯', w:21, u:'tbsp', cal:64, pro:0.1, carb:17.3, fat:0, fib:0, sug:17.2, sod:1, pot:11, cal_m:1, iron:0.1, mag:0, vitC:0, vitD:0, vitB12:0, folate:0, vitA:0},
+  pickle_mango: {n:'Mango Pickle', cat:'Condiments', ico:'🥒', w:20, u:'tbsp', cal:30, pro:0.3, carb:2.5, fat:2.2, fib:0.4, sug:1.0, sod:580, pot:18, cal_m:5, iron:0.2, mag:2, vitC:2, vitD:0, vitB12:0, folate:1, vitA:5},
+  olive_oil: {n:'Olive Oil', cat:'Condiments', ico:'🫒', w:14, u:'tbsp', cal:119, pro:0, carb:0, fat:13.5, fib:0, sug:0, sod:0, pot:0, cal_m:0, iron:0.1, mag:0, vitC:0, vitD:0, vitB12:0, folate:0, vitA:0},
+
+  /* ── Italian (4) ────────────────────────────────────────────── */
+  margherita_pizza: {n:'Margherita Pizza', cat:'Italian', ico:'🍕', w:107, u:'slice', cal:250, pro:11.0, carb:30.0, fat:9.5, fib:1.8, sug:3.5, sod:550, pot:150, cal_m:180, iron:1.5, mag:18, vitC:3, vitD:2, vitB12:0.3, folate:20, vitA:55},
+  spaghetti_bolognese: {n:'Spaghetti Bolognese', cat:'Italian', ico:'🍝', w:350, u:'serving', cal:450, pro:24.0, carb:55.0, fat:14.0, fib:4.0, sug:8.0, sod:680, pot:520, cal_m:50, iron:3.5, mag:55, vitC:10, vitD:3, vitB12:1.2, folate:35, vitA:60},
+  pasta_carbonara: {n:'Pasta Carbonara', cat:'Italian', ico:'🍝', w:300, u:'serving', cal:520, pro:22.0, carb:50.0, fat:25.0, fib:2.0, sug:2.5, sod:720, pot:250, cal_m:180, iron:2.0, mag:32, vitC:0, vitD:10, vitB12:0.8, folate:18, vitA:85},
+  bruschetta: {n:'Bruschetta', cat:'Italian', ico:'🥖', w:80, u:'serving', cal:130, pro:3.5, carb:16.0, fat:5.5, fib:1.5, sug:2.5, sod:280, pot:140, cal_m:15, iron:1.0, mag:10, vitC:5, vitD:0, vitB12:0, folate:12, vitA:18},
+
+  /* ── Japanese (3) ───────────────────────────────────────────── */
+  sushi_salmon: {n:'Salmon Sushi', cat:'Japanese', ico:'🍣', w:180, u:'serving', cal:280, pro:14.0, carb:38.0, fat:7.0, fib:1.0, sug:5.0, sod:580, pot:200, cal_m:12, iron:1.0, mag:22, vitC:2, vitD:120, vitB12:2.5, folate:8, vitA:15},
+  ramen: {n:'Ramen', cat:'Japanese', ico:'🍜', w:450, u:'bowl', cal:450, pro:18.0, carb:55.0, fat:16.0, fib:2.5, sug:3.0, sod:1800, pot:280, cal_m:30, iron:2.5, mag:28, vitC:3, vitD:5, vitB12:0.4, folate:20, vitA:30},
+  miso_soup: {n:'Miso Soup', cat:'Japanese', ico:'🍵', w:240, u:'bowl', cal:40, pro:3.0, carb:5.0, fat:1.0, fib:0.8, sug:1.5, sod:900, pot:210, cal_m:18, iron:0.8, mag:18, vitC:1, vitD:0, vitB12:0.1, folate:10, vitA:3},
+
+  /* ── Mexican (3) ────────────────────────────────────────────── */
+  tacos_chicken: {n:'Chicken Tacos', cat:'Mexican', ico:'🌮', w:180, u:'serving', cal:310, pro:20.0, carb:28.0, fat:13.0, fib:3.5, sug:3.0, sod:520, pot:280, cal_m:80, iron:2.0, mag:30, vitC:6, vitD:2, vitB12:0.3, folate:15, vitA:40},
+  guacamole: {n:'Guacamole', cat:'Mexican', ico:'🥑', w:80, u:'serving', cal:120, pro:1.5, carb:6.5, fat:10.0, fib:4.0, sug:0.5, sod:240, pot:360, cal_m:10, iron:0.4, mag:22, vitC:8, vitD:0, vitB12:0, folate:60, vitA:4},
+  burrito: {n:'Burrito', cat:'Mexican', ico:'🌯', w:280, u:'burrito', cal:420, pro:22.0, carb:50.0, fat:14.0, fib:6.0, sug:3.5, sod:850, pot:380, cal_m:120, iron:3.0, mag:50, vitC:5, vitD:3, vitB12:0.5, folate:40, vitA:35},
 };
 
 /* ───────────────────────────────────────────────────────────────
@@ -927,6 +1039,11 @@ const FOOD_CATEGORIES = [
   'Snacks',
   'Nuts & Seeds',
   'Beverages',
+  'Sweets & Chocolate',
+  'Condiments',
+  'Italian',
+  'Japanese',
+  'Mexican',
 ];
 
 /* ───────────────────────────────────────────────────────────────

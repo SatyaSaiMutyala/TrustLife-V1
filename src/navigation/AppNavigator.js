@@ -5,6 +5,25 @@ import ViewAllScreen from '../screens/Home/ViewAllScreen';
 import ProfileScreen from '../screens/Home/ProfileScreen';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import GoalsScreen from '../screens/Profile/GoalsScreen';
+import PersonalInfoScreen from '../screens/Profile/PersonalInfoScreen';
+import ContactScreen from '../screens/Profile/ContactScreen';
+import PreferencesScreen from '../screens/Profile/PreferencesScreen';
+import HealthScreen from '../screens/Profile/HealthScreen';
+import FamilyMembersScreen from '../screens/Profile/FamilyMembersScreen';
+import ConnectedDevicesScreen from '../screens/Profile/ConnectedDevicesScreen';
+import ConsentManagerScreen from '../screens/Profile/ConsentManagerScreen';
+import AccessLogScreen from '../screens/Profile/AccessLogScreen';
+import DataTransparencyScreen from '../screens/Profile/DataTransparencyScreen';
+import TrustReportScreen from '../screens/Profile/TrustReportScreen';
+import ReferralScreen from '../screens/Profile/ReferralScreen';
+import HealthRewardsScreen from '../screens/Profile/HealthRewardsScreen';
+import SecurityScreen from '../screens/Profile/SecurityScreen';
+import PrivacyPolicyScreen from '../screens/Profile/PrivacyPolicyScreen';
+import SubscriptionScreen from '../screens/Profile/SubscriptionScreen';
+import TermsOfServiceScreen from '../screens/Profile/TermsOfServiceScreen';
+import ConsentAgreementScreen from '../screens/Profile/ConsentAgreementScreen';
+import HelpSupportScreen from '../screens/Profile/HelpSupportScreen';
+import EmergencySOSScreen from '../screens/Profile/EmergencySOSScreen';
 import HPSReportScreen from '../screens/Progress/HPSReportScreen';
 import AyuChatScreen from '../screens/HealthCoach/AyuChatScreen';
 import CapabilityDetailScreen from '../screens/HealthCoach/CapabilityDetailScreen';
@@ -511,6 +530,101 @@ const AppNavigator = () => {
       <Stack.Screen
         name="Goals"
         component={GoalsScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="PersonalInfo"
+        component={PersonalInfoScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="ContactDetails"
+        component={ContactScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Preferences"
+        component={PreferencesScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="HealthProfile"
+        component={HealthScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FamilyMembers"
+        component={FamilyMembersScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="ConnectedDevices"
+        component={ConnectedDevicesScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="ConsentManager"
+        component={ConsentManagerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="AccessLog"
+        component={AccessLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="DataTransparency"
+        component={DataTransparencyScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="TrustReport"
+        component={TrustReportScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Referral"
+        component={ReferralScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="HealthRewards"
+        component={HealthRewardsScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Security"
+        component={SecurityScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Subscription"
+        component={SubscriptionScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfServiceScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="ConsentAgreement"
+        component={ConsentAgreementScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="HelpSupport"
+        component={HelpSupportScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="EmergencySOS"
+        component={EmergencySOSScreen}
         options={{animation: 'slide_from_right'}}
       />
     </Stack.Navigator>

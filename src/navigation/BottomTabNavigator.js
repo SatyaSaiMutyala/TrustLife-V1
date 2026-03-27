@@ -22,11 +22,11 @@ const tabImages = {
 };
 
 const tabs = [
-  {name: 'Home', component: HomeScreen},
-  {name: 'Tracking', component: TrackingScreen},
-  {name: 'Records', component: RecordsScreen},
-  {name: 'Progress', component: ProgressScreen},
-  {name: 'Ayu', component: HealthCoachScreen},
+  {name: 'Home', label: 'Home', component: HomeScreen},
+  {name: 'Tracking', label: 'Tracking', component: TrackingScreen},
+  {name: 'Records', label: 'Records', component: RecordsScreen},
+  {name: 'Progress', label: 'Progress', component: ProgressScreen},
+  {name: 'Ayu', label: 'Ayu Intel', component: HealthCoachScreen},
 ];
 
 const CustomTabBar = ({state, navigation}) => (
@@ -51,7 +51,7 @@ const CustomTabBar = ({state, navigation}) => (
               style={styles.tabIcon}
               resizeMode="contain"
             />
-            <Text style={[styles.tabLabelInner, {color: isFocused ? Colors.primary : Colors.textTertiary, fontWeight: isFocused ? '600' : '400'}]}>{tab.name}</Text>
+            <Text style={[styles.tabLabelInner, {color: isFocused ? Colors.primary : Colors.textTertiary, fontWeight: isFocused ? '600' : '400'}]}>{tab.label}</Text>
           </View>
         </TouchableOpacity>
       );

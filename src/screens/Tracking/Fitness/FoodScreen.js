@@ -87,6 +87,7 @@ const FoodScreen = () => {
         return <NutrientsTab meals={meals} />;
       case 'trends':
         return <TrendsTab />;
+
       default:
         return null;
     }

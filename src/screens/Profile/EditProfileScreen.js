@@ -8,20 +8,13 @@ import AppText from '../../components/shared/AppText';
 import {PROFILE_TABS} from '../../constants/profileData';
 
 import OverviewTab from './tabs/OverviewTab';
-import PersonalTab from './tabs/PersonalTab';
-import ContactTab from './tabs/ContactTab';
 import DependentsTab from './tabs/DependentsTab';
-import SecurityTab from './tabs/SecurityTab';
-import PreferencesTab from './tabs/PreferencesTab';
-import LifestyleTab from './tabs/LifestyleTab';
-import HealthTab from './tabs/HealthTab';
 import FamilyHistoryTab from './tabs/FamilyHistoryTab';
 import EnvironmentTab from './tabs/EnvironmentTab';
 import ReproductiveTab from './tabs/ReproductiveTab';
 import DentalTab from './tabs/DentalTab';
 import VisionTab from './tabs/VisionTab';
 import GeneticTab from './tabs/GeneticTab';
-import DigitalHealthTab from './tabs/DigitalHealthTab';
 import BodyCompTab from './tabs/BodyCompTab';
 import SupplementsTab from './tabs/SupplementsTab';
 import InsuranceTab from './tabs/InsuranceTab';
@@ -30,20 +23,13 @@ import InsuranceTab from './tabs/InsuranceTab';
 
 const TAB_MAP = {
   overview: OverviewTab,
-  personal: PersonalTab,
-  contact: ContactTab,
   dependents: DependentsTab,
-  security: SecurityTab,
-  preferences: PreferencesTab,
-  lifestyle: LifestyleTab,
-  health: HealthTab,
   family: FamilyHistoryTab,
   environment: EnvironmentTab,
   reproductive: ReproductiveTab,
   dental: DentalTab,
   vision: VisionTab,
   genetic: GeneticTab,
-  digital: DigitalHealthTab,
   bodycomp: BodyCompTab,
   supplements: SupplementsTab,
   insurance: InsuranceTab,
@@ -58,6 +44,8 @@ const EditProfileScreen = () => {
   const handleTabPress = (key) => {
     if (key === 'goals') {
       navigation.navigate('Goals');
+    } else if (key === 'security') {
+      navigation.navigate('Security');
     } else {
       setActiveTab(key);
     }

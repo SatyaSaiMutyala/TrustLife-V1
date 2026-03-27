@@ -19,7 +19,7 @@ const MenuSection = ({title, items}) => (
     <SectionTitle title={title} />
     <View style={styles.card}>
       {items.map((item, i) => (
-        <TouchableOpacity key={i} style={[styles.row, i < items.length - 1 && styles.rowBorder]} activeOpacity={0.6}>
+        <TouchableOpacity key={i} style={[styles.row, i < items.length - 1 && styles.rowBorder]} activeOpacity={0.6} onPress={item.onPress}>
           <View style={[styles.ico, {backgroundColor: item.iconBg}]}>
             <Emoji icon={item.icon} size={16} />
           </View>

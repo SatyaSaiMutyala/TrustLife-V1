@@ -15,7 +15,7 @@ const conditions = [
 
 const quickTiles = [
   {icon: '📅', label: 'My bookings', badge: '2 active'},
-  {icon: '🎁', label: 'Invite friends'},
+  {icon: '🎁', label: 'Invite friends', route: 'Referral'},
   {icon: '💬', label: 'Support'},
 ];
 
@@ -50,7 +50,7 @@ const ProfileHeader = ({onBack}) => {
 
     <View style={styles.quickRow}>
       {quickTiles.map((t, i) => (
-        <TouchableOpacity key={i} style={styles.quickTile} activeOpacity={0.7}>
+        <TouchableOpacity key={i} style={styles.quickTile} activeOpacity={0.7} onPress={() => t.route && navigation.navigate(t.route)}>
           <Emoji icon={t.icon} size={20} />
           <AppText variant="small" color="rgba(255,255,255,0.85)" style={styles.qtLabel}>{t.label}</AppText>
           {t.badge && (

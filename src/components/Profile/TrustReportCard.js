@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
@@ -8,10 +9,12 @@ import SectionTitle from '../shared/SectionTitle';
 
 const pills = ['256-bit encryption', 'HIPAA compliant', 'ISO 27001', 'Zero data selling'];
 
-const TrustReportCard = () => (
+const TrustReportCard = () => {
+  const navigation = useNavigation();
+  return (
   <View>
     <SectionTitle title="Trust" />
-    <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={() => navigation.navigate('TrustReport')}>
       <View style={styles.top}>
         <View style={styles.icon}><Emoji icon="🛡️" size={20} /></View>
         <View style={{flex: 1}}>
@@ -27,7 +30,8 @@ const TrustReportCard = () => (
       </View>
     </TouchableOpacity>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   card: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(14), marginBottom: vs(10)},

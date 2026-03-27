@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
@@ -13,12 +14,14 @@ const rewards = [
 ];
 
 const subMenus = [
-  {icon: '🎁', bg: Colors.tealBg, name: 'Referral incentives', sub: 'Earn ₹100 per friend who joins'},
-  {icon: '🏆', bg: Colors.amberBg, name: 'Rewards & redemption', sub: 'Use credits on services & medicines'},
-  {icon: '📄', bg: Colors.blueBg, name: 'Subscription history', sub: 'Past invoices and payment methods'},
+  {icon: '🎁', bg: Colors.tealBg, name: 'Referral incentives', sub: 'Earn ₹100 per friend who joins', route: 'Referral'},
+  {icon: '🏆', bg: Colors.amberBg, name: 'Rewards & redemption', sub: 'Use credits on services & medicines', route: 'HealthRewards'},
+  {icon: '📄', bg: Colors.blueBg, name: 'Subscription history', sub: 'Past invoices and payment methods', route: 'Subscription'},
 ];
 
-const BillingCard = () => (
+const BillingCard = () => {
+  const navigation = useNavigation();
+  return (
   <View>
     <SectionTitle title="Billing & Rewards" />
     <View style={styles.card}>
@@ -39,7 +42,7 @@ const BillingCard = () => (
       </View>
       <View style={styles.divider} />
       {subMenus.map((m, i) => (
-        <TouchableOpacity key={i} style={[styles.menuRow, i > 0 && {marginTop: vs(4)}]} activeOpacity={0.6}>
+        <TouchableOpacity key={i} style={[styles.menuRow, i > 0 && {marginTop: vs(4)}]} activeOpacity={0.6} onPress={() => m.route && navigation.navigate(m.route)}>
           <View style={[styles.menuIco, {backgroundColor: m.bg}]}>
             <Emoji icon={m.icon} size={14} />
           </View>
@@ -52,7 +55,8 @@ const BillingCard = () => (
       ))}
     </View>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   card: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(14), marginBottom: vs(10)},
