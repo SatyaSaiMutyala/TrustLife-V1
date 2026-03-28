@@ -3,6 +3,7 @@ import {View, ScrollView, StyleSheet, StatusBar, TouchableOpacity, Image} from '
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
+import Images from '../../constants/images';
 import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
 
@@ -62,7 +63,7 @@ const HealthCoachScreen = () => {
       <View style={styles.header}>
         <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
           <Image
-            source={require('../../assets/img/ayu-nb.gif')}
+            source={Images.ayuLogo}
             style={{width: ms(40), height: ms(40)}}
             resizeMode="contain"
           />

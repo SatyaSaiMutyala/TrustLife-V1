@@ -82,12 +82,18 @@ const ForYouCarousel = ({navigation}) => (
                 ))}
               </View>
             )}
-            <MiniBars data={card.bars} />
-            <AppText variant="caption" color={Colors.textSecondary} style={styles.avgText}>
-              7-day avg: <AppText variant="caption" color={card.avgColor} style={styles.avgVal}>{card.avg}</AppText>
-            </AppText>
-            <View style={[styles.tag, {backgroundColor: tagMap[card.tagStyle].bg}]}>
-              <AppText variant="small" color={tagMap[card.tagStyle].color}>{card.tag}</AppText>
+            {/* Bars left + Stats right */}
+            <View style={styles.chartRow}>
+              <View style={styles.chartLeft}>
+                <MiniBars data={card.bars} />
+              </View>
+              <View style={styles.chartRight}>
+                <AppText variant="small" color={Colors.textTertiary}>7-day avg</AppText>
+                <AppText variant="bodyBold" color={card.avgColor} style={styles.avgVal}>{card.avg}</AppText>
+                <View style={[styles.tag, {backgroundColor: tagMap[card.tagStyle].bg}]}>
+                  <AppText variant="small" color={tagMap[card.tagStyle].color} style={{fontWeight: '600'}}>{card.tag}</AppText>
+                </View>
+              </View>
             </View>
             <AppText variant="caption" color={Colors.textSecondary} style={styles.rec}>
               {card.rec[0]}<AppText variant="caption" color={Colors.textPrimary} style={styles.recBold}>{card.rec[1]}</AppText>{card.rec[2]}
@@ -109,9 +115,11 @@ const styles = StyleSheet.create({
   cardBody: {padding: ms(11)},
   medChips: {flexDirection: 'row', gap: s(4), marginBottom: vs(6)},
   medChip: {paddingVertical: vs(2), paddingHorizontal: s(6), borderRadius: ms(20), borderWidth: 0.5},
-  avgText: {marginBottom: vs(6)},
-  avgVal: {fontWeight: '500'},
-  tag: {alignSelf: 'flex-start', paddingVertical: vs(2), paddingHorizontal: s(6), borderRadius: ms(20), marginBottom: vs(6)},
+  chartRow: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(6)},
+  chartLeft: {flex: 2, marginRight: s(8)},
+  chartRight: {flex: 3, alignItems: 'flex-end'},
+  avgVal: {fontWeight: '700', fontSize: ms(12), marginTop: vs(1), marginBottom: vs(4)},
+  tag: {paddingVertical: vs(2), paddingHorizontal: s(6), borderRadius: ms(20)},
   rec: {borderTopWidth: 0.5, borderTopColor: Colors.borderLight, paddingTop: vs(6)},
   recBold: {fontWeight: '500'},
 });

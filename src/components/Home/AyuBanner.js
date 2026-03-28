@@ -1,13 +1,17 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
+import Images from '../../constants/images';
 import AppText from '../shared/AppText';
 
-const AyuBanner = () => (
-  <TouchableOpacity style={styles.banner} activeOpacity={0.7}>
+const AyuBanner = () => {
+  const navigation = useNavigation();
+  return (
+  <TouchableOpacity style={styles.banner} activeOpacity={0.7} onPress={() => navigation.navigate('AyuChat')}>
     <View style={styles.avatar}>
-      <Image source={require('../../assets/img/ayu-nb.gif')} style={styles.ayuImg} resizeMode="contain" />
+      <Image source={Images.ayuLogo} style={styles.ayuImg} resizeMode="cover" />
       <View style={styles.onlineDot} />
     </View>
     <View style={styles.body}>
@@ -16,7 +20,8 @@ const AyuBanner = () => (
     </View>
     <Text style={styles.arrow}>›</Text>
   </TouchableOpacity>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   banner: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: Colors.borderLight, padding: ms(13), flexDirection: 'row', alignItems: 'center', gap: s(12), marginBottom: vs(18)},

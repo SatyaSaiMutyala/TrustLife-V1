@@ -6,6 +6,7 @@ import {
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import Fonts from '../../constants/fonts';
+import Images from '../../constants/images';
 import AppText from '../../components/shared/AppText';
 import Emoji from '../../components/shared/Emoji';
 import Icon from '../../components/shared/Icons';
@@ -28,7 +29,7 @@ const quickReplies = [
 
 const CoachAvatar = () => (
   <View style={styles.coachMsgAvatar}>
-    <Image source={require('../../assets/img/ayu-nb.gif')} style={{width: ms(22), height: ms(22)}} resizeMode="contain" />
+    <Image source={Images.ayuLogo} style={{width: ms(22), height: ms(22)}} resizeMode="contain" />
   </View>
 );
 
@@ -78,7 +79,7 @@ const AyuChatScreen = ({navigation}) => {
           </TouchableOpacity>
           <View style={styles.coachAvatarWrap}>
             <View style={styles.coachAvatar}>
-              <Image source={require('../../assets/img/ayu-nb.gif')} style={{width: ms(30), height: ms(30)}} resizeMode="contain" />
+              <Image source={Images.ayuLogo} style={{width: ms(30), height: ms(30)}} resizeMode="contain" />
             </View>
             <View style={styles.onlineDot} />
           </View>

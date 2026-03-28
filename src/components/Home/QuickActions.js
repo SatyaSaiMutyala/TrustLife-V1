@@ -1,30 +1,34 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import SectionTitle from '../shared/SectionTitle';
 import AppText from '../shared/AppText';
 
 const actions = [
-  {image: require('../../assets/img/exercise-track.png'), label: 'Log steps', bg: Colors.tealBg},
-  {image: require('../../assets/img/food-track.png'), label: 'Log meal', bg: Colors.amberBg},
-  {image: require('../../assets/img/medical-track.png'), label: 'Medication', bg: Colors.purpleBg},
-  {image: require('../../assets/img/sleep-track.png'), label: 'Sleep log', bg: Colors.blueBg},
+  {image: require('../../assets/img/exercise-track.png'), label: 'Log steps', route: 'MovementTracker'},
+  {image: require('../../assets/img/food-track.png'), label: 'Log meal', route: 'FoodTracker'},
+  {image: require('../../assets/img/medical-track.png'), label: 'Medication', route: 'MedicationTracker'},
+  {image: require('../../assets/img/sleep-track.png'), label: 'Sleep log', route: 'SleepTracker'},
 ];
 
-const QuickActions = () => (
+const QuickActions = () => {
+  const navigation = useNavigation();
+  return (
   <View>
     <SectionTitle title="Quick Actions" />
     <View style={styles.grid}>
       {actions.map((a, i) => (
-        <TouchableOpacity key={i} style={styles.btn}>
+        <TouchableOpacity key={i} style={styles.btn} onPress={() => navigation.navigate(a.route)}>
           <Image source={a.image} style={styles.img} resizeMode="contain" />
           <AppText variant="caption" color={Colors.textSecondary} style={styles.label}>{a.label}</AppText>
         </TouchableOpacity>
       ))}
     </View>
   </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   grid: {flexDirection: 'row', gap: s(7), marginBottom: vs(18)},

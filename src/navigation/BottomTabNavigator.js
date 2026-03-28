@@ -4,6 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../constants/colors';
 import Fonts from '../constants/fonts';
+import Images from '../constants/images';
 
 import HomeScreen from '../screens/Home/HomeScreen';
 import TrackingScreen from '../screens/Tracking/TrackingScreen';
@@ -18,7 +19,7 @@ const tabImages = {
   Tracking: require('../assets/img/ftracking.png'),
   Records: require('../assets/img/frecords.png'),
   Progress: require('../assets/img/fprogress.png'),
-  Ayu: require('../assets/img/ayu-nb.gif'),
+  Ayu: Images.ayuLogo,
 };
 
 const tabs = [
