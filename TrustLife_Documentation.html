@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustLife - Technical Documentation</title>
+<style>
+  @page { margin: 20mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.7; font-size: 11pt; max-width: 1100px; margin: 0 auto; padding: 20px 32px; }
+  h1 { color: #0a5c47; border-left: 4px solid #0a5c47; padding-left: 12px; font-size: 20pt; page-break-after: avoid; margin: 32pt 0 14pt 0; }
+  h2 { color: #0a5c47; font-size: 14pt; margin-top: 24pt; margin-bottom: 10pt; page-break-after: avoid; }
+  h3 { color: #333; font-size: 12pt; margin-top: 16pt; margin-bottom: 8pt; page-break-after: avoid; }
+  h4 { color: #555; font-size: 11pt; margin-top: 12pt; margin-bottom: 6pt; }
+  p { margin-bottom: 8pt; }
+  ul, ol { margin: 6pt 0 10pt 20pt; }
+  li { margin-bottom: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 12pt 0; font-size: 10pt; page-break-inside: auto; }
+  th { background: #0a5c47; color: white; padding: 8px 10px; text-align: left; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 6px 10px; border-bottom: 0.5px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #f0f7f4; }
+  tr { page-break-inside: avoid; }
+  .page-break { page-break-before: always; }
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 90vh; text-align: center; }
+  .cover-logo { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 48px; }
+  .cover-logo-square { width: 64px; height: 64px; background: #0a5c47; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+  .cover-logo-square span { color: white; font-size: 32pt; font-weight: 800; }
+  .cover-logo-text { font-size: 36pt; font-weight: 800; color: #0a5c47; letter-spacing: -0.5px; }
+  .cover-title { font-size: 22pt; font-weight: 300; color: #333; margin-bottom: 8px; }
+  .cover-subtitle { font-size: 13pt; color: #6b7280; max-width: 480px; margin-bottom: 48px; line-height: 1.6; }
+  .cover-meta { margin-top: 32px; font-size: 10pt; color: #9ca3af; }
+  .cover-meta p { margin-bottom: 4pt; }
+  .cover-confidential { display: inline-block; border: 1.5px solid #e24b4a; color: #e24b4a; padding: 4px 14px; border-radius: 4px; font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 16px; }
+  .cover-footer { margin-top: auto; padding-top: 48px; font-size: 9pt; color: #9ca3af; border-top: 1px solid #e5e7eb; width: 100%; text-align: center; }
+  .toc { list-style: none; padding: 0; margin: 0; }
+  .toc li { display: flex; align-items: baseline; padding: 6px 0; border-bottom: 1px dotted #d1d5db; }
+  .toc li:last-child { border-bottom: none; }
+  .toc .toc-num { color: #0a5c47; font-weight: 700; min-width: 32px; font-size: 10pt; }
+  .toc a { text-decoration: none; color: #1a1a1a; flex: 1; font-size: 11pt; }
+  .toc a:hover { color: #0a5c47; }
+  .toc .toc-page { color: #9ca3af; font-size: 9pt; min-width: 30px; text-align: right; }
+  .toc-sub { list-style: none; padding: 0 0 0 32px; margin: 0; }
+  .toc-sub li { border-bottom: 1px dotted #e5e7eb; padding: 3px 0; }
+  .toc-sub .toc-num { font-size: 9pt; min-width: 40px; }
+  .toc-sub a { font-size: 10pt; }
+  .color-swatch { display: inline-block; width: 16px; height: 16px; border-radius: 3px; vertical-align: middle; margin-right: 6px; border: 0.5px solid #ccc; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; }
+  .badge-green { background: #E1F5EE; color: #085041; }
+  .badge-blue { background: #E6F1FB; color: #0C447C; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .stat-box { background: #f0f7f4; border-radius: 8px; padding: 14px; text-align: center; border: 1px solid #e5e7eb; }
+  .stat-val { font-size: 24pt; font-weight: 800; color: #0a5c47; }
+  .stat-lbl { font-size: 9pt; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  code { background: #f0f7f4; padding: 1px 6px; border-radius: 3px; font-size: 10pt; color: #0a5c47; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+  pre { background: #f8faf9; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 16px; overflow-x: auto; font-size: 9pt; line-height: 1.6; margin: 10pt 0; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; color: #1a1a1a; }
+  .section-divider { border: none; border-top: 2px solid #0a5c47; margin: 24pt 0 0 0; opacity: 0.15; }
+  .print-btn { position: fixed; top: 16px; right: 16px; background: #0a5c47; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 10pt; font-weight: 600; cursor: pointer; z-index: 1000; font-family: inherit; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .print-btn:hover { background: #084a39; }
+  .nav-tree { background: #f8faf9; border: 1px solid #e5e7eb; border-radius: 6px; padding: 14px 16px; font-size: 9.5pt; line-height: 1.7; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; margin: 10pt 0; overflow-x: auto; white-space: pre; }
+  .color-table td:first-child { white-space: nowrap; }
+  .api-section { background: #f8faf9; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 18px; margin: 12pt 0; }
+  .api-section h3 { margin-top: 0; }
+  .flow-text { font-size: 10pt; color: #333; line-height: 1.8; }
+  @media print {
+    .no-print, .print-btn { display: none !important; }
+    body { font-size: 10pt; padding: 0; max-width: none; }
+    .page-break { page-break-before: always; }
+    .cover { min-height: 100vh; }
+    h1 { font-size: 18pt; }
+    h2 { font-size: 13pt; }
+    table { font-size: 9pt; }
+    th { font-size: 8pt; }
+    .stat-val { font-size: 20pt; }
+    .nav-tree, pre { font-size: 8pt; }
+  }
+  @media screen and (max-width: 768px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    body { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE -->
+<!-- ============================================================ -->
+<div class="cover">
+  <div class="cover-logo">
+    <div class="cover-logo-square"><span>T</span></div>
+    <div class="cover-logo-text">TrustLife</div>
+  </div>
+  <div class="cover-title">Technical Documentation</div>
+  <div class="cover-subtitle">Personal Data Protection &amp; Health Information Management<br>Mobile Application &mdash; React Native (iOS &amp; Android)</div>
+  <div class="cover-meta">
+    <p><strong>Version:</strong> 0.0.1</p>
+    <p><strong>Date:</strong> April 2026</p>
+    <p><strong>Package:</strong> TrustLifeApp</p>
+    <div class="cover-confidential">Confidential</div>
+  </div>
+  <div class="cover-footer">
+    TrustLife &mdash; Personal Health Management Platform<br>
+    &copy; 2026 TrustLife. All rights reserved.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE OF CONTENTS -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="toc">Table of Contents</h1>
+<ul class="toc">
+  <li><span class="toc-num">1</span><a href="#s1">Project Overview</a></li>
+  <li><span class="toc-num">2</span><a href="#s2">Architecture &amp; Tech Stack</a></li>
+  <li><span class="toc-num">3</span><a href="#s3">Screen Inventory (Complete List)</a></li>
+  <ul class="toc-sub">
+    <li><span class="toc-num">3.1</span><a href="#s3-1">Auth Screens</a></li>
+    <li><span class="toc-num">3.2</span><a href="#s3-2">Home Screens</a></li>
+    <li><span class="toc-num">3.3</span><a href="#s3-3">Tracking Screens &mdash; Symptom Logs</a></li>
+    <li><span class="toc-num">3.4</span><a href="#s3-4">Tracking Screens &mdash; Fitness</a></li>
+    <li><span class="toc-num">3.5</span><a href="#s3-5">Records &amp; Progress Screens</a></li>
+    <li><span class="toc-num">3.6</span><a href="#s3-6">Health Coach / Ayu Intel</a></li>
+    <li><span class="toc-num">3.7</span><a href="#s3-7">Health Services Screens</a></li>
+    <li><span class="toc-num">3.8</span><a href="#s3-8">Profile Screens</a></li>
+  </ul>
+  <li><span class="toc-num">4</span><a href="#s4">Component Inventory</a></li>
+  <li><span class="toc-num">5</span><a href="#s5">Constants / Data Files</a></li>
+  <li><span class="toc-num">6</span><a href="#s6">Navigation Map</a></li>
+  <li><span class="toc-num">7</span><a href="#s7">Feature Documentation</a></li>
+  <li><span class="toc-num">8</span><a href="#s8">Design System</a></li>
+  <li><span class="toc-num">9</span><a href="#s9">Reusable Components API</a></li>
+  <li><span class="toc-num">10</span><a href="#s10">Dependencies</a></li>
+  <li><span class="toc-num">11</span><a href="#s11">Data Flow</a></li>
+  <li><span class="toc-num">12</span><a href="#s12">File Count Summary</a></li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 1. PROJECT OVERVIEW -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s1">1. Project Overview</h1>
+<p>TrustLife is a comprehensive personal health management mobile application built with React Native. It provides users with a unified platform to track vital signs, manage health records, book health services (doctors, labs, medicines, insurance), monitor progress through a Health Performance Score (HPS), and interact with an AI health coach named "Ayu Intel."</p>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="stat-val">178</div><div class="stat-lbl">Screen Files</div></div>
+  <div class="stat-box"><div class="stat-val">138</div><div class="stat-lbl">Components</div></div>
+  <div class="stat-box"><div class="stat-val">344</div><div class="stat-lbl">Total Source Files</div></div>
+  <div class="stat-box"><div class="stat-val">12</div><div class="stat-lbl">Health Services</div></div>
+</div>
+
+<h2>Tech Stack</h2>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Version</th></tr>
+  <tr><td>Framework</td><td>React Native</td><td>0.75.4</td></tr>
+  <tr><td>Language</td><td>JavaScript (JSX)</td><td>ES2020+</td></tr>
+  <tr><td>React</td><td>React</td><td>18.3.1</td></tr>
+  <tr><td>Navigation</td><td>React Navigation (native-stack + bottom-tabs)</td><td>6.x</td></tr>
+  <tr><td>Icons</td><td>react-native-vector-icons</td><td>10.3.0</td></tr>
+  <tr><td>SVG</td><td>react-native-svg</td><td>15.15.4</td></tr>
+  <tr><td>Responsive Sizing</td><td>react-native-size-matters</td><td>0.4.2</td></tr>
+  <tr><td>File System</td><td>react-native-fs</td><td>2.20.0</td></tr>
+  <tr><td>Safe Area</td><td>react-native-safe-area-context</td><td>4.10.9</td></tr>
+  <tr><td>Screens</td><td>react-native-screens</td><td>3.34.0</td></tr>
+</table>
+
+<h2>Target Platforms</h2>
+<ul>
+  <li><strong>iOS</strong> &mdash; System font (San Francisco)</li>
+  <li><strong>Android</strong> &mdash; Roboto font</li>
+  <li>Responsive scaling via <code>react-native-size-matters</code> (<code>scale</code>, <code>verticalScale</code>, <code>moderateScale</code>)</li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 2. ARCHITECTURE -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s2">2. Architecture</h1>
+
+<h2>Directory Structure</h2>
+<pre>TrustLife-V1/
+├── App.jsx                          # Root component, AuthContext, navigator switch
+├── package.json
+├── src/
+│   ├── assets/
+│   │   └── img/                     # Static images (tab icons, logos)
+│   ├── components/                  # 138 component files
+│   │   ├── Fitness/                 # Fitness tracker tab components
+│   │   │   ├── Cycle/               # Menstrual cycle tabs
+│   │   │   ├── Food/                # Food tracker tabs
+│   │   │   ├── Lifestyle/           # Lifestyle analytics tabs
+│   │   │   ├── Medication/          # Medication tracker tabs
+│   │   │   ├── Movement/            # Movement tracker tabs
+│   │   │   ├── Sleep/               # Sleep tracker tabs
+│   │   │   └── Strength/            # Strength training tabs
+│   │   ├── Home/                    # Home screen sections
+│   │   ├── Profile/                 # Profile screen cards
+│   │   ├── Progress/                # Progress analytics tabs
+│   │   ├── Records/                 # Health records sub-tabs
+│   │   │   ├── DoctorNotes/         # Visit summary tabs
+│   │   │   ├── Imaging/             # Imaging records (X-ray, Echo, USG)
+│   │   │   ├── Insurance/           # Insurance record tabs
+│   │   │   ├── LabReports/          # Lab report views
+│   │   │   ├── Lifestyle/           # Lifestyle record tabs
+│   │   │   ├── OtherLogs/           # BMI, Growth trackers
+│   │   │   ├── Prescriptions/       # Prescription &amp; medication tabs
+│   │   │   ├── Symptoms/            # Symptom analysis tabs
+│   │   │   └── Vaccination/         # Vaccination record tabs
+│   │   ├── Tracking/                # Tracking screen sections
+│   │   └── shared/                  # Reusable UI primitives
+│   ├── constants/                   # 25 data/config files
+│   ├── navigation/                  # 3 navigator files
+│   │   ├── AppNavigator.js          # Main app stack (post-login)
+│   │   ├── AuthNavigator.js         # Auth stack (pre-login)
+│   │   └── BottomTabNavigator.js    # 5-tab bottom bar
+│   └── screens/                     # 178 screen files
+│       ├── Auth/                    # 26 auth screens
+│       ├── HealthCoach/             # 3 screens
+│       ├── HealthServices/          # 44 screens across 10 service types
+│       ├── Home/                    # 3 screens
+│       ├── Profile/                 # 22 screens + 18 profile tabs
+│       ├── Progress/                # 2 screens
+│       ├── Records/                 # 2 screens
+│       └── Tracking/                # 46 screens
+│           ├── Fitness/             # 9 fitness screens
+│           └── SymptomLogs/         # 36 symptom log screens + 1 tracking hub</pre>
+
+<h2>Navigation Hierarchy</h2>
+<div class="nav-tree">App.jsx
+├── AuthContext.Provider (isLoggedIn state)
+└── NavigationContainer
+    ├── [!isLoggedIn] AuthNavigator (Stack)
+    │   ├── Splash, Welcome
+    │   ├── Sign-up: Phone &rarr; OTP &rarr; Personal &rarr; Health &rarr; Medications &rarr; Plan &rarr; Payment &rarr; PaymentMethod &rarr; PaymentProcessing &rarr; Agreement &rarr; Done
+    │   ├── Legal: Terms, Consent, PrivacyPolicy
+    │   ├── Login: LoginHub &rarr; LoginBio / LoginPin / LoginPassword &rarr; LoginSuccess
+    │   └── Forgot: ForgotStep0 &rarr; ForgotStep1 &rarr; ForgotStep2 &rarr; ForgotNewPassword / ForgotNewPin &rarr; ForgotDone
+    │
+    └── [isLoggedIn] AppNavigator (Stack)
+        ├── MainTabs (BottomTabNavigator)
+        │   ├── Home        &rarr; HomeScreen
+        │   ├── Tracking    &rarr; TrackingScreen
+        │   ├── Records     &rarr; RecordsScreen
+        │   ├── Progress    &rarr; ProgressScreen
+        │   └── Ayu Intel   &rarr; HealthCoachScreen
+        │
+        ├── Home sub-screens: ViewAll, Profile
+        ├── Profile sub-screens: EditProfile, Goals, PersonalInfo, ContactDetails, etc.
+        ├── Progress: HPSReport
+        ├── Health Coach: AyuChat, CapabilityDetail
+        ├── Tracking: Symptom Logs + Fitness screens
+        └── Health Services: Doctor, Coach, Lab, Medicine, Insurance, etc.</div>
+
+<h2>State Management Approach</h2>
+<ul>
+  <li><strong>AuthContext</strong> (<code>App.jsx</code>): React Context with <code>isLoggedIn</code> / <code>setIsLoggedIn</code> boolean &mdash; toggles between AuthNavigator and AppNavigator</li>
+  <li><strong>Local component state</strong> (<code>useState</code>): All screens manage their own state locally</li>
+  <li><strong>Constants files</strong>: Mock/static data used across screens (no backend API integration yet)</li>
+  <li><strong>Navigation params</strong>: Data passed between screens via <code>navigation.navigate('ScreenName', { params })</code></li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 3. SCREEN INVENTORY -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s3">3. Screen Inventory (Complete List)</h1>
+
+<h2 id="s3-1">3.1 Auth Screens (26 files)</h2>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>SplashScreen</td><td>Splash</td><td><code>src/screens/Auth/SplashScreen.js</code></td><td>App launch splash with branding</td></tr>
+  <tr><td>2</td><td>WelcomeScreen</td><td>Welcome</td><td><code>src/screens/Auth/WelcomeScreen.js</code></td><td>Onboarding welcome with CTA</td></tr>
+  <tr><td>3</td><td>PhoneScreen</td><td>Phone</td><td><code>src/screens/Auth/PhoneScreen.js</code></td><td>Phone number input for signup</td></tr>
+  <tr><td>4</td><td>OTPScreen</td><td>OTP</td><td><code>src/screens/Auth/OTPScreen.js</code></td><td>OTP verification</td></tr>
+  <tr><td>5</td><td>PersonalScreen</td><td>Personal</td><td><code>src/screens/Auth/PersonalScreen.js</code></td><td>Name, DOB, gender collection</td></tr>
+  <tr><td>6</td><td>HealthProfileScreen</td><td>Health</td><td><code>src/screens/Auth/HealthProfileScreen.js</code></td><td>Health conditions &amp; allergies</td></tr>
+  <tr><td>7</td><td>MedicationsScreen</td><td>Medications</td><td><code>src/screens/Auth/MedicationsScreen.js</code></td><td>Current medications input</td></tr>
+  <tr><td>8</td><td>PlanScreen</td><td>Plan</td><td><code>src/screens/Auth/PlanScreen.js</code></td><td>Subscription plan selection</td></tr>
+  <tr><td>9</td><td>PaymentScreen</td><td>Payment</td><td><code>src/screens/Auth/PaymentScreen.js</code></td><td>Payment summary</td></tr>
+  <tr><td>10</td><td>PaymentMethodScreen</td><td>PaymentMethod</td><td><code>src/screens/Auth/PaymentMethodScreen.js</code></td><td>Payment method selection</td></tr>
+  <tr><td>11</td><td>PaymentProcessingScreen</td><td>PaymentProcessing</td><td><code>src/screens/Auth/PaymentProcessingScreen.js</code></td><td>Payment processing animation</td></tr>
+  <tr><td>12</td><td>AgreementScreen</td><td>Agreement</td><td><code>src/screens/Auth/AgreementScreen.js</code></td><td>Terms &amp; consent agreement</td></tr>
+  <tr><td>13</td><td>DoneScreen</td><td>Done</td><td><code>src/screens/Auth/DoneScreen.js</code></td><td>Signup completion confirmation</td></tr>
+  <tr><td>14</td><td>TermsScreen</td><td>Terms</td><td><code>src/screens/Auth/TermsScreen.js</code></td><td>Terms of service (standalone)</td></tr>
+  <tr><td>15</td><td>ConsentScreen</td><td>Consent</td><td><code>src/screens/Auth/ConsentScreen.js</code></td><td>Consent agreement (standalone)</td></tr>
+  <tr><td>16</td><td>LoginHubScreen</td><td>LoginHub</td><td><code>src/screens/Auth/LoginHubScreen.js</code></td><td>Login method selection hub</td></tr>
+  <tr><td>17</td><td>LoginBioScreen</td><td>LoginBio</td><td><code>src/screens/Auth/LoginBioScreen.js</code></td><td>Biometric login (fingerprint/face)</td></tr>
+  <tr><td>18</td><td>LoginPinScreen</td><td>LoginPin</td><td><code>src/screens/Auth/LoginPinScreen.js</code></td><td>PIN-based login</td></tr>
+  <tr><td>19</td><td>LoginPasswordScreen</td><td>LoginPassword</td><td><code>src/screens/Auth/LoginPasswordScreen.js</code></td><td>Password-based login</td></tr>
+  <tr><td>20</td><td>LoginSuccessScreen</td><td>LoginSuccess</td><td><code>src/screens/Auth/LoginSuccessScreen.js</code></td><td>Login success confirmation</td></tr>
+  <tr><td>21</td><td>ForgotStep0Screen</td><td>ForgotStep0</td><td><code>src/screens/Auth/ForgotStep0Screen.js</code></td><td>Choose forgot password or PIN</td></tr>
+  <tr><td>22</td><td>ForgotStep1Screen</td><td>ForgotStep1</td><td><code>src/screens/Auth/ForgotStep1Screen.js</code></td><td>Identity verification step 1</td></tr>
+  <tr><td>23</td><td>ForgotStep2Screen</td><td>ForgotStep2</td><td><code>src/screens/Auth/ForgotStep2Screen.js</code></td><td>Identity verification step 2</td></tr>
+  <tr><td>24</td><td>ForgotNewPasswordScreen</td><td>ForgotNewPassword</td><td><code>src/screens/Auth/ForgotNewPasswordScreen.js</code></td><td>Set new password</td></tr>
+  <tr><td>25</td><td>ForgotNewPinScreen</td><td>ForgotNewPin</td><td><code>src/screens/Auth/ForgotNewPinScreen.js</code></td><td>Set new PIN</td></tr>
+  <tr><td>26</td><td>ForgotDoneScreen</td><td>ForgotDone</td><td><code>src/screens/Auth/ForgotDoneScreen.js</code></td><td>Reset completion confirmation</td></tr>
+</table>
+
+<h2 id="s3-2">3.2 Home Screens (3 files)</h2>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HomeScreen</td><td>Home (tab)</td><td><code>src/screens/Home/HomeScreen.js</code></td><td>Main dashboard with hero, conditions, quick actions, services</td></tr>
+  <tr><td>2</td><td>ProfileScreen</td><td>Profile</td><td><code>src/screens/Home/ProfileScreen.js</code></td><td>User profile hub with menu sections</td></tr>
+  <tr><td>3</td><td>ViewAllScreen</td><td>ViewAll</td><td><code>src/screens/Home/ViewAllScreen.js</code></td><td>Generic view-all list screen</td></tr>
+</table>
+
+<h2 id="s3-3">3.3 Tracking Screens &mdash; Symptom Logs (41 files)</h2>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>TrackingScreen</td><td>Tracking (tab)</td><td><code>src/screens/Tracking/TrackingScreen.js</code></td><td>Main tracking dashboard</td></tr>
+  <tr><td>2</td><td>SymptomsLogScreen</td><td>SymptomsLog</td><td><code>src/screens/Tracking/SymptomLogs/SymptomsLogScreen.js</code></td><td>General symptoms logging</td></tr>
+  <tr><td>3</td><td>BPLogScreen</td><td>BPLog</td><td><code>src/screens/Tracking/SymptomLogs/BPLogScreen.js</code></td><td>Blood pressure log</td></tr>
+  <tr><td>4</td><td>BPAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/BPAutoView.js</code></td><td>BP auto-reading view</td></tr>
+  <tr><td>5</td><td>BPManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/BPManualView.js</code></td><td>BP manual entry view</td></tr>
+  <tr><td>6</td><td>HeartRateLogScreen</td><td>HeartRateLog</td><td><code>src/screens/Tracking/SymptomLogs/HeartRateLogScreen.js</code></td><td>Heart rate log</td></tr>
+  <tr><td>7</td><td>HRAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/HRAutoView.js</code></td><td>Heart rate auto-reading view</td></tr>
+  <tr><td>8</td><td>HRManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/HRManualView.js</code></td><td>Heart rate manual entry view</td></tr>
+  <tr><td>9</td><td>GlucoseLogScreen</td><td>GlucoseLog</td><td><code>src/screens/Tracking/SymptomLogs/GlucoseLogScreen.js</code></td><td>Blood glucose log</td></tr>
+  <tr><td>10</td><td>GlucoseAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/GlucoseAutoView.js</code></td><td>Glucose auto-reading view</td></tr>
+  <tr><td>11</td><td>GlucoseManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/GlucoseManualView.js</code></td><td>Glucose manual entry view</td></tr>
+  <tr><td>12</td><td>WeightLogScreen</td><td>WeightLog</td><td><code>src/screens/Tracking/SymptomLogs/WeightLogScreen.js</code></td><td>Weight tracking log</td></tr>
+  <tr><td>13</td><td>WeightAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/WeightAutoView.js</code></td><td>Weight auto-reading view</td></tr>
+  <tr><td>14</td><td>WeightManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/WeightManualView.js</code></td><td>Weight manual entry view</td></tr>
+  <tr><td>15</td><td>TempLogScreen</td><td>TempLog</td><td><code>src/screens/Tracking/SymptomLogs/TempLogScreen.js</code></td><td>Body temperature log</td></tr>
+  <tr><td>16</td><td>TempAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/TempAutoView.js</code></td><td>Temperature auto-reading view</td></tr>
+  <tr><td>17</td><td>TempManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/TempManualView.js</code></td><td>Temperature manual entry view</td></tr>
+  <tr><td>18</td><td>ECGLogScreen</td><td>ECGLog</td><td><code>src/screens/Tracking/SymptomLogs/ECGLogScreen.js</code></td><td>ECG/EKG log</td></tr>
+  <tr><td>19</td><td>ECGAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/ECGAutoView.js</code></td><td>ECG auto-reading view</td></tr>
+  <tr><td>20</td><td>ECGManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/ECGManualView.js</code></td><td>ECG manual entry view</td></tr>
+  <tr><td>21</td><td>MoodLogScreen</td><td>MoodLog</td><td><code>src/screens/Tracking/SymptomLogs/MoodLogScreen.js</code></td><td>Mood tracking log</td></tr>
+  <tr><td>22</td><td>MoodAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MoodAutoView.js</code></td><td>Mood auto view</td></tr>
+  <tr><td>23</td><td>MoodManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MoodManualView.js</code></td><td>Mood manual entry view</td></tr>
+  <tr><td>24</td><td>MigraineLogScreen</td><td>MigraineLog</td><td><code>src/screens/Tracking/SymptomLogs/MigraineLogScreen.js</code></td><td>Migraine tracking log</td></tr>
+  <tr><td>25</td><td>MigraineAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MigraineAutoView.js</code></td><td>Migraine auto view</td></tr>
+  <tr><td>26</td><td>MigraineManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MigraineManualView.js</code></td><td>Migraine manual entry view</td></tr>
+  <tr><td>27</td><td>AsthmaLogScreen</td><td>AsthmaLog</td><td><code>src/screens/Tracking/SymptomLogs/AsthmaLogScreen.js</code></td><td>Asthma tracking log</td></tr>
+  <tr><td>28</td><td>AsthmaAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/AsthmaAutoView.js</code></td><td>Asthma auto view</td></tr>
+  <tr><td>29</td><td>AsthmaManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/AsthmaManualView.js</code></td><td>Asthma manual entry view</td></tr>
+  <tr><td>30</td><td>AnemiaLogScreen</td><td>AnemiaLog</td><td><code>src/screens/Tracking/SymptomLogs/AnemiaLogScreen.js</code></td><td>Anemia tracking log</td></tr>
+  <tr><td>31</td><td>AnemiaAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/AnemiaAutoView.js</code></td><td>Anemia auto view</td></tr>
+  <tr><td>32</td><td>AnemiaManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/AnemiaManualView.js</code></td><td>Anemia manual entry view</td></tr>
+  <tr><td>33</td><td>MSKLogScreen</td><td>MSKLog</td><td><code>src/screens/Tracking/SymptomLogs/MSKLogScreen.js</code></td><td>Musculoskeletal pain log</td></tr>
+  <tr><td>34</td><td>MSKAutoView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MSKAutoView.js</code></td><td>MSK auto view</td></tr>
+  <tr><td>35</td><td>MSKManualView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/MSKManualView.js</code></td><td>MSK manual entry view</td></tr>
+  <tr><td>36</td><td>MenstrualLogScreen</td><td>MenstrualLog</td><td><code>src/screens/Tracking/SymptomLogs/MenstrualLogScreen.js</code></td><td>Menstrual cycle log</td></tr>
+  <tr><td>37</td><td>VaccinationLogScreen</td><td>VaccinationLog</td><td><code>src/screens/Tracking/SymptomLogs/VaccinationLogScreen.js</code></td><td>Vaccination record log</td></tr>
+  <tr><td>38</td><td>VaccLogView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/VaccLogView.js</code></td><td>Vaccination log view</td></tr>
+  <tr><td>39</td><td>VaccAefiView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/VaccAefiView.js</code></td><td>Vaccination AEFI reporting view</td></tr>
+  <tr><td>40</td><td>VaccTravelCertsView</td><td>&mdash;</td><td><code>src/screens/Tracking/SymptomLogs/VaccTravelCertsView.js</code></td><td>Vaccination travel certificates view</td></tr>
+  <tr><td>41</td><td>CycleScreen</td><td>CycleTracker</td><td><code>src/screens/Tracking/SymptomLogs/CycleScreen.js</code></td><td>Menstrual cycle detailed tracker</td></tr>
+</table>
+
+<h2 id="s3-4">3.4 Tracking Screens &mdash; Fitness (9 files)</h2>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>FitnessTrackerScreen</td><td>FitnessTracker</td><td><code>src/screens/Tracking/Fitness/FitnessTrackerScreen.js</code></td><td>Fitness tracker hub</td></tr>
+  <tr><td>2</td><td>FitnessCategoryScreen</td><td>FitnessCategory</td><td><code>src/screens/Tracking/Fitness/FitnessCategoryScreen.js</code></td><td>Category selection screen</td></tr>
+  <tr><td>3</td><td>StrengthTrainingScreen</td><td>StrengthTraining</td><td><code>src/screens/Tracking/Fitness/StrengthTrainingScreen.js</code></td><td>Strength/weight training tracker</td></tr>
+  <tr><td>4</td><td>MovementScreen</td><td>MovementTracker</td><td><code>src/screens/Tracking/Fitness/MovementScreen.js</code></td><td>Movement/cardio activity tracker</td></tr>
+  <tr><td>5</td><td>SleepScreen</td><td>SleepTracker</td><td><code>src/screens/Tracking/Fitness/SleepScreen.js</code></td><td>Sleep quality tracker</td></tr>
+  <tr><td>6</td><td>FoodScreen</td><td>FoodTracker</td><td><code>src/screens/Tracking/Fitness/FoodScreen.js</code></td><td>Food/nutrition tracker</td></tr>
+  <tr><td>7</td><td>LifestyleScreen</td><td>LifestyleActivity</td><td><code>src/screens/Tracking/Fitness/LifestyleScreen.js</code></td><td>Lifestyle activity tracker</td></tr>
+  <tr><td>8</td><td>MedicationScreen</td><td>MedicationTracker</td><td><code>src/screens/Tracking/Fitness/MedicationScreen.js</code></td><td>Medication adherence tracker</td></tr>
+  <tr><td>9</td><td>MedDetailScreen</td><td>MedDetail</td><td><code>src/screens/Tracking/Fitness/MedDetailScreen.js</code></td><td>Individual medication detail view</td></tr>
+</table>
+
+<h2 id="s3-5">3.5 Records &amp; Progress Screens</h2>
+
+<h3>Records Screens (2 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>RecordsScreen</td><td>Records (tab)</td><td><code>src/screens/Records/RecordsScreen.js</code></td><td>Main records hub with tabs</td></tr>
+  <tr><td>2</td><td>LifestyleScreen</td><td>&mdash;</td><td><code>src/screens/Records/LifestyleScreen.js</code></td><td>Lifestyle records detail</td></tr>
+</table>
+
+<h3>Progress Screens (2 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>ProgressScreen</td><td>Progress (tab)</td><td><code>src/screens/Progress/ProgressScreen.js</code></td><td>Progress analytics dashboard</td></tr>
+  <tr><td>2</td><td>HPSReportScreen</td><td>HPSReport</td><td><code>src/screens/Progress/HPSReportScreen.js</code></td><td>Detailed HPS report</td></tr>
+</table>
+
+<h2 id="s3-6">3.6 Health Coach / Ayu Intel Screens (3 files)</h2>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HealthCoachScreen</td><td>Ayu (tab)</td><td><code>src/screens/HealthCoach/HealthCoachScreen.js</code></td><td>Ayu Intel health coach home</td></tr>
+  <tr><td>2</td><td>AyuChatScreen</td><td>AyuChat</td><td><code>src/screens/HealthCoach/AyuChatScreen.js</code></td><td>AI chat interface</td></tr>
+  <tr><td>3</td><td>CapabilityDetailScreen</td><td>CapabilityDetail</td><td><code>src/screens/HealthCoach/CapabilityDetailScreen.js</code></td><td>Capability detail view</td></tr>
+</table>
+
+<div class="page-break"></div>
+<h2 id="s3-7">3.7 Health Services Screens (44 files)</h2>
+
+<h3>Doctor (8 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>DoctorConsultationScreen</td><td>DoctorConsultation</td><td><code>src/screens/HealthServices/Doctor/DoctorConsultationScreen.js</code></td><td>Doctor consultation home</td></tr>
+  <tr><td>2</td><td>DoctorSpecialistListScreen</td><td>DoctorSpecialistList</td><td><code>src/screens/HealthServices/Doctor/DoctorSpecialistListScreen.js</code></td><td>Specialist doctor listing</td></tr>
+  <tr><td>3</td><td>DoctorProfileScreen</td><td>DoctorProfile</td><td><code>src/screens/HealthServices/Doctor/DoctorProfileScreen.js</code></td><td>Individual doctor profile</td></tr>
+  <tr><td>4</td><td>ReviewAppointmentScreen</td><td>ReviewAppointment</td><td><code>src/screens/HealthServices/Doctor/ReviewAppointmentScreen.js</code></td><td>Appointment review</td></tr>
+  <tr><td>5</td><td>PatientDetailsScreen</td><td>PatientDetails</td><td><code>src/screens/HealthServices/Doctor/PatientDetailsScreen.js</code></td><td>Patient details for booking</td></tr>
+  <tr><td>6</td><td>PaymentSuccessScreen</td><td>PaymentSuccess</td><td><code>src/screens/HealthServices/Doctor/PaymentSuccessScreen.js</code></td><td>Doctor payment confirmation</td></tr>
+  <tr><td>7</td><td>AppointmentConfirmedScreen</td><td>AppointmentConfirmed</td><td><code>src/screens/HealthServices/Doctor/AppointmentConfirmedScreen.js</code></td><td>Booking confirmed</td></tr>
+  <tr><td>8</td><td>DoctorSessionDetailScreen</td><td>DoctorSessionDetail</td><td><code>src/screens/HealthServices/Doctor/DoctorSessionDetailScreen.js</code></td><td>Past session details</td></tr>
+</table>
+
+<h3>Coach (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>CoachConsultationScreen</td><td>CoachConsultation</td><td><code>src/screens/HealthServices/Coach/CoachConsultationScreen.js</code></td><td>Coach consultation home</td></tr>
+  <tr><td>2</td><td>CoachSpecialistListScreen</td><td>CoachSpecialistList</td><td><code>src/screens/HealthServices/Coach/CoachSpecialistListScreen.js</code></td><td>Coach listing</td></tr>
+  <tr><td>3</td><td>CoachProfileScreen</td><td>CoachProfile</td><td><code>src/screens/HealthServices/Coach/CoachProfileScreen.js</code></td><td>Individual coach profile</td></tr>
+  <tr><td>4</td><td>CoachSessionDetailScreen</td><td>CoachSessionDetail</td><td><code>src/screens/HealthServices/Coach/CoachSessionDetailScreen.js</code></td><td>Session detail view</td></tr>
+</table>
+
+<h3>Counselling (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>CounsellingConsultationScreen</td><td>CounsellingConsultation</td><td><code>src/screens/HealthServices/Counselling/CounsellingConsultationScreen.js</code></td><td>Counselling home</td></tr>
+  <tr><td>2</td><td>CounsellingSpecialistListScreen</td><td>CounsellingSpecialistList</td><td><code>src/screens/HealthServices/Counselling/CounsellingSpecialistListScreen.js</code></td><td>Counsellor listing</td></tr>
+  <tr><td>3</td><td>CounsellingProfileScreen</td><td>CounsellingProfile</td><td><code>src/screens/HealthServices/Counselling/CounsellingProfileScreen.js</code></td><td>Counsellor profile</td></tr>
+  <tr><td>4</td><td>CounsellingSessionDetailScreen</td><td>CounsellingSessionDetail</td><td><code>src/screens/HealthServices/Counselling/CounsellingSessionDetailScreen.js</code></td><td>Session detail view</td></tr>
+</table>
+
+<h3>Nurse (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>NurseConsultationScreen</td><td>NurseConsultation</td><td><code>src/screens/HealthServices/Nurse/NurseConsultationScreen.js</code></td><td>Nurse service home</td></tr>
+  <tr><td>2</td><td>NurseSpecialistListScreen</td><td>NurseSpecialistList</td><td><code>src/screens/HealthServices/Nurse/NurseSpecialistListScreen.js</code></td><td>Nurse listing</td></tr>
+  <tr><td>3</td><td>NurseProfileScreen</td><td>NurseProfile</td><td><code>src/screens/HealthServices/Nurse/NurseProfileScreen.js</code></td><td>Individual nurse profile</td></tr>
+  <tr><td>4</td><td>NurseSessionDetailScreen</td><td>NurseSessionDetail</td><td><code>src/screens/HealthServices/Nurse/NurseSessionDetailScreen.js</code></td><td>Session detail view</td></tr>
+</table>
+
+<h3>Physiotherapy (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>PhysioConsultationScreen</td><td>PhysioConsultation</td><td><code>src/screens/HealthServices/Physiotherapy/PhysioConsultationScreen.js</code></td><td>Physiotherapy home</td></tr>
+  <tr><td>2</td><td>PhysioSpecialistListScreen</td><td>PhysioSpecialistList</td><td><code>src/screens/HealthServices/Physiotherapy/PhysioSpecialistListScreen.js</code></td><td>Physiotherapist listing</td></tr>
+  <tr><td>3</td><td>PhysioProfileScreen</td><td>PhysioProfile</td><td><code>src/screens/HealthServices/Physiotherapy/PhysioProfileScreen.js</code></td><td>Physiotherapist profile</td></tr>
+  <tr><td>4</td><td>PhysioSessionDetailScreen</td><td>PhysioSessionDetail</td><td><code>src/screens/HealthServices/Physiotherapy/PhysioSessionDetailScreen.js</code></td><td>Session detail view</td></tr>
+</table>
+
+<h3>Lab Tests (8 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>LabHomeScreen</td><td>LabHome</td><td><code>src/screens/HealthServices/Lab/LabHomeScreen.js</code></td><td>Lab test home</td></tr>
+  <tr><td>2</td><td>LabTestListScreen</td><td>LabTestList</td><td><code>src/screens/HealthServices/Lab/LabTestListScreen.js</code></td><td>Lab test catalog</td></tr>
+  <tr><td>3</td><td>LabTestSearchScreen</td><td>LabTestSearch</td><td><code>src/screens/HealthServices/Lab/LabTestSearchScreen.js</code></td><td>Lab test search</td></tr>
+  <tr><td>4</td><td>LabFilterScreen</td><td>LabFilter</td><td><code>src/screens/HealthServices/Lab/LabFilterScreen.js</code></td><td>Lab filter options</td></tr>
+  <tr><td>5</td><td>LabCartScreen</td><td>LabCart</td><td><code>src/screens/HealthServices/Lab/LabCartScreen.js</code></td><td>Lab test cart</td></tr>
+  <tr><td>6</td><td>LabTestDetailScreen</td><td>LabTestDetail</td><td><code>src/screens/HealthServices/Lab/LabTestDetailScreen.js</code></td><td>Individual test detail</td></tr>
+  <tr><td>7</td><td>LabPaymentSuccessScreen</td><td>LabPaymentSuccess</td><td><code>src/screens/HealthServices/Lab/LabPaymentSuccessScreen.js</code></td><td>Payment confirmation</td></tr>
+  <tr><td>8</td><td>LabOrderPlacedScreen</td><td>LabOrderPlaced</td><td><code>src/screens/HealthServices/Lab/LabOrderPlacedScreen.js</code></td><td>Order placed confirmation</td></tr>
+</table>
+
+<h3>Medicine / Pharmacy (7 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>MedicineHomeScreen</td><td>MedicineHome</td><td><code>src/screens/HealthServices/Medicine/MedicineHomeScreen.js</code></td><td>Pharmacy home</td></tr>
+  <tr><td>2</td><td>MedicineListScreen</td><td>MedicineList</td><td><code>src/screens/HealthServices/Medicine/MedicineListScreen.js</code></td><td>Medicine catalog</td></tr>
+  <tr><td>3</td><td>MedicineDetailScreen</td><td>MedicineDetail</td><td><code>src/screens/HealthServices/Medicine/MedicineDetailScreen.js</code></td><td>Medicine detail view</td></tr>
+  <tr><td>4</td><td>MedicineSearchScreen</td><td>MedicineSearch</td><td><code>src/screens/HealthServices/Medicine/MedicineSearchScreen.js</code></td><td>Medicine search</td></tr>
+  <tr><td>5</td><td>MedicineCartScreen</td><td>MedicineCart</td><td><code>src/screens/HealthServices/Medicine/MedicineCartScreen.js</code></td><td>Medicine shopping cart</td></tr>
+  <tr><td>6</td><td>MedicinePaymentSuccessScreen</td><td>MedicinePaymentSuccess</td><td><code>src/screens/HealthServices/Medicine/MedicinePaymentSuccessScreen.js</code></td><td>Payment confirmation</td></tr>
+  <tr><td>7</td><td>MedicineOrderPlacedScreen</td><td>MedicineOrderPlaced</td><td><code>src/screens/HealthServices/Medicine/MedicineOrderPlacedScreen.js</code></td><td>Order placed confirmation</td></tr>
+</table>
+
+<h3>Insurance (5 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HealthInsuranceScreen</td><td>HealthInsurance</td><td><code>src/screens/HealthServices/Insurance/HealthInsuranceScreen.js</code></td><td>Insurance plans home</td></tr>
+  <tr><td>2</td><td>InsurancePlanDetailScreen</td><td>InsurancePlanDetail</td><td><code>src/screens/HealthServices/Insurance/InsurancePlanDetailScreen.js</code></td><td>Plan details view</td></tr>
+  <tr><td>3</td><td>InsuranceNomineeDetailsScreen</td><td>InsuranceNomineeDetails</td><td><code>src/screens/HealthServices/Insurance/InsuranceNomineeDetailsScreen.js</code></td><td>Nominee information</td></tr>
+  <tr><td>4</td><td>InsuranceDocumentVerificationScreen</td><td>InsuranceDocumentVerification</td><td><code>src/screens/HealthServices/Insurance/InsuranceDocumentVerificationScreen.js</code></td><td>Document upload/verification</td></tr>
+  <tr><td>5</td><td>InsurancePaymentSuccessScreen</td><td>InsurancePaymentSuccess</td><td><code>src/screens/HealthServices/Insurance/InsurancePaymentSuccessScreen.js</code></td><td>Payment confirmation</td></tr>
+</table>
+
+<h3>Telemedicine (3 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>TelemedicineHomeScreen</td><td>TelemedicineHome</td><td><code>src/screens/HealthServices/Telemedicine/TelemedicineHomeScreen.js</code></td><td>Telemedicine home</td></tr>
+  <tr><td>2</td><td>TelemedicineSpecialistListScreen</td><td>TelemedicineSpecialistList</td><td><code>src/screens/HealthServices/Telemedicine/TelemedicineSpecialistListScreen.js</code></td><td>Specialist listing</td></tr>
+  <tr><td>3</td><td>TelemedicineProfileScreen</td><td>TelemedicineProfile</td><td><code>src/screens/HealthServices/Telemedicine/TelemedicineProfileScreen.js</code></td><td>Provider profile</td></tr>
+</table>
+
+<h3>Wellness (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>WellnessCenterScreen</td><td>WellnessCenter</td><td><code>src/screens/HealthServices/Wellness/WellnessCenterScreen.js</code></td><td>Wellness centers listing</td></tr>
+  <tr><td>2</td><td>WellnessDetailScreen</td><td>WellnessDetail</td><td><code>src/screens/HealthServices/Wellness/WellnessDetailScreen.js</code></td><td>Center detail view</td></tr>
+  <tr><td>3</td><td>WellnessBookingScreen</td><td>WellnessBooking</td><td><code>src/screens/HealthServices/Wellness/WellnessBookingScreen.js</code></td><td>Booking flow</td></tr>
+  <tr><td>4</td><td>WellnessSessionDetailScreen</td><td>WellnessSessionDetail</td><td><code>src/screens/HealthServices/Wellness/WellnessSessionDetailScreen.js</code></td><td>Session detail view</td></tr>
+</table>
+
+<h3>Hospital &amp; Gadgets (2 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HospitalListScreen</td><td>HospitalList</td><td><code>src/screens/HealthServices/Hospital/HospitalListScreen.js</code></td><td>Hospital search/listing</td></tr>
+  <tr><td>2</td><td>HealthGadgetsScreen</td><td>HealthGadgets</td><td><code>src/screens/HealthServices/Gadgets/HealthGadgetsScreen.js</code></td><td>Health gadgets marketplace</td></tr>
+</table>
+
+<div class="page-break"></div>
+<h2 id="s3-8">3.8 Profile Screens (22 main + 18 tabs = 40 files)</h2>
+
+<h3>Main Profile Screens (22 files)</h3>
+<table>
+  <tr><th>#</th><th>Screen Name</th><th>Route</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>EditProfileScreen</td><td>EditProfile</td><td><code>src/screens/Profile/EditProfileScreen.js</code></td><td>Edit user profile</td></tr>
+  <tr><td>2</td><td>GoalsScreen</td><td>Goals</td><td><code>src/screens/Profile/GoalsScreen.js</code></td><td>Health goals management</td></tr>
+  <tr><td>3</td><td>PersonalInfoScreen</td><td>PersonalInfo</td><td><code>src/screens/Profile/PersonalInfoScreen.js</code></td><td>Personal information view</td></tr>
+  <tr><td>4</td><td>ContactScreen</td><td>ContactDetails</td><td><code>src/screens/Profile/ContactScreen.js</code></td><td>Contact details management</td></tr>
+  <tr><td>5</td><td>PreferencesScreen</td><td>Preferences</td><td><code>src/screens/Profile/PreferencesScreen.js</code></td><td>App preferences</td></tr>
+  <tr><td>6</td><td>HealthScreen</td><td>HealthProfile</td><td><code>src/screens/Profile/HealthScreen.js</code></td><td>Health profile overview</td></tr>
+  <tr><td>7</td><td>FamilyMembersScreen</td><td>FamilyMembers</td><td><code>src/screens/Profile/FamilyMembersScreen.js</code></td><td>Family member management</td></tr>
+  <tr><td>8</td><td>ConnectedDevicesScreen</td><td>ConnectedDevices</td><td><code>src/screens/Profile/ConnectedDevicesScreen.js</code></td><td>Connected health devices</td></tr>
+  <tr><td>9</td><td>ConsentManagerScreen</td><td>ConsentManager</td><td><code>src/screens/Profile/ConsentManagerScreen.js</code></td><td>Data consent management</td></tr>
+  <tr><td>10</td><td>AccessLogScreen</td><td>AccessLog</td><td><code>src/screens/Profile/AccessLogScreen.js</code></td><td>Data access audit log</td></tr>
+  <tr><td>11</td><td>DataTransparencyScreen</td><td>DataTransparency</td><td><code>src/screens/Profile/DataTransparencyScreen.js</code></td><td>Data transparency dashboard</td></tr>
+  <tr><td>12</td><td>TrustReportScreen</td><td>TrustReport</td><td><code>src/screens/Profile/TrustReportScreen.js</code></td><td>Trust score report</td></tr>
+  <tr><td>13</td><td>ReferralScreen</td><td>Referral</td><td><code>src/screens/Profile/ReferralScreen.js</code></td><td>Referral program</td></tr>
+  <tr><td>14</td><td>HealthRewardsScreen</td><td>HealthRewards</td><td><code>src/screens/Profile/HealthRewardsScreen.js</code></td><td>Health rewards/points</td></tr>
+  <tr><td>15</td><td>SecurityScreen</td><td>Security</td><td><code>src/screens/Profile/SecurityScreen.js</code></td><td>Security settings</td></tr>
+  <tr><td>16</td><td>PrivacyPolicyScreen</td><td>PrivacyPolicy</td><td><code>src/screens/Profile/PrivacyPolicyScreen.js</code></td><td>Privacy policy viewer</td></tr>
+  <tr><td>17</td><td>SubscriptionScreen</td><td>Subscription</td><td><code>src/screens/Profile/SubscriptionScreen.js</code></td><td>Subscription management</td></tr>
+  <tr><td>18</td><td>TermsOfServiceScreen</td><td>TermsOfService</td><td><code>src/screens/Profile/TermsOfServiceScreen.js</code></td><td>Terms of service viewer</td></tr>
+  <tr><td>19</td><td>ConsentAgreementScreen</td><td>ConsentAgreement</td><td><code>src/screens/Profile/ConsentAgreementScreen.js</code></td><td>Consent agreement viewer</td></tr>
+  <tr><td>20</td><td>HelpSupportScreen</td><td>HelpSupport</td><td><code>src/screens/Profile/HelpSupportScreen.js</code></td><td>Help &amp; support</td></tr>
+  <tr><td>21</td><td>EmergencySOSScreen</td><td>EmergencySOS</td><td><code>src/screens/Profile/EmergencySOSScreen.js</code></td><td>Emergency SOS configuration</td></tr>
+</table>
+
+<h3>Profile Tabs (18 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>OverviewTab</td><td><code>src/screens/Profile/tabs/OverviewTab.js</code></td><td>Profile overview summary</td></tr>
+  <tr><td>2</td><td>PersonalTab</td><td><code>src/screens/Profile/tabs/PersonalTab.js</code></td><td>Personal details tab</td></tr>
+  <tr><td>3</td><td>ContactTab</td><td><code>src/screens/Profile/tabs/ContactTab.js</code></td><td>Contact information tab</td></tr>
+  <tr><td>4</td><td>HealthTab</td><td><code>src/screens/Profile/tabs/HealthTab.js</code></td><td>Health data tab</td></tr>
+  <tr><td>5</td><td>BodyCompTab</td><td><code>src/screens/Profile/tabs/BodyCompTab.js</code></td><td>Body composition tab</td></tr>
+  <tr><td>6</td><td>LifestyleTab</td><td><code>src/screens/Profile/tabs/LifestyleTab.js</code></td><td>Lifestyle habits tab</td></tr>
+  <tr><td>7</td><td>FamilyHistoryTab</td><td><code>src/screens/Profile/tabs/FamilyHistoryTab.js</code></td><td>Family medical history tab</td></tr>
+  <tr><td>8</td><td>InsuranceTab</td><td><code>src/screens/Profile/tabs/InsuranceTab.js</code></td><td>Insurance details tab</td></tr>
+  <tr><td>9</td><td>DependentsTab</td><td><code>src/screens/Profile/tabs/DependentsTab.js</code></td><td>Dependents information tab</td></tr>
+  <tr><td>10</td><td>DentalTab</td><td><code>src/screens/Profile/tabs/DentalTab.js</code></td><td>Dental records tab</td></tr>
+  <tr><td>11</td><td>VisionTab</td><td><code>src/screens/Profile/tabs/VisionTab.js</code></td><td>Vision records tab</td></tr>
+  <tr><td>12</td><td>ReproductiveTab</td><td><code>src/screens/Profile/tabs/ReproductiveTab.js</code></td><td>Reproductive health tab</td></tr>
+  <tr><td>13</td><td>GeneticTab</td><td><code>src/screens/Profile/tabs/GeneticTab.js</code></td><td>Genetic data tab</td></tr>
+  <tr><td>14</td><td>EnvironmentTab</td><td><code>src/screens/Profile/tabs/EnvironmentTab.js</code></td><td>Environmental factors tab</td></tr>
+  <tr><td>15</td><td>DigitalHealthTab</td><td><code>src/screens/Profile/tabs/DigitalHealthTab.js</code></td><td>Digital health records tab</td></tr>
+  <tr><td>16</td><td>SupplementsTab</td><td><code>src/screens/Profile/tabs/SupplementsTab.js</code></td><td>Supplements tab</td></tr>
+  <tr><td>17</td><td>PreferencesTab</td><td><code>src/screens/Profile/tabs/PreferencesTab.js</code></td><td>Preferences tab</td></tr>
+  <tr><td>18</td><td>SecurityTab</td><td><code>src/screens/Profile/tabs/SecurityTab.js</code></td><td>Security settings tab</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 4. COMPONENT INVENTORY -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s4">4. Component Inventory (138 files)</h1>
+
+<h2>Shared / Reusable Components (9 files)</h2>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>AppText</td><td><code>src/components/shared/AppText.js</code></td><td>Global typography component with variant system</td></tr>
+  <tr><td>2</td><td>AppTextField</td><td><code>src/components/shared/AppTextField.js</code></td><td>Styled text input with label, hint, error, icon</td></tr>
+  <tr><td>3</td><td>AppDropdown</td><td><code>src/components/shared/AppDropdown.js</code></td><td>Dropdown picker with label and inline options</td></tr>
+  <tr><td>4</td><td>Icons</td><td><code>src/components/shared/Icons.js</code></td><td>Universal icon component wrapping 12 vector icon families</td></tr>
+  <tr><td>5</td><td>Emoji</td><td><code>src/components/shared/Emoji.js</code></td><td>Cross-platform emoji renderer</td></tr>
+  <tr><td>6</td><td>SectionTitle</td><td><code>src/components/shared/SectionTitle.js</code></td><td>Section header with optional link text</td></tr>
+  <tr><td>7</td><td>FilterBottomSheet</td><td><code>src/components/shared/FilterBottomSheet.js</code></td><td>Modal bottom sheet with filter chips</td></tr>
+  <tr><td>8</td><td>MiniBars</td><td><code>src/components/shared/MiniBars.js</code></td><td>Mini bar chart visualization</td></tr>
+  <tr><td>9</td><td>StandaloneBottomBar</td><td><code>src/components/shared/StandaloneBottomBar.js</code></td><td>Reusable bottom navigation bar for service screens</td></tr>
+</table>
+
+<h2>Home Components (8 files)</h2>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HeroSection</td><td><code>src/components/Home/HeroSection.js</code></td><td>Dashboard hero with HPS score and greeting</td></tr>
+  <tr><td>2</td><td>ActiveConditionsCard</td><td><code>src/components/Home/ActiveConditionsCard.js</code></td><td>Active health conditions card</td></tr>
+  <tr><td>3</td><td>QuickActions</td><td><code>src/components/Home/QuickActions.js</code></td><td>Quick action buttons grid</td></tr>
+  <tr><td>4</td><td>ForYouCarousel</td><td><code>src/components/Home/ForYouCarousel.js</code></td><td>Personalized content carousel</td></tr>
+  <tr><td>5</td><td>HealthServices</td><td><code>src/components/Home/HealthServices.js</code></td><td>Health services grid</td></tr>
+  <tr><td>6</td><td>AyuBanner</td><td><code>src/components/Home/AyuBanner.js</code></td><td>Ayu AI coach promotional banner</td></tr>
+  <tr><td>7</td><td>OrganHealthGrid</td><td><code>src/components/Home/OrganHealthGrid.js</code></td><td>Organ health status grid</td></tr>
+  <tr><td>8</td><td>TestReadinessCard</td><td><code>src/components/Home/TestReadinessCard.js</code></td><td>Test readiness indicator card</td></tr>
+</table>
+
+<h2>Profile Components (8 files)</h2>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>ProfileHeader</td><td><code>src/components/Profile/ProfileHeader.js</code></td><td>Profile screen header with avatar</td></tr>
+  <tr><td>2</td><td>HealthSummary</td><td><code>src/components/Profile/HealthSummary.js</code></td><td>Health summary card</td></tr>
+  <tr><td>3</td><td>MenuSection</td><td><code>src/components/Profile/MenuSection.js</code></td><td>Profile menu section list</td></tr>
+  <tr><td>4</td><td>AyuCard</td><td><code>src/components/Profile/AyuCard.js</code></td><td>Ayu AI card in profile</td></tr>
+  <tr><td>5</td><td>BillingCard</td><td><code>src/components/Profile/BillingCard.js</code></td><td>Billing/subscription card</td></tr>
+  <tr><td>6</td><td>CareTeamCard</td><td><code>src/components/Profile/CareTeamCard.js</code></td><td>Care team overview card</td></tr>
+  <tr><td>7</td><td>SOSCard</td><td><code>src/components/Profile/SOSCard.js</code></td><td>Emergency SOS quick card</td></tr>
+  <tr><td>8</td><td>TrustReportCard</td><td><code>src/components/Profile/TrustReportCard.js</code></td><td>Trust report summary card</td></tr>
+</table>
+
+<h2>Tracking Components (6 files)</h2>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>DailyProgress</td><td><code>src/components/Tracking/DailyProgress.js</code></td><td>Daily health progress overview</td></tr>
+  <tr><td>2</td><td>DayStrip</td><td><code>src/components/Tracking/DayStrip.js</code></td><td>Horizontal day selector strip</td></tr>
+  <tr><td>3</td><td>LogTimeline</td><td><code>src/components/Tracking/LogTimeline.js</code></td><td>Chronological log timeline</td></tr>
+  <tr><td>4</td><td>PriorityReadings</td><td><code>src/components/Tracking/PriorityReadings.js</code></td><td>Priority health readings cards</td></tr>
+  <tr><td>5</td><td>SymptomLogs</td><td><code>src/components/Tracking/SymptomLogs.js</code></td><td>Symptom log entry cards</td></tr>
+  <tr><td>6</td><td>TrackerGrid</td><td><code>src/components/Tracking/TrackerGrid.js</code></td><td>Tracker category grid</td></tr>
+</table>
+
+<h2>Progress Components (5 files)</h2>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>HPSScoreTab</td><td><code>src/components/Progress/HPSScoreTab.js</code></td><td>Health Performance Score tab</td></tr>
+  <tr><td>2</td><td>BiomarkersTab</td><td><code>src/components/Progress/BiomarkersTab.js</code></td><td>Biomarkers analytics tab</td></tr>
+  <tr><td>3</td><td>ConditionsTab</td><td><code>src/components/Progress/ConditionsTab.js</code></td><td>Conditions tracking tab</td></tr>
+  <tr><td>4</td><td>LifestyleTab</td><td><code>src/components/Progress/LifestyleTab.js</code></td><td>Lifestyle analytics tab</td></tr>
+  <tr><td>5</td><td>MedicationTab</td><td><code>src/components/Progress/MedicationTab.js</code></td><td>Medication adherence tab</td></tr>
+</table>
+
+<h2>Records Components (49 files)</h2>
+
+<h3>Top-Level Records (3 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>VisitSummaryTab</td><td><code>src/components/Records/VisitSummaryTab.js</code></td><td>Visit summary overview tab</td></tr>
+  <tr><td>2</td><td>IndividualRecordsTab</td><td><code>src/components/Records/IndividualRecordsTab.js</code></td><td>Individual records browser tab</td></tr>
+  <tr><td>3</td><td>ServiceRecordsTab</td><td><code>src/components/Records/ServiceRecordsTab.js</code></td><td>Service records browser tab</td></tr>
+</table>
+
+<h3>Doctor Notes (8 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>NotesByDoctorTab</td><td><code>src/components/Records/DoctorNotes/NotesByDoctorTab.js</code></td><td>Notes organized by doctor</td></tr>
+  <tr><td>2</td><td>NotesChronologicalTab</td><td><code>src/components/Records/DoctorNotes/NotesChronologicalTab.js</code></td><td>Notes in chronological order</td></tr>
+  <tr><td>3</td><td>VisitSummaryTab</td><td><code>src/components/Records/DoctorNotes/VisitSummaryTab.js</code></td><td>Individual visit summary</td></tr>
+  <tr><td>4</td><td>VisitVitalsTab</td><td><code>src/components/Records/DoctorNotes/VisitVitalsTab.js</code></td><td>Visit vitals recording</td></tr>
+  <tr><td>5</td><td>VisitFindingsTab</td><td><code>src/components/Records/DoctorNotes/VisitFindingsTab.js</code></td><td>Clinical findings</td></tr>
+  <tr><td>6</td><td>VisitInvestigationsTab</td><td><code>src/components/Records/DoctorNotes/VisitInvestigationsTab.js</code></td><td>Investigations ordered</td></tr>
+  <tr><td>7</td><td>VisitPrescriptionTab</td><td><code>src/components/Records/DoctorNotes/VisitPrescriptionTab.js</code></td><td>Prescriptions from visit</td></tr>
+  <tr><td>8</td><td>VisitFollowUpTab</td><td><code>src/components/Records/DoctorNotes/VisitFollowUpTab.js</code></td><td>Follow-up plan</td></tr>
+</table>
+
+<h3>Imaging Records (15 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>ImgAllTab</td><td><code>src/components/Records/Imaging/ImgAllTab.js</code></td><td>All imaging records</td></tr>
+  <tr><td>2</td><td>ImgByFacilityTab</td><td><code>src/components/Records/Imaging/ImgByFacilityTab.js</code></td><td>Imaging by facility</td></tr>
+  <tr><td>3</td><td>XraySummaryTab</td><td><code>src/components/Records/Imaging/XraySummaryTab.js</code></td><td>X-ray summary</td></tr>
+  <tr><td>4</td><td>XrayFindingsTab</td><td><code>src/components/Records/Imaging/XrayFindingsTab.js</code></td><td>X-ray findings</td></tr>
+  <tr><td>5</td><td>XrayDetailsTab</td><td><code>src/components/Records/Imaging/XrayDetailsTab.js</code></td><td>X-ray details</td></tr>
+  <tr><td>6</td><td>XrayClinicalContextTab</td><td><code>src/components/Records/Imaging/XrayClinicalContextTab.js</code></td><td>X-ray clinical context</td></tr>
+  <tr><td>7</td><td>XrayPeerGroupTab</td><td><code>src/components/Records/Imaging/XrayPeerGroupTab.js</code></td><td>X-ray peer comparison</td></tr>
+  <tr><td>8</td><td>EchoSummaryTab</td><td><code>src/components/Records/Imaging/EchoSummaryTab.js</code></td><td>Echocardiogram summary</td></tr>
+  <tr><td>9</td><td>EchoMeasurementsTab</td><td><code>src/components/Records/Imaging/EchoMeasurementsTab.js</code></td><td>Echo measurements</td></tr>
+  <tr><td>10</td><td>EchoContextTab</td><td><code>src/components/Records/Imaging/EchoContextTab.js</code></td><td>Echo clinical context</td></tr>
+  <tr><td>11</td><td>EchoPeerGroupTab</td><td><code>src/components/Records/Imaging/EchoPeerGroupTab.js</code></td><td>Echo peer comparison</td></tr>
+  <tr><td>12</td><td>UsgSummaryTab</td><td><code>src/components/Records/Imaging/UsgSummaryTab.js</code></td><td>Ultrasound summary</td></tr>
+  <tr><td>13</td><td>UsgFindingsTab</td><td><code>src/components/Records/Imaging/UsgFindingsTab.js</code></td><td>Ultrasound findings</td></tr>
+  <tr><td>14</td><td>UsgContextTab</td><td><code>src/components/Records/Imaging/UsgContextTab.js</code></td><td>Ultrasound clinical context</td></tr>
+  <tr><td>15</td><td>UsgPeerGroupTab</td><td><code>src/components/Records/Imaging/UsgPeerGroupTab.js</code></td><td>Ultrasound peer comparison</td></tr>
+</table>
+
+<h3>Lab Reports (6 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>LabAllReportsTab</td><td><code>src/components/Records/LabReports/LabAllReportsTab.js</code></td><td>All lab reports listing</td></tr>
+  <tr><td>2</td><td>LabBiomarkersTab</td><td><code>src/components/Records/LabReports/LabBiomarkersTab.js</code></td><td>Biomarker trends</td></tr>
+  <tr><td>3</td><td>LabBiomarkerDetailView</td><td><code>src/components/Records/LabReports/LabBiomarkerDetailView.js</code></td><td>Individual biomarker detail</td></tr>
+  <tr><td>4</td><td>LabByLabTab</td><td><code>src/components/Records/LabReports/LabByLabTab.js</code></td><td>Reports grouped by lab</td></tr>
+  <tr><td>5</td><td>LabReportSmartView</td><td><code>src/components/Records/LabReports/LabReportSmartView.js</code></td><td>AI-powered smart report view</td></tr>
+  <tr><td>6</td><td>LabReportTraditionalView</td><td><code>src/components/Records/LabReports/LabReportTraditionalView.js</code></td><td>Traditional tabular report view</td></tr>
+</table>
+
+<h3>Insurance Records (6 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>InsOverviewTab</td><td><code>src/components/Records/Insurance/InsOverviewTab.js</code></td><td>Insurance overview</td></tr>
+  <tr><td>2</td><td>InsBenefitsTab</td><td><code>src/components/Records/Insurance/InsBenefitsTab.js</code></td><td>Benefits breakdown</td></tr>
+  <tr><td>3</td><td>InsClaimsTab</td><td><code>src/components/Records/Insurance/InsClaimsTab.js</code></td><td>Claims history</td></tr>
+  <tr><td>4</td><td>InsPremiumTab</td><td><code>src/components/Records/Insurance/InsPremiumTab.js</code></td><td>Premium details</td></tr>
+  <tr><td>5</td><td>InsDocumentsTab</td><td><code>src/components/Records/Insurance/InsDocumentsTab.js</code></td><td>Insurance documents</td></tr>
+  <tr><td>6</td><td>InsAnalyticsTab</td><td><code>src/components/Records/Insurance/InsAnalyticsTab.js</code></td><td>Insurance analytics</td></tr>
+</table>
+
+<h3>Lifestyle Records (5 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>LifestyleSummaryTab</td><td><code>src/components/Records/Lifestyle/LifestyleSummaryTab.js</code></td><td>Lifestyle summary</td></tr>
+  <tr><td>2</td><td>LifestyleActivityTab</td><td><code>src/components/Records/Lifestyle/LifestyleActivityTab.js</code></td><td>Activity records</td></tr>
+  <tr><td>3</td><td>LifestyleFoodTab</td><td><code>src/components/Records/Lifestyle/LifestyleFoodTab.js</code></td><td>Food/nutrition records</td></tr>
+  <tr><td>4</td><td>LifestyleSleepTab</td><td><code>src/components/Records/Lifestyle/LifestyleSleepTab.js</code></td><td>Sleep records</td></tr>
+  <tr><td>5</td><td>LifestyleMedicationTab</td><td><code>src/components/Records/Lifestyle/LifestyleMedicationTab.js</code></td><td>Medication records</td></tr>
+</table>
+
+<h3>Prescriptions (9 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>RxCurrentTab</td><td><code>src/components/Records/Prescriptions/RxCurrentTab.js</code></td><td>Current prescriptions</td></tr>
+  <tr><td>2</td><td>RxHistoryTab</td><td><code>src/components/Records/Prescriptions/RxHistoryTab.js</code></td><td>Prescription history</td></tr>
+  <tr><td>3</td><td>RxByDoctorTab</td><td><code>src/components/Records/Prescriptions/RxByDoctorTab.js</code></td><td>Prescriptions by doctor</td></tr>
+  <tr><td>4</td><td>RxInteractionsTab</td><td><code>src/components/Records/Prescriptions/RxInteractionsTab.js</code></td><td>Drug interactions</td></tr>
+  <tr><td>5</td><td>MetDrugDetailsTab</td><td><code>src/components/Records/Prescriptions/MetDrugDetailsTab.js</code></td><td>Medication drug details</td></tr>
+  <tr><td>6</td><td>MetHistoryTab</td><td><code>src/components/Records/Prescriptions/MetHistoryTab.js</code></td><td>Medication history</td></tr>
+  <tr><td>7</td><td>MetAdherenceTab</td><td><code>src/components/Records/Prescriptions/MetAdherenceTab.js</code></td><td>Medication adherence</td></tr>
+  <tr><td>8</td><td>MetSymptomsTab</td><td><code>src/components/Records/Prescriptions/MetSymptomsTab.js</code></td><td>Medication side effects/symptoms</td></tr>
+  <tr><td>9</td><td>MetVisitsTab</td><td><code>src/components/Records/Prescriptions/MetVisitsTab.js</code></td><td>Medication-related visits</td></tr>
+</table>
+
+<h3>Symptoms Records (6 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>SymDayByDayTab</td><td><code>src/components/Records/Symptoms/SymDayByDayTab.js</code></td><td>Day-by-day symptom log</td></tr>
+  <tr><td>2</td><td>SymPatternsTab</td><td><code>src/components/Records/Symptoms/SymPatternsTab.js</code></td><td>Symptom patterns analysis</td></tr>
+  <tr><td>3</td><td>SymTriggersTab</td><td><code>src/components/Records/Symptoms/SymTriggersTab.js</code></td><td>Symptom triggers</td></tr>
+  <tr><td>4</td><td>SymCorrelationsTab</td><td><code>src/components/Records/Symptoms/SymCorrelationsTab.js</code></td><td>Symptom correlations</td></tr>
+  <tr><td>5</td><td>SymVsLastMonthTab</td><td><code>src/components/Records/Symptoms/SymVsLastMonthTab.js</code></td><td>Month-over-month comparison</td></tr>
+  <tr><td>6</td><td>SymDoctorNotesTab</td><td><code>src/components/Records/Symptoms/SymDoctorNotesTab.js</code></td><td>Doctor notes on symptoms</td></tr>
+</table>
+
+<h3>Vaccination Records (6 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>VaxOverviewTab</td><td><code>src/components/Records/Vaccination/VaxOverviewTab.js</code></td><td>Vaccination overview</td></tr>
+  <tr><td>2</td><td>VaxScheduleTab</td><td><code>src/components/Records/Vaccination/VaxScheduleTab.js</code></td><td>Vaccination schedule</td></tr>
+  <tr><td>3</td><td>VaxAdministrationTab</td><td><code>src/components/Records/Vaccination/VaxAdministrationTab.js</code></td><td>Administration details</td></tr>
+  <tr><td>4</td><td>VaxSideEffectsTab</td><td><code>src/components/Records/Vaccination/VaxSideEffectsTab.js</code></td><td>Side effects tracking</td></tr>
+  <tr><td>5</td><td>VaxCertificateTab</td><td><code>src/components/Records/Vaccination/VaxCertificateTab.js</code></td><td>Vaccination certificates</td></tr>
+  <tr><td>6</td><td>VaxHowItWorksTab</td><td><code>src/components/Records/Vaccination/VaxHowItWorksTab.js</code></td><td>Vaccine information</td></tr>
+</table>
+
+<h3>Other Logs (3 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>BmiTrackerTab</td><td><code>src/components/Records/OtherLogs/BmiTrackerTab.js</code></td><td>BMI tracker</td></tr>
+  <tr><td>2</td><td>GrowthTrackerTab</td><td><code>src/components/Records/OtherLogs/GrowthTrackerTab.js</code></td><td>Growth tracker</td></tr>
+  <tr><td>3</td><td>AddLogTab</td><td><code>src/components/Records/OtherLogs/AddLogTab.js</code></td><td>Add new log entry</td></tr>
+</table>
+
+<div class="page-break"></div>
+<h2>Fitness Components (36 files)</h2>
+
+<h3>Strength Training (6 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>DailyLogTab</td><td><code>src/components/Fitness/Strength/DailyLogTab.js</code></td><td>Strength daily log</td></tr>
+  <tr><td>2</td><td>PlannerTab</td><td><code>src/components/Fitness/Strength/PlannerTab.js</code></td><td>Workout planner</td></tr>
+  <tr><td>3</td><td>HistoryTab</td><td><code>src/components/Fitness/Strength/HistoryTab.js</code></td><td>Workout history</td></tr>
+  <tr><td>4</td><td>SummaryTab</td><td><code>src/components/Fitness/Strength/SummaryTab.js</code></td><td>Strength summary</td></tr>
+  <tr><td>5</td><td>AyuOverlay</td><td><code>src/components/Fitness/Strength/AyuOverlay.js</code></td><td>Ayu AI overlay for strength</td></tr>
+  <tr><td>6</td><td>RestTimerOverlay</td><td><code>src/components/Fitness/Strength/RestTimerOverlay.js</code></td><td>Rest timer between sets</td></tr>
+</table>
+
+<h3>Movement (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>DashboardTab</td><td><code>src/components/Fitness/Movement/DashboardTab.js</code></td><td>Movement dashboard</td></tr>
+  <tr><td>2</td><td>LogActivityTab</td><td><code>src/components/Fitness/Movement/LogActivityTab.js</code></td><td>Log new activity</td></tr>
+  <tr><td>3</td><td>TrendsTab</td><td><code>src/components/Fitness/Movement/TrendsTab.js</code></td><td>Movement trends</td></tr>
+  <tr><td>4</td><td>ConnectTab</td><td><code>src/components/Fitness/Movement/ConnectTab.js</code></td><td>Connect devices/apps</td></tr>
+</table>
+
+<h3>Sleep (3 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>TonightTab</td><td><code>src/components/Fitness/Sleep/TonightTab.js</code></td><td>Tonight's sleep plan</td></tr>
+  <tr><td>2</td><td>MorningTab</td><td><code>src/components/Fitness/Sleep/MorningTab.js</code></td><td>Morning sleep review</td></tr>
+  <tr><td>3</td><td>TrendsTab</td><td><code>src/components/Fitness/Sleep/TrendsTab.js</code></td><td>Sleep trends</td></tr>
+</table>
+
+<h3>Food / Nutrition (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>TodayTab</td><td><code>src/components/Fitness/Food/TodayTab.js</code></td><td>Today's food log</td></tr>
+  <tr><td>2</td><td>AddFoodTab</td><td><code>src/components/Fitness/Food/AddFoodTab.js</code></td><td>Add food entry</td></tr>
+  <tr><td>3</td><td>NutrientsTab</td><td><code>src/components/Fitness/Food/NutrientsTab.js</code></td><td>Nutrient breakdown</td></tr>
+  <tr><td>4</td><td>TrendsTab</td><td><code>src/components/Fitness/Food/TrendsTab.js</code></td><td>Food/nutrition trends</td></tr>
+</table>
+
+<h3>Menstrual Cycle (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>WheelTab</td><td><code>src/components/Fitness/Cycle/WheelTab.js</code></td><td>Cycle wheel visualization</td></tr>
+  <tr><td>2</td><td>CalendarTab</td><td><code>src/components/Fitness/Cycle/CalendarTab.js</code></td><td>Cycle calendar view</td></tr>
+  <tr><td>3</td><td>DailyLogTab</td><td><code>src/components/Fitness/Cycle/DailyLogTab.js</code></td><td>Daily cycle log</td></tr>
+  <tr><td>4</td><td>HistoryTab</td><td><code>src/components/Fitness/Cycle/HistoryTab.js</code></td><td>Cycle history</td></tr>
+</table>
+
+<h3>Medication Tracker (4 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>TodayTab</td><td><code>src/components/Fitness/Medication/TodayTab.js</code></td><td>Today's medication schedule</td></tr>
+  <tr><td>2</td><td>MyMedsTab</td><td><code>src/components/Fitness/Medication/MyMedsTab.js</code></td><td>My medications list</td></tr>
+  <tr><td>3</td><td>AdherenceTab</td><td><code>src/components/Fitness/Medication/AdherenceTab.js</code></td><td>Medication adherence stats</td></tr>
+  <tr><td>4</td><td>AyuTab</td><td><code>src/components/Fitness/Medication/AyuTab.js</code></td><td>Ayu AI medication insights</td></tr>
+</table>
+
+<h3>Lifestyle (2 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>LogTab</td><td><code>src/components/Fitness/Lifestyle/LogTab.js</code></td><td>Lifestyle activity log</td></tr>
+  <tr><td>2</td><td>AnalyticsTab</td><td><code>src/components/Fitness/Lifestyle/AnalyticsTab.js</code></td><td>Lifestyle analytics</td></tr>
+</table>
+
+<h3>Shared Fitness Components (8 files)</h3>
+<table>
+  <tr><th>#</th><th>Component</th><th>File Path</th><th>Description</th></tr>
+  <tr><td>1</td><td>StrengthFlow</td><td><code>src/components/Fitness/StrengthFlow.js</code></td><td>Strength workout flow manager</td></tr>
+  <tr><td>2</td><td>SubcatGrid</td><td><code>src/components/Fitness/SubcatGrid.js</code></td><td>Sub-category selection grid</td></tr>
+  <tr><td>3</td><td>CardioExtras</td><td><code>src/components/Fitness/CardioExtras.js</code></td><td>Cardio-specific extra fields</td></tr>
+  <tr><td>4</td><td>MindBodyExtras</td><td><code>src/components/Fitness/MindBodyExtras.js</code></td><td>Mind-body exercise extras</td></tr>
+  <tr><td>5</td><td>DurationPicker</td><td><code>src/components/Fitness/DurationPicker.js</code></td><td>Duration input picker</td></tr>
+  <tr><td>6</td><td>IntensityPicker</td><td><code>src/components/Fitness/IntensityPicker.js</code></td><td>Intensity level picker</td></tr>
+  <tr><td>7</td><td>NumpadSheet</td><td><code>src/components/Fitness/NumpadSheet.js</code></td><td>Numeric keypad bottom sheet</td></tr>
+  <tr><td>8</td><td>OutcomeCard</td><td><code>src/components/Fitness/OutcomeCard.js</code></td><td>Workout outcome summary card</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 5. CONSTANTS / DATA FILES -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s5">5. Constants / Data Files (25 files)</h1>
+<table>
+  <tr><th>#</th><th>File</th><th>Contents</th></tr>
+  <tr><td>1</td><td><code>src/constants/colors.js</code></td><td>Complete color palette (primary, accent, semantic colors, overlays)</td></tr>
+  <tr><td>2</td><td><code>src/constants/fonts.js</code></td><td>Font families (System/Roboto), font sizes (xs-xlarge), Typography presets</td></tr>
+  <tr><td>3</td><td><code>src/constants/images.js</code></td><td>Image asset references (Ayu logo)</td></tr>
+  <tr><td>4</td><td><code>src/constants/authData.js</code></td><td>Authentication-related mock data</td></tr>
+  <tr><td>5</td><td><code>src/constants/profileData.js</code></td><td>User profile mock data</td></tr>
+  <tr><td>6</td><td><code>src/constants/fitnessData.js</code></td><td>Fitness categories, exercises, workout data</td></tr>
+  <tr><td>7</td><td><code>src/constants/strengthData.js</code></td><td>Strength training exercises, muscle groups</td></tr>
+  <tr><td>8</td><td><code>src/constants/movementData.js</code></td><td>Movement/cardio activity types and data</td></tr>
+  <tr><td>9</td><td><code>src/constants/sleepData.js</code></td><td>Sleep tracking mock data</td></tr>
+  <tr><td>10</td><td><code>src/constants/foodData.js</code></td><td>Food items, nutritional data</td></tr>
+  <tr><td>11</td><td><code>src/constants/cycleData.js</code></td><td>Menstrual cycle tracking data</td></tr>
+  <tr><td>12</td><td><code>src/constants/medicationData.js</code></td><td>Medication list and schedule data</td></tr>
+  <tr><td>13</td><td><code>src/constants/lifestyleData.js</code></td><td>Lifestyle habits and activities data</td></tr>
+  <tr><td>14</td><td><code>src/constants/goalsData.js</code></td><td>Health goals and targets</td></tr>
+  <tr><td>15</td><td><code>src/constants/sosData.js</code></td><td>Emergency SOS contacts and configuration</td></tr>
+  <tr><td>16</td><td><code>src/constants/subscriptionData.js</code></td><td>Subscription plans and pricing</td></tr>
+  <tr><td>17</td><td><code>src/constants/referralData.js</code></td><td>Referral program data</td></tr>
+  <tr><td>18</td><td><code>src/constants/healthRewardsData.js</code></td><td>Health rewards/points system data</td></tr>
+  <tr><td>19</td><td><code>src/constants/serviceRecordsData.js</code></td><td>Service records (doctors, labs, etc.) mock data</td></tr>
+  <tr><td>20</td><td><code>src/constants/consentData.js</code></td><td>Consent management options</td></tr>
+  <tr><td>21</td><td><code>src/constants/consentAgreementData.js</code></td><td>Consent agreement text content</td></tr>
+  <tr><td>22</td><td><code>src/constants/accessLogData.js</code></td><td>Data access audit log entries</td></tr>
+  <tr><td>23</td><td><code>src/constants/termsData.js</code></td><td>Terms of service content</td></tr>
+  <tr><td>24</td><td><code>src/constants/privacyPolicyData.js</code></td><td>Privacy policy content</td></tr>
+  <tr><td>25</td><td><code>src/constants/supportData.js</code></td><td>Help &amp; support FAQ and contact data</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 6. NAVIGATION MAP -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s6">6. Navigation Map</h1>
+
+<h2>Auth Flow (AuthNavigator)</h2>
+<div class="nav-tree">Splash (fade)
+  └── Welcome
+        ├── [Sign Up] Phone &rarr; OTP &rarr; Personal &rarr; Health &rarr; Medications
+        │     &rarr; Plan &rarr; Payment &rarr; PaymentMethod &rarr; PaymentProcessing (fade)
+        │     &rarr; Agreement &rarr; Done (fade)
+        │
+        ├── [Legal] Terms | Consent | PrivacyPolicy
+        │
+        └── [Login] LoginHub
+              ├── LoginBio (biometric) ──────┐
+              ├── LoginPin (4-6 digit PIN) ──┤── LoginSuccess (fade)
+              ├── LoginPassword ─────────────┘
+              │
+              └── [Forgot] ForgotStep0 &rarr; ForgotStep1 &rarr; ForgotStep2
+                    ├── ForgotNewPassword ──┐
+                    └── ForgotNewPin ───────┘── ForgotDone (fade)</div>
+
+<h2>Main App Tabs (BottomTabNavigator)</h2>
+<table>
+  <tr><th>Tab</th><th>Label</th><th>Screen</th><th>Icon</th></tr>
+  <tr><td>1</td><td>Home</td><td>HomeScreen</td><td><code>fhome.png</code></td></tr>
+  <tr><td>2</td><td>Tracking</td><td>TrackingScreen</td><td><code>ftracking.png</code></td></tr>
+  <tr><td>3</td><td>Records</td><td>RecordsScreen</td><td><code>frecords.png</code></td></tr>
+  <tr><td>4</td><td>Progress</td><td>ProgressScreen</td><td><code>fprogress.png</code></td></tr>
+  <tr><td>5</td><td>Ayu Intel</td><td>HealthCoachScreen</td><td><code>ayu-ai.png</code></td></tr>
+</table>
+
+<h2>All Stack Screen Routes (AppNavigator)</h2>
+<table>
+  <tr><th>Route Name</th><th>Screen</th><th>Animation</th></tr>
+  <tr><td>MainTabs</td><td>BottomTabNavigator</td><td>default</td></tr>
+  <tr><td>ViewAll</td><td>ViewAllScreen</td><td>slide_from_right</td></tr>
+  <tr><td>Profile</td><td>ProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>HPSReport</td><td>HPSReportScreen</td><td>slide_from_right</td></tr>
+  <tr><td>AyuChat</td><td>AyuChatScreen</td><td>slide_from_bottom</td></tr>
+  <tr><td>CapabilityDetail</td><td>CapabilityDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CoachConsultation</td><td>CoachConsultationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CoachSpecialistList</td><td>CoachSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CoachProfile</td><td>CoachProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CoachSessionDetail</td><td>CoachSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CounsellingConsultation</td><td>CounsellingConsultationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CounsellingSpecialistList</td><td>CounsellingSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CounsellingProfile</td><td>CounsellingProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CounsellingSessionDetail</td><td>CounsellingSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>NurseConsultation</td><td>NurseConsultationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>NurseSpecialistList</td><td>NurseSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>NurseProfile</td><td>NurseProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>NurseSessionDetail</td><td>NurseSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PhysioConsultation</td><td>PhysioConsultationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PhysioSpecialistList</td><td>PhysioSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PhysioProfile</td><td>PhysioProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PhysioSessionDetail</td><td>PhysioSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>DoctorConsultation</td><td>DoctorConsultationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>DoctorSpecialistList</td><td>DoctorSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>DoctorProfile</td><td>DoctorProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>ReviewAppointment</td><td>ReviewAppointmentScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PatientDetails</td><td>PatientDetailsScreen</td><td>slide_from_right</td></tr>
+  <tr><td>PaymentSuccess</td><td>PaymentSuccessScreen</td><td>fade</td></tr>
+  <tr><td>AppointmentConfirmed</td><td>AppointmentConfirmedScreen</td><td>slide_from_right</td></tr>
+  <tr><td>DoctorSessionDetail</td><td>DoctorSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>HealthInsurance</td><td>HealthInsuranceScreen</td><td>slide_from_right</td></tr>
+  <tr><td>InsurancePlanDetail</td><td>InsurancePlanDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>InsuranceNomineeDetails</td><td>InsuranceNomineeDetailsScreen</td><td>slide_from_right</td></tr>
+  <tr><td>InsuranceDocumentVerification</td><td>InsuranceDocumentVerificationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>InsurancePaymentSuccess</td><td>InsurancePaymentSuccessScreen</td><td>fade</td></tr>
+  <tr><td>HospitalList</td><td>HospitalListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>HealthGadgets</td><td>HealthGadgetsScreen</td><td>slide_from_right</td></tr>
+  <tr><td>TelemedicineHome</td><td>TelemedicineHomeScreen</td><td>slide_from_right</td></tr>
+  <tr><td>TelemedicineSpecialistList</td><td>TelemedicineSpecialistListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>TelemedicineProfile</td><td>TelemedicineProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>WellnessCenter</td><td>WellnessCenterScreen</td><td>slide_from_right</td></tr>
+  <tr><td>WellnessDetail</td><td>WellnessDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>WellnessBooking</td><td>WellnessBookingScreen</td><td>slide_from_right</td></tr>
+  <tr><td>WellnessSessionDetail</td><td>WellnessSessionDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabHome</td><td>LabHomeScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabTestList</td><td>LabTestListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabTestSearch</td><td>LabTestSearchScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabFilter</td><td>LabFilterScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabCart</td><td>LabCartScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabTestDetail</td><td>LabTestDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>LabPaymentSuccess</td><td>LabPaymentSuccessScreen</td><td>fade</td></tr>
+  <tr><td>LabOrderPlaced</td><td>LabOrderPlacedScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicineHome</td><td>MedicineHomeScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicineList</td><td>MedicineListScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicineDetail</td><td>MedicineDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicineSearch</td><td>MedicineSearchScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicineCart</td><td>MedicineCartScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicinePaymentSuccess</td><td>MedicinePaymentSuccessScreen</td><td>fade</td></tr>
+  <tr><td>MedicineOrderPlaced</td><td>MedicineOrderPlacedScreen</td><td>slide_from_right</td></tr>
+  <tr><td>VaccinationLog</td><td>VaccinationLogScreen</td><td>slide_from_right</td></tr>
+  <tr><td>ECGLog .. AnemiaLog</td><td>Various Log Screens</td><td>slide_from_right</td></tr>
+  <tr><td>FitnessTracker</td><td>FitnessTrackerScreen</td><td>slide_from_right</td></tr>
+  <tr><td>FitnessCategory</td><td>FitnessCategoryScreen</td><td>slide_from_right</td></tr>
+  <tr><td>StrengthTraining</td><td>StrengthTrainingScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MovementTracker</td><td>MovementScreen</td><td>slide_from_right</td></tr>
+  <tr><td>SleepTracker</td><td>SleepScreen</td><td>slide_from_right</td></tr>
+  <tr><td>FoodTracker</td><td>FoodScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedicationTracker</td><td>MedicationScreen</td><td>slide_from_right</td></tr>
+  <tr><td>MedDetail</td><td>MedDetailScreen</td><td>slide_from_right</td></tr>
+  <tr><td>CycleTracker</td><td>CycleScreen</td><td>slide_from_right</td></tr>
+  <tr><td>EditProfile</td><td>EditProfileScreen</td><td>slide_from_right</td></tr>
+  <tr><td>Goals .. EmergencySOS</td><td>Various Profile Screens</td><td>slide_from_right</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- 7. FEATURE DOCUMENTATION -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s7">7. Feature Documentation</h1>
+
+<h2>7.1 Authentication</h2>
+
+<h3>Signup Flow (11 steps)</h3>
+<ol>
+  <li>Phone number entry with country code</li>
+  <li>OTP verification (SMS)</li>
+  <li>Personal information (name, DOB, gender)</li>
+  <li>Health profile (conditions, allergies)</li>
+  <li>Current medications</li>
+  <li>Subscription plan selection</li>
+  <li>Payment summary</li>
+  <li>Payment method (card, UPI, etc.)</li>
+  <li>Payment processing (animated)</li>
+  <li>Agreement acceptance (Terms, Consent, Privacy)</li>
+  <li>Account creation completion</li>
+</ol>
+
+<h3>Login Methods</h3>
+<ul>
+  <li><strong>Biometric</strong> (LoginBio) &mdash; Fingerprint/Face ID</li>
+  <li><strong>PIN</strong> (LoginPin) &mdash; 4-6 digit numeric PIN</li>
+  <li><strong>Password</strong> (LoginPassword) &mdash; Traditional password</li>
+</ul>
+
+<h3>Forgot Password/PIN Flow</h3>
+<ol>
+  <li>Choose what to reset (password or PIN)</li>
+  <li>Identity verification step 1</li>
+  <li>Identity verification step 2</li>
+  <li>Set new password OR new PIN</li>
+  <li>Reset confirmation</li>
+</ol>
+
+<h2>7.2 Home Dashboard</h2>
+<p>The HomeScreen is composed of these component sections:</p>
+<ul>
+  <li><strong>HeroSection</strong> &mdash; HPS score display, user greeting, quick stats</li>
+  <li><strong>ActiveConditionsCard</strong> &mdash; Current health conditions with severity</li>
+  <li><strong>QuickActions</strong> &mdash; Grid of quick action buttons (log vitals, book appointment, etc.)</li>
+  <li><strong>ForYouCarousel</strong> &mdash; Personalized health content recommendations</li>
+  <li><strong>HealthServices</strong> &mdash; Grid of 12 health services (Doctor, Lab, Medicine, etc.)</li>
+  <li><strong>AyuBanner</strong> &mdash; AI health coach promotional banner</li>
+  <li><strong>OrganHealthGrid</strong> &mdash; Organ-by-organ health status</li>
+  <li><strong>TestReadinessCard</strong> &mdash; Upcoming test preparation status</li>
+</ul>
+
+<h2>7.3 Health Tracking</h2>
+
+<h3>14 Vital/Symptom Log Types</h3>
+<table>
+  <tr><th>#</th><th>Vital</th><th>Route</th><th>Auto View</th><th>Manual View</th></tr>
+  <tr><td>1</td><td>Blood Pressure</td><td>BPLog</td><td>BPAutoView</td><td>BPManualView</td></tr>
+  <tr><td>2</td><td>Heart Rate</td><td>HeartRateLog</td><td>HRAutoView</td><td>HRManualView</td></tr>
+  <tr><td>3</td><td>Blood Glucose</td><td>GlucoseLog</td><td>GlucoseAutoView</td><td>GlucoseManualView</td></tr>
+  <tr><td>4</td><td>Weight</td><td>WeightLog</td><td>WeightAutoView</td><td>WeightManualView</td></tr>
+  <tr><td>5</td><td>Body Temperature</td><td>TempLog</td><td>TempAutoView</td><td>TempManualView</td></tr>
+  <tr><td>6</td><td>ECG</td><td>ECGLog</td><td>ECGAutoView</td><td>ECGManualView</td></tr>
+  <tr><td>7</td><td>Mood</td><td>MoodLog</td><td>MoodAutoView</td><td>MoodManualView</td></tr>
+  <tr><td>8</td><td>Migraine</td><td>MigraineLog</td><td>MigraineAutoView</td><td>MigraineManualView</td></tr>
+  <tr><td>9</td><td>Asthma</td><td>AsthmaLog</td><td>AsthmaAutoView</td><td>AsthmaManualView</td></tr>
+  <tr><td>10</td><td>Anemia</td><td>AnemiaLog</td><td>AnemiaAutoView</td><td>AnemiaManualView</td></tr>
+  <tr><td>11</td><td>MSK Pain</td><td>MSKLog</td><td>MSKAutoView</td><td>MSKManualView</td></tr>
+  <tr><td>12</td><td>Menstrual</td><td>MenstrualLog</td><td>&mdash;</td><td>&mdash;</td></tr>
+  <tr><td>13</td><td>Symptoms</td><td>SymptomsLog</td><td>&mdash;</td><td>&mdash;</td></tr>
+  <tr><td>14</td><td>Vaccination</td><td>VaccinationLog</td><td>VaccLogView, VaccAefiView, VaccTravelCertsView</td><td>&mdash;</td></tr>
+</table>
+
+<h3>7 Fitness Tracker Categories</h3>
+<table>
+  <tr><th>#</th><th>Category</th><th>Route</th><th>Tabs</th></tr>
+  <tr><td>1</td><td>Strength Training</td><td>StrengthTraining</td><td>DailyLog, Planner, History, Summary + AyuOverlay, RestTimerOverlay</td></tr>
+  <tr><td>2</td><td>Movement/Cardio</td><td>MovementTracker</td><td>Dashboard, LogActivity, Trends, Connect</td></tr>
+  <tr><td>3</td><td>Sleep</td><td>SleepTracker</td><td>Tonight, Morning, Trends</td></tr>
+  <tr><td>4</td><td>Food/Nutrition</td><td>FoodTracker</td><td>Today, AddFood, Nutrients, Trends</td></tr>
+  <tr><td>5</td><td>Menstrual Cycle</td><td>CycleTracker</td><td>Wheel, Calendar, DailyLog, History</td></tr>
+  <tr><td>6</td><td>Medication</td><td>MedicationTracker</td><td>Today, MyMeds, Adherence, Ayu</td></tr>
+  <tr><td>7</td><td>Lifestyle</td><td>LifestyleActivity</td><td>Log, Analytics</td></tr>
+</table>
+
+<h3>Supporting Fitness Components</h3>
+<ul>
+  <li><strong>StrengthFlow</strong> &mdash; Manages workout flow state</li>
+  <li><strong>SubcatGrid</strong> &mdash; Sub-category selection (exercise types)</li>
+  <li><strong>CardioExtras, MindBodyExtras</strong> &mdash; Category-specific input fields</li>
+  <li><strong>DurationPicker, IntensityPicker</strong> &mdash; Input pickers</li>
+  <li><strong>NumpadSheet</strong> &mdash; Numeric input bottom sheet</li>
+  <li><strong>OutcomeCard</strong> &mdash; Workout result summary</li>
+</ul>
+
+<h2>7.4 Health Records</h2>
+<p>Three main record tabs:</p>
+<ol>
+  <li><strong>VisitSummaryTab</strong> &mdash; Doctor visit summaries with sub-tabs: Summary, Vitals, Findings, Investigations, Prescription, Follow-Up; organized by doctor or chronologically</li>
+  <li><strong>IndividualRecordsTab</strong> &mdash; Individual health record categories:
+    <ul>
+      <li>Lab Reports (AllReports, Biomarkers, BiomarkerDetail, ByLab, SmartView, TraditionalView)</li>
+      <li>Imaging (All, ByFacility, X-ray [5 sub-tabs], Echo [4 sub-tabs], USG [4 sub-tabs])</li>
+      <li>Prescriptions (Current, History, ByDoctor, Interactions, plus Med-specific tabs)</li>
+      <li>Symptoms (DayByDay, Patterns, Triggers, Correlations, VsLastMonth, DoctorNotes)</li>
+      <li>Vaccination (Overview, Schedule, Administration, SideEffects, Certificate, HowItWorks)</li>
+      <li>Insurance (Overview, Benefits, Claims, Premium, Documents, Analytics)</li>
+      <li>Lifestyle (Summary, Activity, Food, Sleep, Medication)</li>
+      <li>Other Logs (BMI Tracker, Growth Tracker, Add Log)</li>
+    </ul>
+  </li>
+  <li><strong>ServiceRecordsTab</strong> &mdash; Service-related records</li>
+</ol>
+
+<h2>7.5 Progress &amp; Analytics</h2>
+<ul>
+  <li><strong>HPSScoreTab</strong> &mdash; Health Performance Score with trend visualization</li>
+  <li><strong>BiomarkersTab</strong> &mdash; Key biomarker tracking with trends</li>
+  <li><strong>ConditionsTab</strong> &mdash; Active condition monitoring</li>
+  <li><strong>LifestyleTab</strong> &mdash; Lifestyle analytics dashboard</li>
+  <li><strong>MedicationTab</strong> &mdash; Medication adherence analytics</li>
+  <li><strong>HPSReportScreen</strong> &mdash; Detailed HPS breakdown report</li>
+</ul>
+
+<h2>7.6 Health Coach / Ayu Intel</h2>
+<ul>
+  <li><strong>HealthCoachScreen</strong> &mdash; Main Ayu Intel hub with capability cards</li>
+  <li><strong>CapabilityDetailScreen</strong> &mdash; Detailed view of each AI capability</li>
+  <li><strong>AyuChatScreen</strong> &mdash; Chat interface with Ayu AI (slide_from_bottom animation)</li>
+</ul>
+
+<h2>7.7 Health Services (12 Service Types)</h2>
+<table>
+  <tr><th>#</th><th>Service</th><th>Screens</th><th>Flow</th></tr>
+  <tr><td>1</td><td>Doctor</td><td>8 screens</td><td>Consultation &rarr; SpecialistList &rarr; Profile &rarr; ReviewAppointment &rarr; PatientDetails &rarr; PaymentSuccess &rarr; AppointmentConfirmed; SessionDetail</td></tr>
+  <tr><td>2</td><td>Coach</td><td>4 screens</td><td>Consultation &rarr; SpecialistList &rarr; Profile &rarr; SessionDetail</td></tr>
+  <tr><td>3</td><td>Counselling</td><td>4 screens</td><td>Consultation &rarr; SpecialistList &rarr; Profile &rarr; SessionDetail</td></tr>
+  <tr><td>4</td><td>Nurse</td><td>4 screens</td><td>Consultation &rarr; SpecialistList &rarr; Profile &rarr; SessionDetail</td></tr>
+  <tr><td>5</td><td>Physiotherapy</td><td>4 screens</td><td>Consultation &rarr; SpecialistList &rarr; Profile &rarr; SessionDetail</td></tr>
+  <tr><td>6</td><td>Lab Tests</td><td>8 screens</td><td>Home &rarr; TestList &rarr; TestSearch &rarr; Filter &rarr; TestDetail &rarr; Cart &rarr; PaymentSuccess &rarr; OrderPlaced</td></tr>
+  <tr><td>7</td><td>Medicine</td><td>7 screens</td><td>Home &rarr; List &rarr; Search &rarr; Detail &rarr; Cart &rarr; PaymentSuccess &rarr; OrderPlaced</td></tr>
+  <tr><td>8</td><td>Insurance</td><td>5 screens</td><td>HealthInsurance &rarr; PlanDetail &rarr; NomineeDetails &rarr; DocumentVerification &rarr; PaymentSuccess</td></tr>
+  <tr><td>9</td><td>Telemedicine</td><td>3 screens</td><td>Home &rarr; SpecialistList &rarr; Profile</td></tr>
+  <tr><td>10</td><td>Wellness</td><td>4 screens</td><td>Center &rarr; Detail &rarr; Booking &rarr; SessionDetail</td></tr>
+  <tr><td>11</td><td>Hospital</td><td>1 screen</td><td>HospitalList</td></tr>
+  <tr><td>12</td><td>Gadgets</td><td>1 screen</td><td>HealthGadgets</td></tr>
+</table>
+
+<h2>7.8 Profile &amp; Settings</h2>
+<table>
+  <tr><th>Category</th><th>Screens</th><th>Description</th></tr>
+  <tr><td>Account</td><td>EditProfile, PersonalInfo, ContactDetails, Preferences, HealthProfile</td><td>Personal data management</td></tr>
+  <tr><td>Family</td><td>FamilyMembers</td><td>Family member profiles</td></tr>
+  <tr><td>Devices</td><td>ConnectedDevices</td><td>Health device connections</td></tr>
+  <tr><td>Goals</td><td>Goals</td><td>Health goals setting</td></tr>
+  <tr><td>Data &amp; Privacy</td><td>ConsentManager, AccessLog, DataTransparency, ConsentAgreement</td><td>Data governance</td></tr>
+  <tr><td>Trust</td><td>TrustReport</td><td>Data trust scoring</td></tr>
+  <tr><td>Rewards</td><td>HealthRewards, Referral</td><td>Gamification and referrals</td></tr>
+  <tr><td>Security</td><td>Security</td><td>Password, PIN, biometric settings</td></tr>
+  <tr><td>Legal</td><td>PrivacyPolicy, TermsOfService</td><td>Legal documents</td></tr>
+  <tr><td>Billing</td><td>Subscription</td><td>Subscription management</td></tr>
+  <tr><td>Support</td><td>HelpSupport</td><td>FAQs and contact</td></tr>
+  <tr><td>Emergency</td><td>EmergencySOS</td><td>Emergency contacts and SOS trigger</td></tr>
+</table>
+
+<h3>Edit Profile Tabs (18 sub-tabs)</h3>
+<p>Overview, Personal, Contact, Health, BodyComp, Lifestyle, FamilyHistory, Insurance, Dependents, Dental, Vision, Reproductive, Genetic, Environment, DigitalHealth, Supplements, Preferences, Security</p>
+
+<h2>7.9 Emergency SOS</h2>
+<p>Dedicated <code>EmergencySOSScreen</code> with SOS contacts configuration, one-tap emergency activation, and emergency information display. Profile section includes a <code>SOSCard</code> component for quick access.</p>
+
+<h2>7.10 Subscription &amp; Billing</h2>
+<ul>
+  <li><code>PlanScreen</code> (Auth) &mdash; Plan selection during signup</li>
+  <li><code>PaymentScreen</code> / <code>PaymentMethodScreen</code> / <code>PaymentProcessingScreen</code> (Auth) &mdash; Payment during signup</li>
+  <li><code>SubscriptionScreen</code> (Profile) &mdash; Post-signup subscription management</li>
+  <li><code>BillingCard</code> (Profile component) &mdash; Billing summary in profile</li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 8. DESIGN SYSTEM -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s8">8. Design System</h1>
+
+<h2>Color Palette</h2>
+
+<h3>Primary Colors</h3>
+<table class="color-table">
+  <tr><th>Name</th><th>Color</th><th>Hex</th><th>Usage</th></tr>
+  <tr><td><code>primary</code></td><td><span class="color-swatch" style="background:#0a5c47"></span></td><td>#0a5c47</td><td>Primary brand color, active tab, key CTAs</td></tr>
+  <tr><td><code>accent</code></td><td><span class="color-swatch" style="background:#1D9E75"></span></td><td>#1D9E75</td><td>Accent highlights, focused input borders</td></tr>
+  <tr><td><code>lightGreen</code></td><td><span class="color-swatch" style="background:#5DCAA5"></span></td><td>#5DCAA5</td><td>Light accent variant</td></tr>
+  <tr><td><code>paleGreen</code></td><td><span class="color-swatch" style="background:#9FE1CB"></span></td><td>#9FE1CB</td><td>Pale accent, progress indicators</td></tr>
+  <tr><td><code>background</code></td><td><span class="color-swatch" style="background:#f0f7f4"></span></td><td>#f0f7f4</td><td>App background</td></tr>
+  <tr><td><code>white</code></td><td><span class="color-swatch" style="background:#FFFFFF"></span></td><td>#FFFFFF</td><td>Card backgrounds, text on dark</td></tr>
+  <tr><td><code>black</code></td><td><span class="color-swatch" style="background:#000000"></span></td><td>#000000</td><td>Max contrast text</td></tr>
+</table>
+
+<h3>Text Colors</h3>
+<table class="color-table">
+  <tr><th>Name</th><th>Color</th><th>Hex</th><th>Usage</th></tr>
+  <tr><td><code>textPrimary</code></td><td><span class="color-swatch" style="background:#1a1a1a"></span></td><td>#1a1a1a</td><td>Primary body text</td></tr>
+  <tr><td><code>textSecondary</code></td><td><span class="color-swatch" style="background:#6b7280"></span></td><td>#6b7280</td><td>Secondary/muted text</td></tr>
+  <tr><td><code>textTertiary</code></td><td><span class="color-swatch" style="background:#9ca3af"></span></td><td>#9ca3af</td><td>Placeholder, hints, labels</td></tr>
+  <tr><td><code>borderLight</code></td><td><span class="color-swatch" style="background:#e5e7eb"></span></td><td>#e5e7eb</td><td>Card borders, dividers</td></tr>
+</table>
+
+<h3>Semantic Colors</h3>
+<table class="color-table">
+  <tr><th>Category</th><th>Background</th><th>Text</th><th>Dark</th><th>Base</th></tr>
+  <tr>
+    <td>Red (danger/error)</td>
+    <td><span class="color-swatch" style="background:#FCEBEB"></span> #FCEBEB</td>
+    <td><span class="color-swatch" style="background:#A32D2D"></span> #A32D2D</td>
+    <td><span class="color-swatch" style="background:#791F1F"></span> #791F1F</td>
+    <td><span class="color-swatch" style="background:#E24B4A"></span> #E24B4A</td>
+  </tr>
+  <tr>
+    <td>Amber (warning)</td>
+    <td><span class="color-swatch" style="background:#FAEEDA"></span> #FAEEDA</td>
+    <td><span class="color-swatch" style="background:#854F0B"></span> #854F0B</td>
+    <td><span class="color-swatch" style="background:#633806"></span> #633806</td>
+    <td><span class="color-swatch" style="background:#BA7517"></span> #BA7517</td>
+  </tr>
+  <tr>
+    <td>Teal (success)</td>
+    <td><span class="color-swatch" style="background:#E1F5EE"></span> #E1F5EE</td>
+    <td><span class="color-swatch" style="background:#085041"></span> #085041</td>
+    <td><span class="color-swatch" style="background:#0F6E56"></span> #0F6E56</td>
+    <td><span class="color-swatch" style="background:#1D9E75"></span> #1D9E75</td>
+  </tr>
+  <tr>
+    <td>Blue (info)</td>
+    <td><span class="color-swatch" style="background:#E6F1FB"></span> #E6F1FB</td>
+    <td><span class="color-swatch" style="background:#0C447C"></span> #0C447C</td>
+    <td>&mdash;</td>
+    <td><span class="color-swatch" style="background:#378ADD"></span> #378ADD</td>
+  </tr>
+  <tr>
+    <td>Purple (special)</td>
+    <td><span class="color-swatch" style="background:#EEEDFE"></span> #EEEDFE</td>
+    <td><span class="color-swatch" style="background:#3C3489"></span> #3C3489</td>
+    <td><span class="color-swatch" style="background:#26215C"></span> #26215C</td>
+    <td><span class="color-swatch" style="background:#6C63FF"></span> #6C63FF</td>
+  </tr>
+  <tr>
+    <td>Pink</td>
+    <td><span class="color-swatch" style="background:#FBEAF0"></span> #FBEAF0</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+    <td>&mdash;</td>
+  </tr>
+</table>
+
+<h3>Overlay Colors</h3>
+<table>
+  <tr><th>Name</th><th>Value</th><th>Usage</th></tr>
+  <tr><td><code>heroOverlay</code></td><td>rgba(255,255,255,0.12)</td><td>Hero card overlays</td></tr>
+  <tr><td><code>heroBorder</code></td><td>rgba(255,255,255,0.18)</td><td>Hero card borders</td></tr>
+  <tr><td><code>heroTextMuted</code></td><td>rgba(255,255,255,0.6)</td><td>Muted hero text</td></tr>
+  <tr><td><code>heroTextSubtle</code></td><td>rgba(255,255,255,0.5)</td><td>Subtle hero text</td></tr>
+  <tr><td><code>badgeBg</code></td><td>rgba(255,255,255,0.1)</td><td>Badge backgrounds</td></tr>
+  <tr><td><code>scoreBg</code></td><td>rgba(255,255,255,0.15)</td><td>Score card backgrounds</td></tr>
+  <tr><td><code>statBg</code></td><td>rgba(255,255,255,0.1)</td><td>Stat card backgrounds</td></tr>
+</table>
+
+<h2>Typography System</h2>
+
+<h3>Font Families</h3>
+<table>
+  <tr><th>Platform</th><th>Font</th></tr>
+  <tr><td>iOS</td><td>System (San Francisco)</td></tr>
+  <tr><td>Android</td><td>Roboto</td></tr>
+</table>
+<p>Weights used: <code>regular</code>, <code>medium</code>, <code>bold</code> (all mapped to platform fonts)</p>
+
+<h3>Font Size Scale (via <code>moderateScale</code>)</h3>
+<table>
+  <tr><th>Token</th><th>Base Size</th></tr>
+  <tr><td><code>xs</code></td><td>ms(7)</td></tr>
+  <tr><td><code>sm</code></td><td>ms(8)</td></tr>
+  <tr><td><code>caption</code></td><td>ms(9)</td></tr>
+  <tr><td><code>small</code></td><td>ms(10)</td></tr>
+  <tr><td><code>body</code></td><td>ms(12)</td></tr>
+  <tr><td><code>title</code></td><td>ms(14)</td></tr>
+  <tr><td><code>heading</code></td><td>ms(16)</td></tr>
+  <tr><td><code>large</code></td><td>ms(18)</td></tr>
+  <tr><td><code>xlarge</code></td><td>ms(22)</td></tr>
+</table>
+
+<h3>Typography Presets</h3>
+<table>
+  <tr><th>Variant</th><th>Font Size</th><th>Weight</th><th>Line Height</th><th>Usage</th></tr>
+  <tr><td><code>screenName</code></td><td>ms(19)</td><td>800</td><td>ms(24)</td><td>Screen titles ("Progress", "Records")</td></tr>
+  <tr><td><code>header</code></td><td>ms(16)</td><td>600</td><td>ms(21)</td><td>Section headers</td></tr>
+  <tr><td><code>subtitle</code></td><td>ms(12)</td><td>400</td><td>ms(17)</td><td>Subtitles under headers</td></tr>
+  <tr><td><code>sectionTitle</code></td><td>ms(13)</td><td>700</td><td>ms(17)</td><td>Section labels (uppercase, letter-spacing: 0.3)</td></tr>
+  <tr><td><code>body</code></td><td>ms(13)</td><td>400</td><td>ms(19)</td><td>Regular body text</td></tr>
+  <tr><td><code>bodyBold</code></td><td>ms(13)</td><td>500</td><td>ms(19)</td><td>Bold body text</td></tr>
+  <tr><td><code>caption</code></td><td>ms(11)</td><td>400</td><td>ms(15)</td><td>Helper/caption text</td></tr>
+  <tr><td><code>small</code></td><td>ms(10)</td><td>400</td><td>ms(14)</td><td>Badges, labels</td></tr>
+  <tr><td><code>subtext</code></td><td>ms(10)</td><td>400</td><td>ms(14)</td><td>Muted info text</td></tr>
+</table>
+
+<h2>Spacing System</h2>
+<p>Uses <code>react-native-size-matters</code> throughout:</p>
+<ul>
+  <li><code>scale(n)</code> / <code>s(n)</code> &mdash; Horizontal spacing</li>
+  <li><code>verticalScale(n)</code> / <code>vs(n)</code> &mdash; Vertical spacing</li>
+  <li><code>moderateScale(n)</code> / <code>ms(n)</code> &mdash; Font sizes, border radius, icon sizes</li>
+</ul>
+<p>Common spacing values:</p>
+<ul>
+  <li>Card padding: <code>s(12)</code> - <code>s(16)</code> horizontal, <code>vs(10)</code> - <code>vs(14)</code> vertical</li>
+  <li>Section margins: <code>vs(9)</code> - <code>vs(14)</code></li>
+  <li>Border radius: <code>ms(10)</code> - <code>ms(14)</code></li>
+  <li>Input height: <code>vs(38)</code></li>
+</ul>
+
+<h2>Component Patterns</h2>
+<ul>
+  <li><strong>Cards:</strong> White background, <code>borderRadius: ms(10)</code>, <code>borderWidth: 1</code>, <code>borderColor: Colors.borderLight</code></li>
+  <li><strong>Headers:</strong> <code>headerShown: false</code> on all navigators (custom headers per screen)</li>
+  <li><strong>Buttons:</strong> TouchableOpacity with <code>activeOpacity: 0.7</code></li>
+  <li><strong>Inputs:</strong> Rounded borders with focus state (accent border), error state (red border)</li>
+  <li><strong>Bottom Tab:</strong> Custom tab bar with active state background <code>rgba(10, 92, 71, 0.18)</code>, icon size <code>ms(28)</code></li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 9. REUSABLE COMPONENTS API -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s9">9. Reusable Components API</h1>
+
+<div class="api-section">
+  <h3>AppText</h3>
+  <p><strong>File:</strong> <code>src/components/shared/AppText.js</code></p>
+  <p>Global text component with typography variant system.</p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>variant</code></td><td>string</td><td>'body'</td><td>Typography variant: screenName, header, subtitle, sectionTitle, body, bodyBold, caption, small, subtext</td></tr>
+    <tr><td><code>color</code></td><td>string</td><td>Colors.textPrimary</td><td>Text color override</td></tr>
+    <tr><td><code>style</code></td><td>object/array</td><td>&mdash;</td><td>Additional style overrides</td></tr>
+    <tr><td><code>children</code></td><td>node</td><td>&mdash;</td><td>Text content</td></tr>
+    <tr><td><code>...rest</code></td><td>&mdash;</td><td>&mdash;</td><td>All standard React Native Text props</td></tr>
+  </table>
+  <p><strong>Smart behavior:</strong> If a custom <code>style.fontSize</code> exceeds the variant's <code>lineHeight</code>, the variant's <code>lineHeight</code> is removed to prevent clipping.</p>
+</div>
+
+<div class="api-section">
+  <h3>AppTextField</h3>
+  <p><strong>File:</strong> <code>src/components/shared/AppTextField.js</code></p>
+  <p>Styled text input with label, hint, error states, and icon support.</p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>label</code></td><td>string</td><td>&mdash;</td><td>Uppercase label above the input</td></tr>
+    <tr><td><code>value</code></td><td>string</td><td>&mdash;</td><td>Input value</td></tr>
+    <tr><td><code>onChangeText</code></td><td>function</td><td>&mdash;</td><td>Change handler</td></tr>
+    <tr><td><code>placeholder</code></td><td>string</td><td>&mdash;</td><td>Placeholder text</td></tr>
+    <tr><td><code>hint</code></td><td>string</td><td>&mdash;</td><td>Helper text below input</td></tr>
+    <tr><td><code>error</code></td><td>string</td><td>&mdash;</td><td>Error message (red, replaces hint)</td></tr>
+    <tr><td><code>readOnly</code></td><td>boolean</td><td>false</td><td>Disables editing, gray background</td></tr>
+    <tr><td><code>multiline</code></td><td>boolean</td><td>false</td><td>Enables multiline with min-height</td></tr>
+    <tr><td><code>icon</code></td><td>string</td><td>&mdash;</td><td>Emoji/text icon on the left</td></tr>
+    <tr><td><code>rightText</code></td><td>string</td><td>&mdash;</td><td>Text on the right side of input</td></tr>
+  </table>
+  <p><strong>Border states:</strong> Default (borderLight), Focused (accent), Error (red)</p>
+</div>
+
+<div class="api-section">
+  <h3>AppDropdown</h3>
+  <p><strong>File:</strong> <code>src/components/shared/AppDropdown.js</code></p>
+  <p>Inline dropdown picker with absolute-positioned options list.</p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>label</code></td><td>string</td><td>&mdash;</td><td>Uppercase label above trigger</td></tr>
+    <tr><td><code>value</code></td><td>string</td><td>&mdash;</td><td>Currently selected value</td></tr>
+    <tr><td><code>options</code></td><td>string[]</td><td>[]</td><td>Array of option strings</td></tr>
+    <tr><td><code>onSelect</code></td><td>function</td><td>&mdash;</td><td>Selection handler (option) =&gt; void</td></tr>
+    <tr><td><code>placeholder</code></td><td>string</td><td>'Select an option'</td><td>Placeholder when no value</td></tr>
+    <tr><td><code>hint</code></td><td>string</td><td>&mdash;</td><td>Helper text below dropdown</td></tr>
+  </table>
+</div>
+
+<div class="api-section">
+  <h3>Icon</h3>
+  <p><strong>File:</strong> <code>src/components/shared/Icons.js</code></p>
+  <p>Universal icon component supporting 12 vector icon families.</p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>family</code></td><td>string</td><td>'Ionicons'</td><td>Icon family name</td></tr>
+    <tr><td><code>name</code></td><td>string</td><td>&mdash;</td><td>Icon name within the family</td></tr>
+    <tr><td><code>size</code></td><td>number</td><td>20</td><td>Icon size (auto-scaled via ms())</td></tr>
+    <tr><td><code>color</code></td><td>string</td><td>Colors.textPrimary</td><td>Icon color</td></tr>
+  </table>
+  <p><strong>Available families:</strong> Ionicons, MaterialCommunityIcons, Feather, FontAwesome, FontAwesome5, MaterialIcons, Entypo, AntDesign, Octicons, SimpleLineIcons, EvilIcons, Foundation</p>
+</div>
+
+<div class="api-section">
+  <h3>SectionTitle</h3>
+  <p><strong>File:</strong> <code>src/components/shared/SectionTitle.js</code></p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>title</code></td><td>string</td><td>&mdash;</td><td>Section title text</td></tr>
+    <tr><td><code>linkText</code></td><td>string</td><td>&mdash;</td><td>Optional link text on the right</td></tr>
+    <tr><td><code>onLinkPress</code></td><td>function</td><td>&mdash;</td><td>Link press handler</td></tr>
+  </table>
+</div>
+
+<div class="api-section">
+  <h3>FilterBottomSheet</h3>
+  <p><strong>File:</strong> <code>src/components/shared/FilterBottomSheet.js</code></p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>visible</code></td><td>boolean</td><td>&mdash;</td><td>Controls modal visibility</td></tr>
+    <tr><td><code>onClose</code></td><td>function</td><td>&mdash;</td><td>Close handler</td></tr>
+    <tr><td><code>onApply</code></td><td>function</td><td>&mdash;</td><td>Apply handler with selections object</td></tr>
+    <tr><td><code>filterSections</code></td><td>array</td><td>[]</td><td>Array of { key, title, options, multi }</td></tr>
+  </table>
+</div>
+
+<div class="api-section">
+  <h3>MiniBars</h3>
+  <p><strong>File:</strong> <code>src/components/shared/MiniBars.js</code></p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>data</code></td><td>array</td><td>&mdash;</td><td>Array of { height, color, day } objects</td></tr>
+  </table>
+</div>
+
+<div class="api-section">
+  <h3>StandaloneBottomBar</h3>
+  <p><strong>File:</strong> <code>src/components/shared/StandaloneBottomBar.js</code></p>
+  <table>
+    <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>activeTab</code></td><td>string</td><td>'main'</td><td>Currently active tab key</td></tr>
+    <tr><td><code>onTabChange</code></td><td>function</td><td>&mdash;</td><td>Tab change handler (tabKey) =&gt; void</td></tr>
+    <tr><td><code>mainLabel</code></td><td>string</td><td>'Doctors'</td><td>Label for the main tab</td></tr>
+    <tr><td><code>mainIcon</code></td><td>string</td><td>'medkit-outline'</td><td>Ionicon name for main tab</td></tr>
+    <tr><td><code>mainScreen</code></td><td>string</td><td>'DoctorConsultation'</td><td>Navigation target for main tab</td></tr>
+  </table>
+  <p>Fixed tabs: Back, [Main], Appointments, More</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. DEPENDENCIES -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s10">10. Dependencies</h1>
+
+<h2>Production Dependencies</h2>
+<table>
+  <tr><th>Package</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td><code>react</code></td><td>18.3.1</td><td>Core React library</td></tr>
+  <tr><td><code>react-native</code></td><td>0.75.4</td><td>Mobile framework</td></tr>
+  <tr><td><code>@react-navigation/native</code></td><td>^6.1.18</td><td>Navigation framework core</td></tr>
+  <tr><td><code>@react-navigation/native-stack</code></td><td>^6.11.0</td><td>Native stack navigator</td></tr>
+  <tr><td><code>@react-navigation/bottom-tabs</code></td><td>^6.6.1</td><td>Bottom tab navigator</td></tr>
+  <tr><td><code>react-native-screens</code></td><td>^3.34.0</td><td>Native navigation screen containers</td></tr>
+  <tr><td><code>react-native-safe-area-context</code></td><td>^4.10.9</td><td>Safe area insets handling</td></tr>
+  <tr><td><code>react-native-vector-icons</code></td><td>^10.3.0</td><td>Icon library (12 families)</td></tr>
+  <tr><td><code>react-native-svg</code></td><td>^15.15.4</td><td>SVG rendering support</td></tr>
+  <tr><td><code>react-native-size-matters</code></td><td>^0.4.2</td><td>Responsive sizing utilities</td></tr>
+  <tr><td><code>react-native-fs</code></td><td>^2.20.0</td><td>File system access</td></tr>
+</table>
+
+<h2>Dev Dependencies</h2>
+<table>
+  <tr><th>Package</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td><code>@babel/core</code></td><td>^7.20.0</td><td>Babel transpiler core</td></tr>
+  <tr><td><code>@babel/preset-env</code></td><td>^7.20.0</td><td>Babel environment preset</td></tr>
+  <tr><td><code>@babel/runtime</code></td><td>^7.20.0</td><td>Babel runtime helpers</td></tr>
+  <tr><td><code>@react-native/babel-preset</code></td><td>0.75.4</td><td>React Native Babel preset</td></tr>
+  <tr><td><code>@react-native/eslint-config</code></td><td>0.75.4</td><td>React Native ESLint rules</td></tr>
+  <tr><td><code>@react-native/gradle-plugin</code></td><td>^0.75.4</td><td>Android Gradle integration</td></tr>
+  <tr><td><code>@react-native/metro-config</code></td><td>0.75.4</td><td>Metro bundler configuration</td></tr>
+  <tr><td><code>babel-jest</code></td><td>^29.6.3</td><td>Babel integration for Jest</td></tr>
+  <tr><td><code>eslint</code></td><td>^8.19.0</td><td>JavaScript linter</td></tr>
+  <tr><td><code>jest</code></td><td>^29.6.3</td><td>Testing framework</td></tr>
+  <tr><td><code>prettier</code></td><td>2.8.8</td><td>Code formatter</td></tr>
+  <tr><td><code>react-test-renderer</code></td><td>18.3.1</td><td>React component testing</td></tr>
+</table>
+
+<h2>Engine Requirements</h2>
+<p>Node.js &gt;= 18</p>
+
+<!-- ============================================================ -->
+<!-- 11. DATA FLOW -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s11">11. Data Flow</h1>
+
+<h2>Authentication State</h2>
+<pre>App.jsx
+├── AuthContext = createContext()
+├── useState: isLoggedIn (boolean)
+└── AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}
+    └── NavigationContainer
+        ├── !isLoggedIn &rarr; AuthNavigator
+        └── isLoggedIn &rarr; AppNavigator</pre>
+<ul>
+  <li>Login screens call <code>setIsLoggedIn(true)</code> to switch to AppNavigator</li>
+  <li>No persistent auth token storage implemented (UI prototype stage)</li>
+</ul>
+
+<h2>Data Sources</h2>
+<p>All data is currently sourced from <strong>constants files</strong> (mock data):</p>
+<ul>
+  <li>Screens import data directly from <code>src/constants/*.js</code></li>
+  <li>No REST API calls, no backend integration</li>
+  <li>No Redux, MobX, or other state management library</li>
+  <li>Each screen manages its own local state via <code>useState</code></li>
+</ul>
+
+<h2>Navigation Parameter Passing</h2>
+<p>Data flows between screens via React Navigation params:</p>
+<pre>// Sending
+navigation.navigate('DoctorProfile', { doctorId: 123, specialty: 'Cardiology' });
+
+// Receiving
+const { doctorId, specialty } = route.params;</pre>
+<p>Common param patterns:</p>
+<ul>
+  <li>Service screens pass provider/item IDs between list &rarr; detail &rarr; booking</li>
+  <li>Tracking screens pass vital type, date, and reading data</li>
+  <li>Records screens pass record type and ID for detail views</li>
+</ul>
+
+<!-- ============================================================ -->
+<!-- 12. FILE COUNT SUMMARY -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h1 id="s12">12. File Count Summary</h1>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="stat-val">178</div><div class="stat-lbl">Screen Files</div></div>
+  <div class="stat-box"><div class="stat-val">138</div><div class="stat-lbl">Component Files</div></div>
+  <div class="stat-box"><div class="stat-val">25</div><div class="stat-lbl">Constants / Data Files</div></div>
+  <div class="stat-box"><div class="stat-val">3</div><div class="stat-lbl">Navigation Files</div></div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-box"><div class="stat-val">344</div><div class="stat-lbl">Total Source Files</div></div>
+  <div class="stat-box"><div class="stat-val">~95</div><div class="stat-lbl">Navigation Routes</div></div>
+  <div class="stat-box"><div class="stat-val">14</div><div class="stat-lbl">Vital Log Types</div></div>
+  <div class="stat-box"><div class="stat-val">7</div><div class="stat-lbl">Fitness Categories</div></div>
+</div>
+
+<h2>Detailed Breakdown</h2>
+<table>
+  <tr><th>Category</th><th style="text-align:right">Count</th></tr>
+  <tr><td><strong>Screen Files</strong></td><td style="text-align:right"><strong>178</strong></td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Auth Screens</td><td style="text-align:right">26</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Home Screens</td><td style="text-align:right">3</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Tracking Screens (Symptom Logs)</td><td style="text-align:right">41</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Tracking Screens (Fitness)</td><td style="text-align:right">9</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Records Screens</td><td style="text-align:right">2</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Progress Screens</td><td style="text-align:right">2</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Health Coach Screens</td><td style="text-align:right">3</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Health Services Screens</td><td style="text-align:right">44</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Profile Screens (main)</td><td style="text-align:right">22</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Profile Tabs</td><td style="text-align:right">18</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Tracking Hub</td><td style="text-align:right">1</td></tr>
+  <tr><td colspan="2" style="border-top:1px solid #ccc"></td></tr>
+  <tr><td><strong>Component Files</strong></td><td style="text-align:right"><strong>138</strong></td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Shared/Reusable</td><td style="text-align:right">9</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Home</td><td style="text-align:right">8</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Profile</td><td style="text-align:right">8</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Tracking</td><td style="text-align:right">6</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Progress</td><td style="text-align:right">5</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Records</td><td style="text-align:right">49</td></tr>
+  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;Fitness</td><td style="text-align:right">36</td></tr>
+  <tr><td colspan="2" style="border-top:1px solid #ccc"></td></tr>
+  <tr><td><strong>Constants/Data Files</strong></td><td style="text-align:right"><strong>25</strong></td></tr>
+  <tr><td><strong>Navigation Files</strong></td><td style="text-align:right"><strong>3</strong></td></tr>
+  <tr><td><strong>Root File (App.jsx)</strong></td><td style="text-align:right"><strong>1</strong></td></tr>
+  <tr><td colspan="2" style="border-top:2px solid #0a5c47"></td></tr>
+  <tr><td><strong>Total Source Files (.js/.jsx)</strong></td><td style="text-align:right"><strong>344</strong></td></tr>
+  <tr><td>Total Registered Navigation Routes</td><td style="text-align:right">~95</td></tr>
+  <tr><td>Total Health Service Types</td><td style="text-align:right">12</td></tr>
+  <tr><td>Total Vital Log Types</td><td style="text-align:right">14</td></tr>
+  <tr><td>Total Fitness Tracker Categories</td><td style="text-align:right">7</td></tr>
+  <tr><td>Total Profile Edit Tabs</td><td style="text-align:right">18</td></tr>
+</table>
+
+<hr class="section-divider" style="margin-top: 48pt;">
+<p style="text-align: center; color: #9ca3af; font-size: 9pt; margin-top: 24pt;">
+  Generated for the TrustLife-V1 project &mdash; April 2026<br>
+  &copy; 2026 TrustLife. All rights reserved.
+</p>
+
+</body>
+</html>

@@ -33,6 +33,29 @@ const serviceItems = [
   {icon: '📱', iconBg: Colors.amberBg, name: 'All health services', sub: 'Doctor · Nurse · Physio · Wellness · Insurance'},
 ];
 
+const getAyuCoreItems = (navigation) => [
+  {icon: '🪪', iconBg: Colors.blueBg, name: 'Health Passport', sub: 'Portable lifetime record · Share in one tap', badge: 'New', badgeStyle: 'b'},
+  {icon: '⏱️', iconBg: Colors.tealBg, name: 'Health Timeline', sub: 'Your complete health story from 2019 to today', badge: 'New', badgeStyle: 'b'},
+  {icon: '📋', iconBg: Colors.amberBg, name: 'Pre-appointment prep', sub: 'Ayu briefs you before every doctor visit', badge: 'Tomorrow', badgeStyle: 'a'},
+  {icon: '⚠️', iconBg: Colors.redBg, name: 'Emergency health card', sub: 'Lock screen accessible · No login needed', badge: 'Critical', badgeStyle: 'r'},
+];
+
+const getAyuIntelItems = (navigation) => [
+  {icon: '🥗', iconBg: Colors.pinkBg, name: 'Nutrition intelligence', sub: 'GI scoring · Food as medicine for T2DM', badge: 'New', badgeStyle: 'b'},
+  {icon: '💊', iconBg: Colors.purpleBg, name: 'Medication intelligence', sub: 'Interactions · Side effects · Drug education', badge: 'Safety', badgeStyle: 'p'},
+  {icon: '😊', iconBg: Colors.pinkBg, name: 'Mental health & wellbeing', sub: 'Mood · Stress · Wellbeing score', badge: 'New', badgeStyle: 'b'},
+  {icon: '✨', iconBg: Colors.tealBg, name: 'Ayu proactive intelligence', sub: 'Weekly brief · Pattern alerts · Celebrations', badge: 'Always on', badgeStyle: 'g'},
+];
+
+const getAyuLifeItems = (navigation) => [
+  {icon: '👨‍👩‍👧', iconBg: Colors.pinkBg, name: 'Family health', sub: 'Manage the whole family under one account', badge: 'New', badgeStyle: 'b'},
+  {icon: '🏁', iconBg: Colors.tealBg, name: 'Goals & milestones', sub: 'Set targets · Track · Celebrate achievements', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('Goals')},
+  {icon: '🗺️', iconBg: Colors.blueBg, name: 'Preventive roadmap', sub: '5-year projection · CV risk · Screening calendar', badge: 'New', badgeStyle: 'b'},
+  {icon: '💰', iconBg: Colors.amberBg, name: 'Health spending', sub: 'Claims · 80D tax · Annual spend summary', badge: 'New', badgeStyle: 'b'},
+  {icon: '⌚', iconBg: Colors.blueBg, name: 'Connected devices', sub: 'Wearables · Sync status · Data quality', onPress: () => navigation.navigate('ConnectedDevices')},
+  {icon: '🏢', iconBg: Colors.blueBg, name: 'Doctor companion portal', sub: 'What Dr. Kavitha sees between your visits', badge: 'Ecosystem', badgeStyle: 'g'},
+];
+
 const getAboutItems = (navigation) => [
   {icon: '🔐', iconBg: Colors.tealBg, name: 'Security centre', sub: 'Login activity · 2FA · Change password', onPress: () => navigation.navigate('Security')},
   {icon: '📄', iconBg: Colors.blueBg, name: 'Privacy policy', sub: 'How we protect your health data', onPress: () => navigation.navigate('PrivacyPolicy')},
@@ -46,6 +69,9 @@ const ProfileScreen = ({navigation}) => {
   const accountItems = getAccountItems(navigation);
   const dataItems = getDataItems(navigation);
   const aboutItems = getAboutItems(navigation);
+  const ayuCoreItems = getAyuCoreItems(navigation);
+  const ayuIntelItems = getAyuIntelItems(navigation);
+  const ayuLifeItems = getAyuLifeItems(navigation);
   return (
   <View style={styles.container}>
     <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
@@ -62,6 +88,9 @@ const ProfileScreen = ({navigation}) => {
         <MenuSection title="Health Services" items={serviceItems} />
         <SOSCard />
         <MenuSection title="About" items={aboutItems} />
+        <MenuSection title="Ayu Settings · Core companion" items={ayuCoreItems} />
+        <MenuSection title="Intelligence layers" items={ayuIntelItems} />
+        <MenuSection title="Life management" items={ayuLifeItems} />
         <TouchableOpacity style={styles.logoutBtn} activeOpacity={0.7}>
           <AppText variant="body" color={Colors.redText} style={{fontWeight: '500'}}>Log out</AppText>
         </TouchableOpacity>

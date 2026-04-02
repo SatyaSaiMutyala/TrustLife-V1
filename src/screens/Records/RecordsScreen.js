@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
@@ -8,10 +8,28 @@ import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
 import VisitSummaryTab from '../../components/Records/VisitSummaryTab';
 import IndividualRecordsTab from '../../components/Records/IndividualRecordsTab';
+import ServiceRecordsTab from '../../components/Records/ServiceRecordsTab';
+import RecordsFinalTab from '../../components/Records/RecordsFinalTab';
+const SERVICE_FILTERS = [
+  {key: 'all', label: 'All', icon: 'grid-outline', bg: 'rgba(255,255,255,0.15)'},
+  {key: 'lab', label: 'Lab', icon: 'flask-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'doc', label: 'Doctor', icon: 'medical-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'med', label: 'Medicines', icon: 'medkit-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'tele', label: 'Tele', icon: 'videocam-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'coach', label: 'Coach', icon: 'barbell-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'couns', label: 'Counsel', icon: 'chatbubbles-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'nurse', label: 'Nurse', icon: 'heart-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'physio', label: 'Physio', icon: 'fitness-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'hosp', label: 'Hospital', icon: 'business-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'well', label: 'Wellness', icon: 'leaf-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'ins', label: 'Insurance', icon: 'shield-checkmark-outline', bg: 'rgba(255,255,255,0.1)'},
+];
 
 const mainTabs = [
   {key: 'summary', label: 'Visit summary'},
-  {key: 'individual', label: 'Individual records', badge: '3'},
+  {key: 'individual', label: 'Individual records'},
+  {key: 'services', label: 'Service records'},
+  {key: 'final', label: 'My records'},
 ];
 
 const FILTERS = [
@@ -28,9 +46,12 @@ const FILTERS = [
 ];
 
 const RecordsScreen = () => {
+
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('summary');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [serviceFilter, setServiceFilter] = useState('all');
+  const addRef = useRef(null);
 
   return (
     <View style={styles.container}>
@@ -108,19 +129,62 @@ const RecordsScreen = () => {
             })}
           </ScrollView>
         )}
+
+        {activeTab === 'services' && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.ribbonScroll}>
+            {SERVICE_FILTERS.map(f => {
+              const active = serviceFilter === f.key;
+              return (
+                <TouchableOpacity
+                  key={f.key}
+                  style={styles.ribbonItem}
+                  onPress={() => setServiceFilter(f.key)}
+                  activeOpacity={0.7}>
+                  <View style={[styles.ribbonIcon, {backgroundColor: active ? Colors.white : f.bg}]}>
+                    <Icon
+                      family="Ionicons"
+                      name={f.icon}
+                      size={16}
+                      color={active ? Colors.primary : 'rgba(255,255,255,0.85)'}
+                    />
+                  </View>
+                  <AppText
+                    variant="small"
+                    color={active ? Colors.white : 'rgba(255,255,255,0.6)'}
+                    style={[styles.ribbonLabel, active && {fontWeight: '700'}]}
+                    numberOfLines={1}>
+                    {f.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        )}
       </View>
 
       <ScrollView
         style={styles.body}
         contentContainerStyle={styles.bodyContent}
         showsVerticalScrollIndicator={false}>
-        {activeTab === 'summary' ? (
-          <VisitSummaryTab />
-        ) : (
-          <IndividualRecordsTab activeFilter={activeFilter} />
-        )}
-        <View style={{height: vs(20)}} />
+        {activeTab === 'summary' && <VisitSummaryTab />}
+        {activeTab === 'individual' && <IndividualRecordsTab activeFilter={activeFilter} />}
+        {activeTab === 'services' && <ServiceRecordsTab navigation={navigation} onAddRef={addRef} activeFilter={serviceFilter} />}
+        {activeTab === 'final' && <RecordsFinalTab navigation={navigation} />}
+        <View style={{height: vs(80)}} />
       </ScrollView>
+
+      {/* FAB - visible on service records tab */}
+      {activeTab === 'services' && (
+        <TouchableOpacity
+          style={styles.fab}
+          activeOpacity={0.8}
+          onPress={() => addRef.current && addRef.current()}>
+          <Icon family="Ionicons" name="add" size={26} color={Colors.white} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -146,6 +210,7 @@ const styles = StyleSheet.create({
 
   body: {flex: 1},
   bodyContent: {padding: s(12)},
+  fab: {position: 'absolute', bottom: vs(24), right: s(16), width: ms(52), height: ms(52), borderRadius: ms(26), backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', elevation: 6, shadowColor: Colors.primary, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8},
 });
 
 export default RecordsScreen;

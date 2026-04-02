@@ -18,7 +18,7 @@ const services = [
   {image: require('../../assets/img/c-hospital.png'), label: 'Hospitals', bg: Colors.redBg, screen: 'HospitalList'},
   {image: require('../../assets/img/c-wellness.png'), label: 'Wellness\ncentre', bg: Colors.tealBg, screen: 'WellnessCenter'},
   {image: require('../../assets/img/c-healthinsurance.png'), label: 'Health\ninsurance', bg: Colors.purpleBg, screen: 'HealthInsurance'},
-  {image: require('../../assets/img/c-ambulance.png'), label: 'Health\ngadgets', bg: Colors.amberBg, screen: 'HealthGadgets'},
+  {image: require('../../assets/img/c-gadgets.png'), label: 'Health\ngadgets', bg: Colors.amberBg, screen: 'HealthGadgets'},
 ];
 
 const HealthServices = () => {

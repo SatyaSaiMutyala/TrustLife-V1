@@ -10,7 +10,7 @@ import HomeScreen from '../screens/Home/HomeScreen';
 import TrackingScreen from '../screens/Tracking/TrackingScreen';
 import RecordsScreen from '../screens/Records/RecordsScreen';
 import ProgressScreen from '../screens/Progress/ProgressScreen';
-import HealthCoachScreen from '../screens/HealthCoach/HealthCoachScreen';
+import AyuIntelScreen from '../screens/AyuIntel/AyuIntelScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,8 +26,8 @@ const tabs = [
   {name: 'Home', label: 'Home', component: HomeScreen},
   {name: 'Tracking', label: 'Tracking', component: TrackingScreen},
   {name: 'Records', label: 'Records', component: RecordsScreen},
+  {name: 'Ayu', label: 'Ayu Intel', component: AyuIntelScreen},
   {name: 'Progress', label: 'Progress', component: ProgressScreen},
-  {name: 'Ayu', label: 'Ayu Intel', component: HealthCoachScreen},
 ];
 
 const CustomTabBar = ({state, navigation}) => (

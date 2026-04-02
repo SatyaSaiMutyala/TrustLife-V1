@@ -105,6 +105,7 @@ import FoodScreen from '../screens/Tracking/Fitness/FoodScreen';
 import MedicationScreen from '../screens/Tracking/Fitness/MedicationScreen';
 import MedDetailScreen from '../screens/Tracking/Fitness/MedDetailScreen';
 import CycleScreen from '../screens/Tracking/SymptomLogs/CycleScreen';
+import RecordDetailScreen from '../screens/Records/RecordDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -523,6 +524,11 @@ const AppNavigator = () => {
         options={{animation: 'slide_from_right'}}
       />
       <Stack.Screen
+        name="RecordDetail"
+        component={RecordDetailScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
         name="EditProfile"
         component={EditProfileScreen}
         options={{animation: 'slide_from_right'}}
@@ -625,6 +631,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="EmergencySOS"
         component={EmergencySOSScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="BiomarkerDetail"
+        component={require('../screens/AyuIntel/BiomarkerDetailScreen').default}
         options={{animation: 'slide_from_right'}}
       />
     </Stack.Navigator>
