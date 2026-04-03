@@ -15,12 +15,12 @@ const SCORE_STRIP = [
 
 // ─── 2. MAIN TABS ─────────────────────────────────────────────
 const MAIN_TABS = [
-  { key: 'overview',  label: 'AI Overview', ico: 'brain-outline' },
+  { key: 'overview',  label: 'AI Overview', ico: 'bulb-outline' },
   { key: 'biomarker', label: 'Biomarker',   ico: 'flask-outline' },
   { key: 'lifestyle', label: 'Lifestyle',   ico: 'fitness-outline' },
-  { key: 'medical',   label: 'Medical',     ico: 'medical-outline' },
+  { key: 'medical',   label: 'Medical',     ico: 'medkit-outline' },
   { key: 'symptoms',  label: 'Symptoms',    ico: 'pulse-outline' },
-  { key: 'analytics', label: 'Analytics',   ico: 'analytics-outline' },
+  { key: 'analytics', label: 'Analytics',   ico: 'bar-chart-outline' },
 ];
 
 // ─── 3. OVERVIEW DATA ─────────────────────────────────────────

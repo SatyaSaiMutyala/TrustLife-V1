@@ -82,7 +82,7 @@ const ConditionCard = ({cond}) => {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      onPress={() => navigation.navigate('BiomarkerDetail', {medicalId: cond.id})}
+      onPress={() => navigation.navigate('MedicalDetail', {medicalId: cond.id})}
       style={styles.card}>
       {/* Card header */}
       <View style={styles.cardHeader}>
@@ -135,7 +135,7 @@ const OrganRow = ({organ, isLast}) => {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      onPress={() => navigation.navigate('BiomarkerDetail', {medicalId: organ.id})}
+      onPress={() => navigation.navigate('MedicalDetail', {medicalId: organ.id})}
       style={[styles.organRow, !isLast && styles.organRowBorder]}>
       <View style={[styles.organIcon, {backgroundColor: organ.icoBg}]}>
         <AppText style={{fontSize: ms(18)}}>{organ.ico}</AppText>

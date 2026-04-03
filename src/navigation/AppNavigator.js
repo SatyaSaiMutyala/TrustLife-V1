@@ -638,6 +638,26 @@ const AppNavigator = () => {
         component={require('../screens/AyuIntel/BiomarkerDetailScreen').default}
         options={{animation: 'slide_from_right'}}
       />
+      <Stack.Screen
+        name="BiomarkerIntelDetail"
+        component={require('../screens/AyuIntel/BiomarkerIntelDetailScreen').default}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="LifestyleDetail"
+        component={require('../screens/AyuIntel/LifestyleDetailScreen').default}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="MedicalDetail"
+        component={require('../screens/AyuIntel/MedicalDetailScreen').default}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="SymptomsDetail"
+        component={require('../screens/AyuIntel/SymptomsDetailScreen').default}
+        options={{animation: 'slide_from_right'}}
+      />
     </Stack.Navigator>
   );
 };

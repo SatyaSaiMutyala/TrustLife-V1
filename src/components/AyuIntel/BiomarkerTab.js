@@ -2,6 +2,7 @@ import React, {useState, useMemo} from 'react';
 import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
+import Svg, {Circle} from 'react-native-svg';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
 import Icon from '../shared/Icons';
@@ -95,16 +96,16 @@ const BiomarkerTab = () => {
       {/* HPS Hero */}
       <View style={sty.hero}>
         <View style={sty.heroRow}>
-          {/* Score Ring */}
+          {/* Score Ring (SVG) */}
           <View style={sty.ring}>
-            <View style={sty.ringBg} />
-            <View style={[sty.ringProgress, {
-              borderColor: '#5EEAD4',
-              borderTopColor: '#5EEAD4',
-              borderRightColor: '#5EEAD4',
-              borderBottomColor: hpsAvg > 50 ? '#5EEAD4' : 'transparent',
-              borderLeftColor: hpsAvg > 75 ? '#5EEAD4' : 'transparent',
-            }]} />
+            <Svg width={ms(78)} height={ms(78)} viewBox="0 0 78 78">
+              <Circle cx="39" cy="39" r="32" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={6.5} />
+              <Circle cx="39" cy="39" r="32" fill="none" stroke="#5EEAD4" strokeWidth={6.5}
+                strokeDasharray={`${2 * Math.PI * 32}`}
+                strokeDashoffset={`${2 * Math.PI * 32 * (1 - hpsAvg / 100)}`}
+                strokeLinecap="round"
+                transform="rotate(-90 39 39)" />
+            </Svg>
             <View style={sty.ringCenter}>
               <AppText style={{fontSize: ms(24), fontWeight: '700', color: '#fff', fontFamily: 'monospace'}}>{hpsAvg}</AppText>
               <AppText style={{fontSize: ms(8), color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: 0.5}}>/ 100</AppText>
@@ -155,7 +156,7 @@ const BiomarkerTab = () => {
             key={bm.id}
             style={sty.card}
             activeOpacity={0.7}
-            onPress={() => navigation.navigate('BiomarkerDetail', {biomarkerId: bm.id})}>
+            onPress={() => navigation.navigate('BiomarkerIntelDetail', {biomarkerId: bm.id})}>
             {/* Stripe */}
             <View style={[sty.stripe, {backgroundColor: stripeColor(bm.hps)}]} />
 
@@ -176,11 +177,20 @@ const BiomarkerTab = () => {
                   </View>
                   <AppText style={{fontSize: ms(9), color: '#94A3B8', marginTop: vs(1)}}>{refStr}</AppText>
                 </View>
-                {/* HPS mini */}
+                {/* HPS mini (SVG) */}
                 <View style={{alignItems: 'center', marginLeft: s(8)}}>
-                  <View style={[sty.hpsMini, {borderColor: hc + '22'}]}>
-                    <View style={[sty.hpsMiniProgress, {borderColor: hc, borderTopColor: hc, borderRightColor: hc, borderBottomColor: bm.hps > 50 ? hc : 'transparent', borderLeftColor: bm.hps > 75 ? hc : 'transparent'}]} />
-                    <AppText style={{fontSize: ms(10), fontWeight: '700', color: hc, fontFamily: 'monospace'}}>{bm.hps}</AppText>
+                  <View style={{width: ms(42), height: ms(42), alignItems: 'center', justifyContent: 'center'}}>
+                    <Svg width={ms(42)} height={ms(42)} viewBox="0 0 42 42">
+                      <Circle cx="21" cy="21" r="16" fill="none" stroke={hc + '22'} strokeWidth={5} />
+                      <Circle cx="21" cy="21" r="16" fill="none" stroke={hc} strokeWidth={5}
+                        strokeDasharray={`${2 * Math.PI * 16}`}
+                        strokeDashoffset={`${2 * Math.PI * 16 * (1 - bm.hps / 100)}`}
+                        strokeLinecap="round"
+                        transform="rotate(-90 21 21)" />
+                    </Svg>
+                    <View style={{position: 'absolute'}}>
+                      <AppText style={{fontSize: ms(10), fontWeight: '700', color: hc, fontFamily: 'monospace'}}>{bm.hps}</AppText>
+                    </View>
                   </View>
                   <AppText style={{fontSize: ms(8), color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.4, marginTop: vs(1)}}>HPS</AppText>
                 </View>
@@ -243,7 +253,13 @@ const sty = StyleSheet.create({
     transform: [{rotate: '-45deg'}],
   },
   ringCenter: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   scoreBox: {
     flex: 1,

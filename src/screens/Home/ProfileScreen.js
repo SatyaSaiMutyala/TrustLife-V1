@@ -34,26 +34,26 @@ const serviceItems = [
 ];
 
 const getAyuCoreItems = (navigation) => [
-  {icon: '🪪', iconBg: Colors.blueBg, name: 'Health Passport', sub: 'Portable lifetime record · Share in one tap', badge: 'New', badgeStyle: 'b'},
-  {icon: '⏱️', iconBg: Colors.tealBg, name: 'Health Timeline', sub: 'Your complete health story from 2019 to today', badge: 'New', badgeStyle: 'b'},
-  {icon: '📋', iconBg: Colors.amberBg, name: 'Pre-appointment prep', sub: 'Ayu briefs you before every doctor visit', badge: 'Tomorrow', badgeStyle: 'a'},
-  {icon: '⚠️', iconBg: Colors.redBg, name: 'Emergency health card', sub: 'Lock screen accessible · No login needed', badge: 'Critical', badgeStyle: 'r'},
+  {icon: '🪪', iconBg: Colors.blueBg, name: 'Health Passport', sub: 'Portable lifetime record · Share in one tap', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'passport', name: 'Health Passport'})},
+  {icon: '⏱️', iconBg: Colors.tealBg, name: 'Health Timeline', sub: 'Your complete health story from 2019 to today', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'timeline', name: 'Health Timeline'})},
+  {icon: '📋', iconBg: Colors.amberBg, name: 'Pre-appointment prep', sub: 'Ayu briefs you before every doctor visit', badge: 'Tomorrow', badgeStyle: 'a', onPress: () => navigation.navigate('CapabilityDetail', {key: 'preappt', name: 'Pre-appointment prep'})},
+  {icon: '⚠️', iconBg: Colors.redBg, name: 'Emergency health card', sub: 'Lock screen accessible · No login needed', badge: 'Critical', badgeStyle: 'r', onPress: () => navigation.navigate('CapabilityDetail', {key: 'emergency', name: 'Emergency health card'})},
 ];
 
 const getAyuIntelItems = (navigation) => [
-  {icon: '🥗', iconBg: Colors.pinkBg, name: 'Nutrition intelligence', sub: 'GI scoring · Food as medicine for T2DM', badge: 'New', badgeStyle: 'b'},
-  {icon: '💊', iconBg: Colors.purpleBg, name: 'Medication intelligence', sub: 'Interactions · Side effects · Drug education', badge: 'Safety', badgeStyle: 'p'},
-  {icon: '😊', iconBg: Colors.pinkBg, name: 'Mental health & wellbeing', sub: 'Mood · Stress · Wellbeing score', badge: 'New', badgeStyle: 'b'},
-  {icon: '✨', iconBg: Colors.tealBg, name: 'Ayu proactive intelligence', sub: 'Weekly brief · Pattern alerts · Celebrations', badge: 'Always on', badgeStyle: 'g'},
+  {icon: '🥗', iconBg: Colors.pinkBg, name: 'Nutrition intelligence', sub: 'GI scoring · Food as medicine for T2DM', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'nutrition', name: 'Nutrition intelligence'})},
+  {icon: '💊', iconBg: Colors.purpleBg, name: 'Medication intelligence', sub: 'Interactions · Side effects · Drug education', badge: 'Safety', badgeStyle: 'p', onPress: () => navigation.navigate('CapabilityDetail', {key: 'medintel', name: 'Medication intelligence'})},
+  {icon: '😊', iconBg: Colors.pinkBg, name: 'Mental health & wellbeing', sub: 'Mood · Stress · Wellbeing score', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'mental', name: 'Mental health & wellbeing'})},
+  {icon: '✨', iconBg: Colors.tealBg, name: 'Ayu proactive intelligence', sub: 'Weekly brief · Pattern alerts · Celebrations', badge: 'Always on', badgeStyle: 'g', onPress: () => navigation.navigate('CapabilityDetail', {key: 'ayupro', name: 'Ayu proactive intelligence'})},
 ];
 
 const getAyuLifeItems = (navigation) => [
-  {icon: '👨‍👩‍👧', iconBg: Colors.pinkBg, name: 'Family health', sub: 'Manage the whole family under one account', badge: 'New', badgeStyle: 'b'},
-  {icon: '🏁', iconBg: Colors.tealBg, name: 'Goals & milestones', sub: 'Set targets · Track · Celebrate achievements', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('Goals')},
-  {icon: '🗺️', iconBg: Colors.blueBg, name: 'Preventive roadmap', sub: '5-year projection · CV risk · Screening calendar', badge: 'New', badgeStyle: 'b'},
-  {icon: '💰', iconBg: Colors.amberBg, name: 'Health spending', sub: 'Claims · 80D tax · Annual spend summary', badge: 'New', badgeStyle: 'b'},
-  {icon: '⌚', iconBg: Colors.blueBg, name: 'Connected devices', sub: 'Wearables · Sync status · Data quality', onPress: () => navigation.navigate('ConnectedDevices')},
-  {icon: '🏢', iconBg: Colors.blueBg, name: 'Doctor companion portal', sub: 'What Dr. Kavitha sees between your visits', badge: 'Ecosystem', badgeStyle: 'g'},
+  {icon: '👨‍👩‍👧', iconBg: Colors.pinkBg, name: 'Family health', sub: 'Manage the whole family under one account', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'family', name: 'Family health'})},
+  {icon: '🏁', iconBg: Colors.tealBg, name: 'Goals & milestones', sub: 'Set targets · Track · Celebrate achievements', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'goals', name: 'Goals & milestones'})},
+  {icon: '🗺️', iconBg: Colors.blueBg, name: 'Preventive roadmap', sub: '5-year projection · CV risk · Screening calendar', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'preventive', name: 'Preventive roadmap'})},
+  {icon: '💰', iconBg: Colors.amberBg, name: 'Health spending', sub: 'Claims · 80D tax · Annual spend summary', badge: 'New', badgeStyle: 'b', onPress: () => navigation.navigate('CapabilityDetail', {key: 'spending', name: 'Health spending'})},
+  {icon: '⌚', iconBg: Colors.blueBg, name: 'Connected devices', sub: 'Wearables · Sync status · Data quality', onPress: () => navigation.navigate('CapabilityDetail', {key: 'devices', name: 'Connected devices'})},
+  {icon: '🏢', iconBg: Colors.blueBg, name: 'Doctor companion portal', sub: 'What Dr. Kavitha sees between your visits', badge: 'Ecosystem', badgeStyle: 'g', onPress: () => navigation.navigate('CapabilityDetail', {key: 'doctorportal', name: 'Doctor companion portal'})},
 ];
 
 const getAboutItems = (navigation) => [

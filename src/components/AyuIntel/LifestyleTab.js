@@ -25,7 +25,7 @@ const LifestyleTab = () => {
             activeOpacity={0.7}
             style={styles.card}
             onPress={() =>
-              navigation.navigate('BiomarkerDetail', {
+              navigation.navigate('LifestyleDetail', {
                 lifestyleId: section.id,
               })
             }>

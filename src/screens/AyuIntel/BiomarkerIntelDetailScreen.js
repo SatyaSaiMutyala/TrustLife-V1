@@ -17,14 +17,7 @@ import {
 import Colors from '../../constants/colors';
 import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
-import {
-  BIOMARKERS,
-  LIFESTYLE_SECTIONS,
-  LIFESTYLE_DETAIL_DATA,
-  MEDICAL_CONDITIONS,
-  MEDICAL_DETAIL_DATA,
-  ORGANS,
-} from '../../constants/ayuIntelData';
+import {BIOMARKERS} from '../../constants/ayuIntelData';
 import TrendChart from '../../components/shared/TrendChart';
 
 const {width: SCREEN_W} = Dimensions.get('window');
@@ -328,132 +321,158 @@ const PLACEHOLDER_BIOMARKER = {
   },
 };
 
-const PLACEHOLDER_LIFESTYLE = {
-  id: 'sleep_quality',
-  name: 'Sleep Quality',
-  category: 'Lifestyle',
-  unit: 'score',
-  refRange: '80 \u2013 100',
-  latestValue: 62,
-  latestRIR: 0.78,
-  delta: '-5',
-  deltaDirection: 'down',
-  readingsCount: 30,
-  baseline: 82,
-  urgency: 'Suboptimal',
-  urgencyColor: Colors.amber,
-  narrative:
-    'Your sleep quality has been declining over the past month, correlating with increased screen time and irregular sleep schedule.',
-  correlations: [],
-  history: [{date: '2026-03-30', value: 62, status: 'low', delta: '-5'}],
-  trendChart: [82, 78, 75, 70, 67, 62],
-  trendDates: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-  refLow: 80,
-  refHigh: 100,
-  timeline: [],
-  about:
-    'Sleep quality score based on duration, efficiency, and disruption metrics.',
-  symptoms: [],
-  causes: [],
-  progression: {
-    currentPosition: 0.38,
-    rangeLabels: ['Poor', 'Fair', 'Good'],
-    rangeBreaks: [0.33, 0.66],
-    scores: {
-      status: {
-        score: 55,
-        label: 'Status',
-        badge: 'Fair',
-        badgeColor: Colors.amber,
-        detail: '',
-      },
-      stability: {
-        score: 40,
-        label: 'Stability',
-        badge: 'Declining',
-        badgeColor: Colors.red,
-        detail: '',
-      },
-      velocity: {
-        score: 50,
-        label: 'Velocity',
-        badge: 'Moderate',
-        badgeColor: Colors.amber,
-        detail: '',
-      },
-    },
-    hpsHistory: [],
-    measurementTable: [],
+// ──────────────────────────────────────────────
+// Per-biomarker detail data (inline)
+// ──────────────────────────────────────────────
+const BM_DETAIL = {
+  hba1c: {
+    narrative: 'Priya, your HbA1c of 7.8% is above your 7.0% target for the third test in a row. The root cause is not your medication (Metformin AM adherence is 97%), but the evening cascade: missed PM Metformin (58%) \u2192 large dinner \u2192 post-dinner glucose averaging 180 mg/dL \u2192 poor sleep raising cortisol \u2192 elevated FBG. Ayu estimates fixing this single cascade would lower HbA1c by 0.4\u20130.6% within one test cycle.',
+    urgLabel: 'Urgent',
+    correlations: [
+      {label: 'PM Metformin misses \u2192 HbA1c', value: '13 misses in March = estimated +0.18% contribution to HbA1c. Each miss adds ~12 mg/dL to next-morning FBG.', status: 'elevated'},
+      {label: 'Sleep \u2192 FBG \u2192 HbA1c', value: 'Nights with <6h sleep: next-morning FBG +15 mg/dL higher. Ayu found this on 18 of 31 March nights.', status: 'elevated'},
+      {label: 'Post-dinner inactivity', value: 'Days without evening walk: post-dinner glucose peaks at 196 mg/dL vs 158 mg/dL on walking days \u2014 a 38 mg/dL difference.', status: 'elevated'},
+      {label: 'Vit D deficiency worsening control', value: 'Vit D 18 ng/mL worsens insulin resistance. Correcting it may reduce HbA1c by 0.2\u20130.4% independently.', status: 'elevated'},
+    ],
+    about: 'HbA1c reflects average blood glucose over 2\u20133 months. Above 7.0% signals poor T2DM control; sustained elevation causes microvascular complications affecting kidneys, eyes, and nerves.',
+    symptoms: ['Increased thirst and frequent urination','Unexplained fatigue and brain fog','Blurred or fluctuating vision','Slow-healing cuts and wounds','Frequent skin and urinary infections','Foot tingling or numbness (neuropathy)'],
+    causes: ['Uncontrolled blood glucose','High-carbohydrate diet with refined sugars','Physical inactivity worsening insulin resistance','PM Metformin dose misses (58% adherence)','Chronic sleep deficit raising cortisol and FBG','Post-dinner glucose spikes not adequately managed'],
+    timeline: [{label:'Now',detail:'HbA1c 7.8% \u2014 above target for 3 consecutive tests',color:Colors.amber},{label:'3\u20136 months',detail:'With Metformin 1000mg: HbA1c could reach 7.0\u20137.3%',color:Colors.red},{label:'12\u201318 months',detail:'Risk of early retinopathy and microalbuminuria',color:Colors.red},{label:'2\u20133 years',detail:'CV event risk significantly elevated. Neuropathy accelerates.',color:Colors.red}],
+    organs: [{name:'Heart',stage:'Early Stress',severity:52,trend:'Watch',icon:'heart-outline'},{name:'Kidneys',stage:'Stage 2 CKD',severity:42,trend:'Stable',icon:'water-outline'},{name:'Eyes',stage:'Screening Due',severity:35,trend:'Stable',icon:'eye-outline'},{name:'Nerves',stage:'Early Neuropathy',severity:48,trend:'Watch',icon:'flash-outline'}],
+    organDetails: [{name:'Heart',stage:'Early Stress',impact:'Hyperglycaemia accelerates atherosclerosis. HbA1c >7% doubles long-term CV event risk.',icon:'heart-outline'},{name:'Kidneys',stage:'Stage 2 CKD',impact:'Sustained high glucose damages glomerular filtration. eGFR 72 mL/min confirms early-stage impact.',icon:'water-outline'},{name:'Eyes',stage:'Screening Due',impact:'Retinal microvasculature damaged by chronic hyperglycaemia. No fundus exam on record.',icon:'eye-outline'},{name:'Nerves',stage:'Early Neuropathy',impact:'Glycation of myelin sheaths degrades nerve conduction. Foot tingling 5x/month.',icon:'flash-outline'}],
+    cluster: {name:'Metabolic Syndrome Cluster',description:'HbA1c elevation is the central driver of a cascade affecting cardiovascular, renal and neurological systems.',riskScore:72,diseases:[{name:'Type 2 Diabetes',type:'active',progress:0.85},{name:'Cardiovascular Disease',type:'emerging',progress:0.55},{name:'Chronic Kidney Disease',type:'watch',progress:0.38}],timeline:[{stage:'Current',detail:'Pre-diabetic with metabolic syndrome features',color:Colors.amber},{stage:'1\u20132 years',detail:'Complications onset risk without intervention',color:Colors.red}]},
+    care: {actions:[{priority:'High',icon:'walk-outline',title:'15-min Post-Dinner Walk',description:'Reduces post-dinner glucose spike by up to 30%.',color:Colors.red},{priority:'High',icon:'alarm-outline',title:'Fix PM Metformin Adherence',description:'Each missed PM dose adds +12 mg/dL to next-morning FBG. Set a 9 PM alert.',color:Colors.red},{priority:'High',icon:'moon-outline',title:'Sleep 7 Hours',description:'Sleep below 6h raises cortisol which directly increases FBG by ~15 mg/dL.',color:Colors.red},{priority:'Medium',icon:'restaurant-outline',title:'Reduce Dinner Carb Portion',description:'Replace 1 roti with a salad \u2014 estimated -18\u201325 mg/dL post-dinner.',color:Colors.amber}],treatment:['Metformin 1000mg BD \u2014 AM 97%, PM 58% (improve urgently)','HbA1c retest Jun 2026','Retinal screening \u2014 overdue','Annual kidney function panel'],prevention:'Maintain HbA1c below 7.0% through consistent Metformin, low-GI diet, 30 min/day activity, and 7h sleep.'},
   },
-  organs: [],
-  organDetails: [],
-  cluster: {name: '', description: '', riskScore: 0, diseases: [], timeline: []},
-  care: {actions: [], treatment: [], prevention: ''},
-};
-
-const PLACEHOLDER_MEDICAL = {
-  id: 'hypertension',
-  name: 'Hypertension',
-  category: 'Medical Condition',
-  unit: 'mmHg',
-  refRange: '< 120/80',
-  latestValue: '138/88',
-  latestRIR: 1.15,
-  delta: '+4/+2',
-  deltaDirection: 'up',
-  readingsCount: 12,
-  baseline: '120/78',
-  urgency: 'Stage 1',
-  urgencyColor: Colors.amber,
-  narrative:
-    'Blood pressure readings show a consistent upward trend, now classified as Stage 1 hypertension.',
-  correlations: [],
-  history: [
-    {date: '2026-03-20', value: '138/88', status: 'elevated', delta: '+4/+2'},
-  ],
-  trendChart: [120, 124, 126, 130, 134, 138],
-  trendDates: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-  refLow: 90,
-  refHigh: 120,
-  timeline: [],
-  about:
-    'Hypertension is sustained elevation of blood pressure above normal thresholds.',
-  symptoms: [],
-  causes: [],
-  progression: {
-    currentPosition: 0.58,
-    rangeLabels: ['Normal', 'Elevated', 'Stage 1', 'Stage 2'],
-    rangeBreaks: [0.3, 0.55, 0.8],
-    scores: {
-      status: {
-        score: 50,
-        label: 'Status',
-        badge: 'Stage 1',
-        badgeColor: Colors.amber,
-        detail: '',
-      },
-      stability: {
-        score: 45,
-        label: 'Stability',
-        badge: 'Worsening',
-        badgeColor: Colors.red,
-        detail: '',
-      },
-      velocity: {
-        score: 55,
-        label: 'Velocity',
-        badge: 'Slow',
-        badgeColor: Colors.amber,
-        detail: '',
-      },
-    },
-    hpsHistory: [],
-    measurementTable: [],
+  fbg: {
+    narrative: 'Your FBG of 126 mg/dL is improving \u2014 down 10 mg/dL across March since Metformin 1000mg started. Your FBG is highly predictable from the prior evening\'s behaviour. On evenings you took PM Metformin + walked + slept 7h, FBG averaged 108 mg/dL. On evenings you missed all three, it averaged 138 mg/dL \u2014 a 30 mg/dL swing.',
+    urgLabel: 'Urgent',
+    correlations: [{label:'Evening walk impact',value:'15-min post-dinner walk \u2192 FBG next morning 18 mg/dL lower on average.',status:'elevated'},{label:'Sleep duration \u2192 FBG',value:'FBG on 7h+ sleep nights: avg 114 mg/dL. On <6h nights: avg 129 mg/dL.',status:'elevated'},{label:'PM Metformin adherence',value:'Evenings with PM Metformin taken: next FBG avg 119 mg/dL. Missed: avg 131 mg/dL.',status:'elevated'},{label:'Stress-cortisol pattern',value:'High-stress Mondays \u2192 Tuesday FBG avg +12 mg/dL above weekly average.',status:'elevated'}],
+    about: 'Fasting blood glucose measures blood sugar after an overnight fast. Normal: 70\u2013100 mg/dL. Priya\'s FBG of 126 reflects T2DM.',
+    symptoms: ['Increased morning thirst','Frequent urination at night','Fatigue throughout the day','Headaches and difficulty concentrating','Blurred vision on high-glucose mornings'],
+    causes: ['Large dinner carbohydrate portions','PM Metformin misses (58%)','Poor sleep (5.9h avg)','Post-dinner inactivity','Stress-cortisol cascade'],
+    timeline: [{label:'Now',detail:'FBG 126 mg/dL \u2014 diabetic range. March downtrend encouraging.',color:Colors.amber},{label:'3 months',detail:'If walk + sleep improve: FBG could reach 110\u2013115.',color:Colors.amber},{label:'12 months',detail:'Without changes: FBG likely 130\u2013140 requiring dose escalation.',color:Colors.red}],
+    organs: [{name:'Pancreas',stage:'Beta Cell Stress',severity:55,trend:'Watch',icon:'fitness-outline'},{name:'Liver',stage:'Glycogen Overload',severity:48,trend:'Watch',icon:'medical-outline'}],
+    organDetails: [{name:'Pancreas',stage:'Beta Cell Stress',impact:'Beta cells chronically overworked. Long-term exhaustion leads to reduced insulin output.',icon:'fitness-outline'},{name:'Liver',stage:'Glycogen Overload',impact:'Excess glucose converted to liver fat \u2014 Grade 1 NAFLD confirmed.',icon:'medical-outline'}],
+    cluster: {name:'Insulin Resistance Cluster',description:'Elevated FBG clusters with insulin resistance, NAFLD, and metabolic syndrome.',riskScore:68,diseases:[{name:'T2DM',type:'active',progress:0.85},{name:'Non-alcoholic Fatty Liver',type:'emerging',progress:0.45},{name:'Hypertension',type:'emerging',progress:0.55}],timeline:[{stage:'Current',detail:'FBG 126 \u2014 diabetic range with encouraging downtrend',color:Colors.amber}]},
+    care: {actions:[{priority:'High',icon:'walk-outline',title:'Post-Dinner Walk (15 min)',description:'Reduces post-dinner glucose by 30%.',color:Colors.red},{priority:'High',icon:'alarm-outline',title:'PM Metformin at 9 PM',description:'Each PM dose reduces next-morning FBG by ~12 mg/dL.',color:Colors.red}],treatment:['Metformin 1000mg BD','Target FBG: 70\u2013100 mg/dL','Weekly FBG self-monitoring'],prevention:'Maintain FBG below 100 mg/dL with post-dinner activity, low-GI dinner, and 7h sleep.'},
   },
-  organs: [],
-  organDetails: [],
-  cluster: {name: '', description: '', riskScore: 0, diseases: [], timeline: []},
-  care: {actions: [], treatment: [], prevention: ''},
+  ldl: {
+    narrative: 'Your LDL of 118 mg/dL is on a clear downward trajectory \u2014 Atorvastatin 10mg has brought it from 145 to 118 over 2.5 years. At the current rate (~2 mg/dL/month), you should reach the T2DM target of <100 mg/dL by approximately September 2026.',
+    urgLabel: 'Watch',
+    correlations: [{label:'LDL:HDL ratio',value:'Current ratio: 2.27. Target for T2DM is <2.0. Bringing LDL to 100 would achieve this.',status:'elevated'},{label:'Carb diet \u2192 TG \u2192 LDL quality',value:'High-carb diet creates small dense LDL particles \u2014 3\u00D7 more atherogenic.',status:'elevated'},{label:'Exercise deficit',value:'Current 6,240 steps/day vs target 8,000. Each 1,000 steps improves LDL quality.',status:'watch'}],
+    about: 'LDL carries cholesterol to arterial walls. For T2DM patients, target is <100 mg/dL (stricter than general <130).',
+    symptoms: ['Usually asymptomatic','Elevated cardiac risk is the key danger'],
+    causes: ['High-saturated-fat diet','Low physical activity','T2DM worsens lipid metabolism'],
+    timeline: [{label:'Now',detail:'LDL 118 \u2014 declining on Atorvastatin 10mg',color:Colors.amber},{label:'6\u20139 months',detail:'LDL should reach 100\u2013108 mg/dL',color:Colors.amber}],
+    organs: [{name:'Heart',stage:'Atherosclerosis Risk',severity:55,trend:'Watch',icon:'heart-outline'},{name:'Brain',stage:'Stroke Risk',severity:40,trend:'Stable',icon:'bulb-outline'}],
+    organDetails: [{name:'Heart',stage:'Atherosclerosis Risk',impact:'LDL deposits in coronary arteries accelerate plaque formation.',icon:'heart-outline'},{name:'Brain',stage:'Stroke Risk',impact:'Carotid plaque from LDL elevation raises ischaemic stroke risk.',icon:'bulb-outline'}],
+    cluster: {name:'Atherogenic Dyslipidaemia Cluster',description:'Elevated LDL with elevated TG and T2DM creates a triple-threat.',riskScore:58,diseases:[{name:'Coronary Artery Disease',type:'emerging',progress:0.50},{name:'Ischaemic Stroke',type:'watch',progress:0.35}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'medkit-outline',title:'Continue Atorvastatin 10mg',description:'Clear downward trend. Discuss titration if LDL >100 at Sep 2026.',color:Colors.red}],treatment:['Atorvastatin 10mg ON daily (97% adherence)','LDL retest Sep 2026','Annual LFT while on statin'],prevention:'Maintain LDL <100 through Atorvastatin, saturated fat reduction, and exercise.'},
+  },
+  tg: {
+    narrative: 'Your Triglycerides of 162 mg/dL have been flat for 18 months. Dinner averages 58% calories from carbohydrates, directly converted to TG in the liver. Reducing dinner carbs alone could bring TG to <150 mg/dL.',
+    urgLabel: 'Watch',
+    correlations: [{label:'Dinner carb load \u2192 TG',value:'Days with rice + roti dinner: next-day TG estimated +15\u201320 mg/dL higher.',status:'elevated'},{label:'NAFLD connection',value:'Grade 1 NAFLD confirmed \u2014 excess TG deposits directly as liver fat.',status:'elevated'},{label:'TG:HDL ratio',value:'TG:HDL = 3.1. Above 3.0 is a surrogate marker for insulin resistance.',status:'elevated'}],
+    about: 'Triglycerides are blood fat linked to insulin resistance, NAFLD, and cardiovascular risk.',
+    symptoms: ['Usually asymptomatic at 162 mg/dL','Fatigue and brain fog'],
+    causes: ['High-carbohydrate diet (58% carbs)','Insulin resistance','Grade 1 NAFLD','Sedentary lifestyle'],
+    timeline: [{label:'Now',detail:'TG 162 \u2014 mildly elevated, stable',color:Colors.amber},{label:'6 months',detail:'Carb reduction + exercise could bring TG <150',color:Colors.amber}],
+    organs: [{name:'Liver',stage:'Grade 1 NAFLD',severity:52,trend:'Watch',icon:'medical-outline'},{name:'Arteries',stage:'Atherogenic Risk',severity:45,trend:'Watch',icon:'pulse-outline'}],
+    organDetails: [{name:'Liver',stage:'Grade 1 NAFLD',impact:'Excess TG converted to liver fat via de novo lipogenesis.',icon:'medical-outline'},{name:'Arteries',stage:'Atherogenic Risk',impact:'VLDL carries TG and becomes small dense LDL \u2014 most atherogenic form.',icon:'pulse-outline'}],
+    cluster: {name:'Metabolic-Hepatic Cluster',description:'Elevated TG clusters with NAFLD and insulin resistance.',riskScore:55,diseases:[{name:'NAFLD',type:'active',progress:0.60},{name:'Metabolic Syndrome',type:'active',progress:0.70}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'restaurant-outline',title:'Reduce Dietary Carbohydrates',description:'Target <50% calories from carbs. Replace rice with dal.',color:Colors.red}],treatment:['No TG medication at 162 \u2014 lifestyle-first','Target TG <150 through diet and exercise'],prevention:'Reduce refined carbs, increase omega-3, maintain 7,000+ daily steps.'},
+  },
+  hdl: {
+    narrative: 'Your HDL of 52 mg/dL is healthy and stable \u2014 one of the few unconditionally positive markers. Your step count increase is already working on HDL. If maintained, HDL should reach 55\u201358 mg/dL by September 2026.',
+    urgLabel: 'Healthy',
+    correlations: [{label:'Steps \u2192 HDL trajectory',value:'Steps rose from 5,100 to 6,240/day. Ayu projects +3\u20134 mg/dL by Sep 2026.',status:'normal'},{label:'HDL as LDL counterweight',value:'LDL:HDL ratio 2.27. Getting HDL to 59 would bring ratio to 2.0 safe threshold.',status:'normal'}],
+    about: 'HDL is the protective cholesterol that removes LDL from arterial walls.',
+    symptoms: ['Low HDL causes no symptoms','Protective effect reduces cardiovascular risk'],
+    causes: ['Sedentary lifestyle (primary modifiable cause)','Partially offset by walking improvement'],
+    timeline: [{label:'Now',detail:'HDL 52 \u2014 adequate protection',color:Colors.teal},{label:'12 months',detail:'With 8,000+ steps: HDL 56\u201360 mg/dL',color:Colors.teal}],
+    organs: [{name:'Heart',stage:'Protected',severity:20,trend:'Stable',icon:'heart-outline'}],
+    organDetails: [{name:'Heart',stage:'Protected',impact:'HDL at 52 provides adequate cardiovascular protection.',icon:'heart-outline'}],
+    cluster: {name:'Cardiovascular Protection',description:'HDL at 52 provides adequate protection.',riskScore:25,diseases:[{name:'Coronary Artery Disease',type:'watch',progress:0.35}],timeline:[]},
+    care: {actions:[{priority:'Medium',icon:'walk-outline',title:'Sustain Step Count',description:'Reaching 8,000 steps/day would raise HDL by 3\u20135 mg/dL.',color:Colors.amber}],treatment:['No medication needed for HDL at 52','Focus on exercise and Mediterranean diet'],prevention:'Maintain HDL >50 with consistent aerobic activity.'},
+  },
+  hb: {
+    narrative: 'Your Haemoglobin of 11.8 g/dL has been borderline for 2+ years without investigation. Iron and ferritin have never been tested \u2014 the most common cause of borderline anaemia in Indian women. Methylcobalamin addresses B12, but if iron deficiency is primary, response will be limited.',
+    urgLabel: 'Watch',
+    correlations: [{label:'Anaemia \u2192 fatigue \u2192 inactivity',value:'Low Hb reduces VO2 max \u2192 less exercise tolerance \u2192 lower step count. Fixing Hb may improve steps without extra effort.',status:'elevated'},{label:'Anaemia \u2192 HRV \u2192 sleep',value:'HRV is 28ms (low). Anaemia forces higher heart rate, reducing HRV and worsening sleep quality.',status:'elevated'},{label:'Menstrual blood loss',value:'Irregular cycles (\u00B16 days) suggest possible heavier losses. Monthly iron deficit is likely driver.',status:'elevated'}],
+    about: 'Haemoglobin carries oxygen in red blood cells. 11.8 g/dL is just below the 12.0 threshold for females.',
+    symptoms: ['Persistent fatigue','Breathlessness on stairs','Pale skin','Cold hands and feet','Brain fog','Palpitations on exertion'],
+    causes: ['Likely iron deficiency \u2014 NOT yet tested','Possible Metformin-induced B12 malabsorption','Menstrual blood loss'],
+    timeline: [{label:'Now',detail:'Hb 11.8 \u2014 borderline for 2+ years',color:Colors.amber},{label:'6 weeks',detail:'Methylcobalamin effect: Hb +0.2\u20130.5 if B12 pathway',color:Colors.amber}],
+    organs: [{name:'Heart',stage:'Compensating',severity:40,trend:'Watch',icon:'heart-outline'},{name:'Brain',stage:'Cognitive Dip',severity:38,trend:'Watch',icon:'bulb-outline'},{name:'Muscles',stage:'Reduced VO2',severity:35,trend:'Stable',icon:'barbell-outline'}],
+    organDetails: [{name:'Heart',stage:'Compensating',impact:'Heart compensates by increasing output. HRV 28ms is a marker of this stress.',icon:'heart-outline'},{name:'Brain',stage:'Cognitive Dip',impact:'Mild anaemia reduces cerebral oxygen, impairing concentration and mood.',icon:'bulb-outline'}],
+    cluster: {name:'Anaemia-Fatigue Cluster',description:'Declining Hb clusters with iron deficiency, B12 depletion, and chronic disease anaemia.',riskScore:42,diseases:[{name:'Iron Deficiency Anaemia',type:'emerging',progress:0.60},{name:'B12-related Anaemia',type:'watch',progress:0.35}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'flask-outline',title:'Order Iron Panel Urgently',description:'Serum iron, ferritin, TIBC \u2014 most likely undiagnosed cause.',color:Colors.red}],treatment:['Methylcobalamin 500mcg OD','Order iron panel','If ferritin <20: start iron sulphate 200mg daily'],prevention:'Annual full blood count. Adequate dietary iron and B12.'},
+  },
+  vitd: {
+    narrative: 'Your Vitamin D of 18 ng/mL has been deficient across all 4 readings spanning 2 years. Correcting Vit D deficiency in T2DM patients produces an average 0.3\u20130.5% reduction in HbA1c \u2014 purely from improved insulin sensitivity. Your supplement (started Jan 2026) is actively working on your primary concern.',
+    urgLabel: 'Watch',
+    correlations: [{label:'Vit D \u2192 insulin sensitivity',value:'Vit D deficiency reduces pancreatic beta-cell responsiveness. At 18 ng/mL, estimated 12\u201318% worsening of baseline insulin sensitivity.',status:'elevated'},{label:'Vit D \u2192 fatigue \u2192 inactivity',value:'Vit D deficiency causes generalised fatigue and muscle weakness. Partly why step count remains below target.',status:'elevated'},{label:'Vit D \u2192 mood',value:'Vit D deficiency is independently linked to depression (PHQ-9: 8). Correcting may improve mood score by 1\u20132 points.',status:'elevated'}],
+    about: 'Vitamin D is essential for calcium metabolism, immune function, and insulin signalling. Chronic deficiency worsens insulin resistance.',
+    symptoms: ['Fatigue and weakness','Muscle aches and bone pain','Frequent infections','Low mood and brain fog','Reduced exercise tolerance'],
+    causes: ['Minimal sun exposure','No supplementation until Jan 2026','T2DM patients have higher Vit D requirements','BMI 25 \u2014 Vit D sequestered in fat'],
+    timeline: [{label:'Now',detail:'Vit D 18 ng/mL \u2014 4 consecutive deficient readings',color:Colors.amber},{label:'6\u20138 weeks',detail:'Expect 26\u201330 ng/mL \u2014 approaching threshold',color:Colors.amber},{label:'3\u20134 months',detail:'Target range 30\u201360 achievable. HbA1c improvement expected.',color:Colors.teal}],
+    organs: [{name:'Pancreas',stage:'Insulin Resistance',severity:50,trend:'Watch',icon:'fitness-outline'},{name:'Bones',stage:'Subclinical Deficiency',severity:38,trend:'Watch',icon:'body-outline'},{name:'Muscles',stage:'Proximal Myopathy',severity:45,trend:'Watch',icon:'barbell-outline'},{name:'Brain',stage:'Mood Impacted',severity:40,trend:'Watch',icon:'bulb-outline'},{name:'Immune System',stage:'Innate Immunity Low',severity:42,trend:'Watch',icon:'shield-outline'}],
+    organDetails: [{name:'Pancreas',stage:'Insulin Resistance',impact:'VDR on beta-cells essential for insulin secretion. Deficiency worsens resistance by 10\u201320%.',icon:'fitness-outline'},{name:'Bones',stage:'Subclinical Deficiency',impact:'Chronic deficiency means negative calcium balance \u2014 silent osteoporosis risk.',icon:'body-outline'},{name:'Brain',stage:'Mood Impacted',impact:'VDR in hippocampus impairs serotonin synthesis \u2014 contributing to PHQ-9 score of 8.',icon:'bulb-outline'}],
+    cluster: {name:'Micronutrient-Metabolic Cluster',description:'Vit D deficiency clusters with worsened T2DM, mood disorders, and musculoskeletal weakness.',riskScore:45,diseases:[{name:'Worsened T2DM control',type:'active',progress:0.65},{name:'Musculoskeletal weakness',type:'active',progress:0.55},{name:'Mood disorder',type:'emerging',progress:0.48}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'medkit-outline',title:'Do Not Miss Supplement',description:'60,000 IU weekly cholecalciferol \u2014 take consistently.',color:Colors.red},{priority:'High',icon:'flask-outline',title:'Vit D Test April 2026',description:'Confirm repletion is on track.',color:Colors.red},{priority:'Medium',icon:'sunny-outline',title:'15-min Morning Sunlight',description:'Expose arms and face to morning sun 4x/week.',color:Colors.amber}],treatment:['Cholecalciferol 60,000 IU weekly','Retest Vit D Apr 2026','Check serum calcium and PTH'],prevention:'Maintain Vit D 40\u201360 ng/mL through daily supplementation after repletion.'},
+  },
+  b12: {
+    narrative: 'Your B12 of 312 pg/mL has been slowly declining over 18 months as Metformin reduces ileal B12 absorption. Your foot tingling (5\u00D7 this month) occurs with two simultaneous neuropathy risks \u2014 T2DM peripheral neuropathy AND B12 demyelination.',
+    urgLabel: 'Watch',
+    correlations: [{label:'Metformin \u2192 B12 depletion',value:'B12 declining ~32 pg/mL over 18 months. Deficiency (<200) in 3\u20134 years without supplementation.',status:'elevated'},{label:'B12 \u2192 foot tingling',value:'B12 deficiency demyelinates peripheral nerves. Dual causation with T2DM neuropathy.',status:'elevated'},{label:'B12 \u2192 mood',value:'B12 is a cofactor for serotonin synthesis. Low B12 contributes to PHQ-9 score of 8.',status:'elevated'}],
+    about: 'Vitamin B12 is essential for nerve function, RBC formation, and DNA synthesis.',
+    symptoms: ['Peripheral tingling in feet','Fatigue and weakness','Mood changes','Difficulty concentrating'],
+    causes: ['Long-term Metformin use','Low dietary B12','No supplementation until Mar 2026'],
+    timeline: [{label:'Now',detail:'B12 312 pg/mL \u2014 declining slowly',color:Colors.amber},{label:'2\u20133 months',detail:'Expect 350\u2013400 pg/mL with supplementation',color:Colors.amber}],
+    organs: [{name:'Nerves',stage:'Early Demyelination',severity:42,trend:'Watch',icon:'flash-outline'},{name:'Brain',stage:'Mood Impact',severity:35,trend:'Watch',icon:'bulb-outline'}],
+    organDetails: [{name:'Nerves',stage:'Early Demyelination',impact:'B12 essential for myelin synthesis. Foot tingling 5x/month is the manifestation.',icon:'flash-outline'},{name:'Brain',stage:'Mood Impact',impact:'B12 is cofactor for serotonin/dopamine. Partially driving PHQ-9 of 8.',icon:'bulb-outline'}],
+    cluster: {name:'Metformin-Micronutrient Cluster',description:'Long-term Metformin depletes B12, worsening neuropathy and anaemia.',riskScore:38,diseases:[{name:'B12 Neuropathy',type:'emerging',progress:0.45},{name:'Mild Anaemia',type:'active',progress:0.55}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'medkit-outline',title:'Continue Methylcobalamin 500mcg',description:'Daily methylcobalamin preferred for Metformin users.',color:Colors.red}],treatment:['Methylcobalamin 500mcg OD indefinitely','B12 recheck Jun 2026','Annual B12 monitoring on Metformin'],prevention:'All patients on Metformin >2 years should take prophylactic B12.'},
+  },
+  tsh: {
+    narrative: 'Your TSH of 2.8 mIU/L is excellent and perfectly stable across 5 readings. Thyroid function is not contributing to any of your active health issues. Your fatigue is from anaemia, poor sleep, and deconditioning \u2014 not thyroid.',
+    urgLabel: 'Healthy',
+    correlations: [{label:'TSH rules out thyroid-insulin link',value:'Normal TSH confirms thyroid is not a driver of HbA1c elevation.',status:'normal'},{label:'TSH rules out thyroid-anaemia link',value:'Normal TSH confirms Hb decline is not thyroid-related.',status:'normal'}],
+    about: 'TSH regulates thyroid function. 2.8 mIU/L is comfortably mid-range (0.5\u20134.5). No dysfunction detected.',
+    symptoms: ['No thyroid symptoms \u2014 TSH is healthy','Fatigue is from anaemia, not thyroid'],
+    causes: ['Normal thyroid axis','Adequate iodine intake'],
+    timeline: [{label:'Now',detail:'TSH 2.8 \u2014 healthy and stable',color:Colors.teal}],
+    organs: [{name:'Thyroid',stage:'Normal Function',severity:15,trend:'Stable',icon:'body-outline'}],
+    organDetails: [{name:'Thyroid',stage:'Normal Function',impact:'TSH mid-range indicates optimal thyroid output. No hypothyroid component.',icon:'body-outline'}],
+    cluster: {name:'Thyroid Health \u2014 No Cluster',description:'Thyroid function excellent. No thyroid-driven cluster applies.',riskScore:12,diseases:[{name:'Hypothyroidism',type:'watch',progress:0.08}],timeline:[]},
+    care: {actions:[{priority:'Low',icon:'flask-outline',title:'Annual TSH Screening',description:'Annual check appropriate for T2DM females over 35.',color:Colors.teal}],treatment:['No thyroid medication required','Annual TSH check'],prevention:'Maintain adequate iodine intake. Annual TSH screening.'},
+  },
+  egfr: {
+    narrative: 'Your eGFR of 72 mL/min is stable and within normal range but sits at CKD Stage 2 boundary. This stability is a direct result of Olmesartan (96% adherence). The two parameters that determine eGFR trajectory are BP control and HbA1c.',
+    urgLabel: 'Watch',
+    correlations: [{label:'BP \u2192 eGFR protection',value:'Each 10 mmHg systolic reduction slows eGFR decline by ~30% in T2DM.',status:'elevated'},{label:'HbA1c \u2192 eGFR trajectory',value:'Each 1% HbA1c reduction slows eGFR decline by ~30%.',status:'elevated'},{label:'Olmesartan dual benefit',value:'Olmesartan lowers BP AND reduces glomerular hyperfiltration. Full renoprotective effect at 96% adherence.',status:'normal'}],
+    about: 'eGFR measures kidney filtering capacity. 72 mL/min is within normal (>60) but in CKD Stage 2 range.',
+    symptoms: ['Usually asymptomatic at Stage 2','Ankle oedema from Amlodipine (not kidney)'],
+    causes: ['5-year T2DM history','Hypertension','Age-related decline (~1 mL/min/year)'],
+    timeline: [{label:'Now',detail:'eGFR 72 \u2014 stable CKD2. No proteinuria.',color:Colors.teal},{label:'1 year',detail:'If BP <130/80 and HbA1c <7.0%: eGFR stable or improving',color:Colors.teal}],
+    organs: [{name:'Kidneys',stage:'CKD Stage 2',severity:42,trend:'Stable',icon:'water-outline'},{name:'Heart',stage:'Cardiorenal Risk',severity:38,trend:'Watch',icon:'heart-outline'}],
+    organDetails: [{name:'Kidneys',stage:'CKD Stage 2',impact:'eGFR 72 reflects 72% of full capacity. Stable for 18 months.',icon:'water-outline'},{name:'Heart',stage:'Cardiorenal Risk',impact:'CKD doubles CV risk through fluid dysregulation.',icon:'heart-outline'}],
+    cluster: {name:'Cardiorenal-Metabolic Cluster',description:'T2DM + HTN + CKD2 form a self-reinforcing triad.',riskScore:40,diseases:[{name:'CKD Progression',type:'watch',progress:0.42},{name:'Cardiovascular Disease',type:'emerging',progress:0.50}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'heart-outline',title:'Control BP to <130/80',description:'Single most effective renal protection intervention.',color:Colors.red},{priority:'High',icon:'close-circle-outline',title:'Avoid NSAIDs',description:'Ibuprofen reduces renal perfusion acutely. Use paracetamol only.',color:Colors.red}],treatment:['Olmesartan 20mg OD \u2014 maintain 96%','Target BP <130/80','Annual kidney panel'],prevention:'Control BP <130/80 and HbA1c <7.0%. Avoid NSAIDs. Maintain hydration.'},
+  },
+  malb: {
+    narrative: 'Your Microalbumin of 18 mg/L is consistently normal \u2014 one of the most reassuring findings. After 5 years of T2DM, maintaining normal microalbumin means your kidney barrier is intact. This reflects Olmesartan working as a renoprotective agent.',
+    urgLabel: 'Healthy',
+    correlations: [{label:'Olmesartan \u2192 microalbumin',value:'ARBs reduce intraglomerular pressure directly. Normal microalbumin is evidence Olmesartan is working.',status:'normal'},{label:'HbA1c ceiling watch',value:'If HbA1c rises above 8.5%, microalbumin likely to cross 30 mg/L within 12\u201318 months.',status:'watch'},{label:'Hydration gap risk',value:'Current hydration 1.4L/day. Dehydration transiently elevates microalbumin readings.',status:'watch'}],
+    about: 'Urine Microalbumin detects the earliest sign of diabetic kidney damage. 18 mg/L is well within normal (<30).',
+    symptoms: ['No symptoms \u2014 preclinical biomarker','Foamy urine would indicate proteinuria (not present)'],
+    causes: ['No pathological cause \u2014 microalbumin is normal','Olmesartan and glucose control are protecting kidneys'],
+    timeline: [{label:'Now',detail:'Microalbumin 18 \u2014 consistently normal. Kidney barrier intact.',color:Colors.teal}],
+    organs: [{name:'Kidneys',stage:'No Nephropathy',severity:18,trend:'Stable',icon:'water-outline'}],
+    organDetails: [{name:'Kidneys',stage:'No Nephropathy',impact:'Normal microalbumin confirms glomerular barrier is intact.',icon:'water-outline'}],
+    cluster: {name:'Renal Protection \u2014 Holding',description:'Normal microalbumin confirms kidney protection is effective.',riskScore:18,diseases:[{name:'Diabetic Nephropathy',type:'watch',progress:0.18}],timeline:[]},
+    care: {actions:[{priority:'High',icon:'medkit-outline',title:'Continue Olmesartan',description:'ARBs provide direct renal protection. Sustain 96% adherence.',color:Colors.red},{priority:'High',icon:'flask-outline',title:'Annual Microalbumin Test',description:'Any rise above 30 mg/L requires nephrology review.',color:Colors.red}],treatment:['Olmesartan 20mg OD','Annual microalbumin test','Maintain HbA1c <7.0%'],prevention:'Maintain BP <130/80 and HbA1c <7.0%. Annual testing. Stay hydrated.'},
+  },
 };
 
 // ──────────────────────────────────────────────
@@ -522,11 +541,14 @@ const mapBiomarkerToDetail = bm => {
   const deltaStr = deltaNum >= 0 ? '+' + deltaVal : String(deltaVal);
   const urgency = _urgencyFromValue(bm.val, bm.lo, bm.hi);
 
+  const VISIT_NOTES = ['Baseline','Follow-up','Review','Medication change','Follow-up','Review'];
   const history = hist.map((h, i) => {
     const prev = hist[i + 1];
     const d = prev ? (h.v - prev.v).toFixed(1) : '\u2014';
     const dStr = prev && parseFloat(d) >= 0 ? '+' + d : d;
-    return {date: h.dt, value: h.v, status: _histStatusLabel(h.st), delta: dStr};
+    const rng = bm.hi - bm.lo || 1;
+    const rir = ((h.v - bm.lo) / rng).toFixed(2);
+    return {date: h.dt, value: h.v, status: _histStatusLabel(h.st), delta: dStr, rir: rir, note: VISIT_NOTES[i] || 'Review', unit: bm.unit, refRange: (bm.lo > 0 ? bm.lo + '\u2013' : '') + bm.hi + ' ' + bm.unit};
   });
 
   const trendChart = hist.slice().reverse().map(h => h.v);
@@ -553,21 +575,8 @@ const mapBiomarkerToDetail = bm => {
   const overshoot = (bm.val - bm.lo) / (range * 2);
   const currentPosition = Math.max(0, Math.min(1, overshoot));
 
-  const relevantOrgans = (ORGANS || []).map(o => ({
-    name: o.name,
-    stage: o.pillLabel,
-    severity:
-      o.pillLabel === 'Normal' ? 15 : o.pillLabel === 'Borderline' ? 42 : 55,
-    trend: o.pillLabel === 'Normal' ? 'Stable' : 'Watch',
-    icon: o.ico,
-  }));
-
-  const organDetails = (ORGANS || []).map(o => ({
-    name: o.name,
-    stage: o.pillLabel,
-    impact: o.detail,
-    icon: o.ico,
-  }));
+  // Get per-biomarker detail data
+  const detail = BM_DETAIL[bm.id] || {};
 
   return {
     id: bm.id,
@@ -581,25 +590,19 @@ const mapBiomarkerToDetail = bm => {
     deltaDirection: deltaNum > 0 ? 'up' : deltaNum < 0 ? 'down' : 'stable',
     readingsCount: hist.length,
     baseline: oldestHist ? oldestHist.v : bm.val,
-    urgency: urgency.label,
+    urgency: detail.urgLabel || urgency.label,
     urgencyColor: urgency.color,
-    narrative: bm.insight || '',
-    correlations: [],
+    narrative: detail.narrative || bm.insight || '',
+    correlations: detail.correlations || [],
     history: history,
     trendChart: trendChart,
     trendDates: trendDates,
     refLow: bm.lo,
     refHigh: bm.hi,
-    timeline: [
-      {
-        label: 'Now',
-        detail: '' + bm.val + bm.unit + ' \u2014 ' + bm.st.lbl,
-        color: urgency.color,
-      },
-    ],
-    about: bm.st.d || '',
-    symptoms: [],
-    causes: [],
+    timeline: detail.timeline || [{label:'Now',detail:''+bm.val+bm.unit+' \u2014 '+bm.st.lbl,color:urgency.color}],
+    about: detail.about || bm.st.d || '',
+    symptoms: detail.symptoms || [],
+    causes: detail.causes || [],
     progression: {
       currentPosition: currentPosition,
       rangeLabels: ['Low', 'Normal', 'Elevated'],
@@ -608,352 +611,19 @@ const mapBiomarkerToDetail = bm => {
       hpsHistory: hpsHistory,
       measurementTable: measurementTable,
     },
-    organs: relevantOrgans.slice(0, 4),
-    organDetails: organDetails.slice(0, 4),
-    cluster: {
+    organs: (detail.organs || []).slice(0, 4),
+    organDetails: (detail.organDetails || []).slice(0, 4),
+    cluster: detail.cluster || {
       name: bm.cat + ' Cluster',
-      description: bm.insight || 'Cluster analysis for ' + bm.name + '.',
+      description: bm.insight || '',
       riskScore: Math.max(0, 100 - bm.hps),
       diseases: [],
       timeline: [],
     },
-    care: {
-      actions: [
-        {
-          priority: bm.hps < 60 ? 'High' : 'Medium',
-          icon: 'medkit-outline',
-          title: 'Monitor ' + bm.name,
-          description: bm.insight || 'Continue monitoring ' + bm.name + ' levels.',
-          color: urgency.color,
-        },
-      ],
-      treatment: [
-        'Retest ' + bm.name + ' in 3 months',
-        'Discuss results with your doctor',
-      ],
+    care: detail.care || {
+      actions: [{priority:'Medium',icon:'medkit-outline',title:'Monitor '+bm.name,description:'Continue monitoring.',color:urgency.color}],
+      treatment: ['Retest in 3 months'],
       prevention: bm.insight || '',
-    },
-  };
-};
-
-const ORGAN_ICON_MAP = {
-  'Liver': 'medical-outline',
-  'Kidneys': 'water-outline',
-  'Pancreas': 'fitness-outline',
-  'Heart': 'heart-outline',
-  'Blood Vessels': 'pulse-outline',
-  'Brain': 'bulb-outline',
-  'Muscles': 'barbell-outline',
-  'Adrenal Glands': 'flash-outline',
-  'Nerves': 'flash-outline',
-};
-
-const mapLifestyleToDetail = section => {
-  if (!section) return null;
-  const metrics = section.metrics || [];
-  const firstMetric = metrics[0];
-  const numericVal = firstMetric
-    ? parseFloat(firstMetric.value.replace(/[^0-9.\-]/g, '')) || 0
-    : 0;
-
-  const detail = LIFESTYLE_DETAIL_DATA[section.id] || {};
-
-  const correlations = metrics.map(m => ({
-    label: m.label,
-    value: m.value,
-    status:
-      m.pillLabel === '\u2713'
-        ? 'normal'
-        : m.pillLabel === '\u26a0'
-        ? 'elevated'
-        : m.pillLabel.toLowerCase(),
-  }));
-
-  const trendChart = metrics.map((_, i) => numericVal - (metrics.length - 1 - i) * 2);
-  const trendDates = metrics.map((_, i) => 'Point ' + (i + 1));
-
-  const badgeText = section.badge || '';
-  const isWarning =
-    badgeText.toLowerCase().includes('concern') ||
-    badgeText.toLowerCase().includes('below') ||
-    badgeText.toLowerCase().includes('attention');
-  const urgencyColor = detail.urgency === 'high' ? Colors.amber : isWarning ? Colors.amber : Colors.teal;
-  const urgencyLabel = detail.urgency === 'high' ? 'Needs Attention' : isWarning ? 'Suboptimal' : 'Normal';
-
-  // Build history from metrics as monthly entries
-  var history = metrics.map(function(m, i) {
-    var monthNames = ['Mar 26', 'Feb 26', 'Jan 26', 'Dec 25', 'Nov 25', 'Oct 25', 'Sep 25'];
-    var val = parseFloat(m.value.replace(/[^0-9.\-]/g, '')) || 0;
-    return {
-      dt: monthNames[i] || 'Month ' + (i + 1),
-      v: val,
-      st: m.pillLabel === '\u2713' ? 'n' : 'h',
-    };
-  });
-
-  // Build measurement table from metrics
-  var measurementTable = metrics.map(function(m, i) {
-    var monthNames = ['Mar 2026', 'Feb 2026', 'Jan 2026', 'Dec 2025', 'Nov 2025', 'Oct 2025', 'Sep 2025'];
-    return {
-      date: monthNames[i] || 'Month ' + (i + 1),
-      label: m.label,
-      value: m.value,
-      ref: m.ref || '',
-      status: m.pillLabel === '\u2713' ? 'normal' : 'elevated',
-    };
-  });
-
-  // Map organs from detail data
-  var detailOrgans = (detail.organs || []);
-  var organs = detailOrgans.map(function(o) {
-    return {
-      name: o.n,
-      icon: ORGAN_ICON_MAP[o.n] || 'body-outline',
-      severity: o.sev,
-      color: o.col,
-    };
-  });
-
-  var organDetails = detailOrgans.map(function(o) {
-    return {
-      name: o.n,
-      icon: ORGAN_ICON_MAP[o.n] || 'body-outline',
-      stage: o.stage,
-      severity: o.sev,
-      color: o.col,
-      description: o.n + ' is at ' + o.stage + ' stage with severity ' + o.sev + '%.',
-    };
-  });
-
-  // Map cluster
-  var detailCluster = detail.cluster || {};
-  var clusterDiseases = (detailCluster.diseases || []).map(function(d) {
-    return {
-      name: d.n,
-      probability: d.p,
-      type: d.type,
-    };
-  });
-
-  // Map timeline
-  var timeline = (detail.timeline || []).map(function(t) {
-    return {
-      time: t.time,
-      event: t.event,
-      color: t.col,
-    };
-  });
-
-  // Map care actions
-  var careActions = (detail.actions || []).map(function(a) {
-    return {
-      priority: a.pri === 'high' ? 'High' : 'Medium',
-      icon: a.ico,
-      title: a.title,
-      description: a.desc,
-      color: a.pri === 'high' ? '#EF4444' : '#F59E0B',
-    };
-  });
-
-  // Map progression panels to scores
-  var panels = (detail.progression && detail.progression.panels) || [];
-  var statusPanel = panels[0] || {};
-  var stabilityPanel = panels[1] || {};
-  var velocityPanel = panels[2] || {};
-
-  return {
-    id: section.id,
-    name: section.sectionLabel || section.title,
-    category: 'Lifestyle',
-    unit: '',
-    refRange: firstMetric ? firstMetric.ref : '',
-    latestValue: firstMetric ? firstMetric.value : '\u2014',
-    latestRIR: 0,
-    delta: '\u2014',
-    deltaDirection: 'stable',
-    readingsCount: metrics.length,
-    baseline: numericVal,
-    urgency: urgencyLabel,
-    urgencyColor: urgencyColor,
-    narrative: detail.narrative || section.corrBody || '',
-    correlations: correlations,
-    history: history,
-    trendChart: trendChart,
-    trendDates: trendDates,
-    refLow: 0,
-    refHigh: 100,
-    timeline: timeline,
-    about: detail.about || section.corrBody || (section.sectionLabel || section.title) + ' lifestyle data.',
-    symptoms: detail.symptoms || [],
-    causes: detail.causes || [],
-    progression: {
-      currentPosition: detail.progression ? detail.progression.position : (isWarning ? 0.38 : 0.75),
-      rangeLabels: ['Poor', 'Fair', 'Good'],
-      rangeBreaks: [0.33, 0.66],
-      scores: {
-        status: {
-          score: statusPanel.bar || (isWarning ? 50 : 80),
-          label: statusPanel.lbl || 'Status',
-          badge: statusPanel.badge || urgencyLabel,
-          badgeColor: statusPanel.badgeCol || urgencyColor,
-          detail: statusPanel.detail || section.corrBody || '',
-        },
-        stability: {
-          score: stabilityPanel.bar || 50,
-          label: stabilityPanel.lbl || 'Stability',
-          badge: stabilityPanel.badge || 'Monitoring',
-          badgeColor: stabilityPanel.badgeCol || Colors.amber,
-          detail: stabilityPanel.detail || '',
-        },
-        velocity: {
-          score: velocityPanel.bar || 50,
-          label: velocityPanel.lbl || 'Velocity',
-          badge: velocityPanel.badge || 'Stable',
-          badgeColor: velocityPanel.badgeCol || Colors.amber,
-          detail: velocityPanel.detail || '',
-        },
-      },
-      hpsHistory: [],
-      measurementTable: measurementTable,
-    },
-    organs: organs,
-    organDetails: organDetails,
-    cluster: {
-      name: detailCluster.name || '',
-      description: detailCluster.name ? 'Risk cluster: ' + detailCluster.name + '.' : '',
-      riskScore: parseInt((detailCluster.risk || '0').replace('%', ''), 10),
-      diseases: clusterDiseases,
-      timeline: timeline,
-    },
-    care: {
-      actions: careActions,
-      treatment: detail.treatment || [],
-      prevention: detail.prevention || '',
-    },
-  };
-};
-
-const mapMedicalToDetail = condition => {
-  if (!condition) return null;
-  const detail = MEDICAL_DETAIL_DATA[condition.id] || {};
-  const risks = condition.risks || [];
-
-  const badgeText = condition.badge || '';
-  const isUrgent = detail.urgency === 'high' ||
-    badgeText.toLowerCase().includes('suboptimal') ||
-    badgeText.toLowerCase().includes('above');
-  const urgencyColor = isUrgent ? Colors.amber : Colors.teal;
-  const urgencyLabel = isUrgent ? 'Needs Attention' : condition.badge || 'Monitoring';
-
-  // Build correlations from detail data
-  var correlations = (detail.correlations || []).map(function(c) {
-    return {label: c.lbl, value: c.val, status: 'elevated'};
-  });
-
-  // Build timeline from detail
-  var timeline = (detail.timeline || []).map(function(t) {
-    return {time: t.time, event: t.event, color: t.col};
-  });
-
-  // Build organs
-  var detailOrgans = detail.organs || [];
-  var organs = detailOrgans.map(function(o) {
-    return {name: o.n, icon: ORGAN_ICON_MAP[o.n] || 'body-outline', severity: o.sev, color: o.col};
-  });
-  var organDetails = detailOrgans.map(function(o) {
-    return {name: o.n, icon: ORGAN_ICON_MAP[o.n] || 'body-outline', stage: o.stage, severity: o.sev, color: o.col, description: o.n + ' is at ' + o.stage + ' with severity ' + o.sev + '%.'};
-  });
-
-  // Build cluster
-  var detailCluster = detail.cluster || {};
-  var clusterDiseases = (detailCluster.diseases || []).map(function(d) {
-    return {name: d.n, probability: d.p, type: d.type};
-  });
-
-  // Build care actions
-  var careActions = (detail.actions || []).map(function(a) {
-    return {priority: a.pri === 'high' ? 'High' : 'Medium', icon: a.ico || 'medkit-outline', title: a.title, description: a.desc, color: a.pri === 'high' ? '#EF4444' : '#F59E0B'};
-  });
-
-  // Build progression panels as scores
-  var panels = (detail.progression && detail.progression.panels) || [];
-  var statusPanel = panels[0] || {};
-  var stabilityPanel = panels[1] || {};
-  var velocityPanel = panels[2] || {};
-
-  // Build measurement table from risks
-  var measurementTable = risks.map(function(r) {
-    return {date: '\u2014', value: r.value, delta: '\u2014', status: r.label, hps: 100 - (r.barWidth || 0)};
-  });
-
-  return {
-    id: condition.id,
-    name: condition.title,
-    category: 'Medical Condition',
-    unit: '',
-    refRange: 'Risk-based',
-    latestValue: risks[0] ? risks[0].value : condition.badge,
-    latestRIR: 0,
-    delta: '\u2014',
-    deltaDirection: 'stable',
-    readingsCount: risks.length || correlations.length,
-    baseline: 0,
-    urgency: urgencyLabel,
-    urgencyColor: urgencyColor,
-    narrative: detail.narrative || condition.sub || '',
-    correlations: correlations,
-    history: [],
-    trendChart: risks.map(function(r) { return r.barWidth; }),
-    trendDates: risks.map(function(r) { return r.label; }),
-    refLow: 0,
-    refHigh: 100,
-    timeline: timeline,
-    about: detail.about || condition.sub || condition.title + ' medical condition.',
-    symptoms: detail.symptoms || [],
-    causes: detail.causes || [],
-    progression: {
-      currentPosition: detail.progression ? detail.progression.position : 0.5,
-      rangeLabels: ['Low risk', 'Moderate', 'High risk'],
-      rangeBreaks: [0.33, 0.66],
-      scores: {
-        status: {
-          score: statusPanel.bar || 50,
-          label: statusPanel.lbl || 'Status',
-          badge: statusPanel.badge || urgencyLabel,
-          badgeColor: statusPanel.badgeCol || urgencyColor,
-          detail: statusPanel.detail || condition.sub || '',
-        },
-        stability: {
-          score: stabilityPanel.bar || 50,
-          label: stabilityPanel.lbl || 'Stability',
-          badge: stabilityPanel.badge || 'Monitoring',
-          badgeColor: stabilityPanel.badgeCol || Colors.amber,
-          detail: stabilityPanel.detail || '',
-        },
-        velocity: {
-          score: velocityPanel.bar || 50,
-          label: velocityPanel.lbl || 'Velocity',
-          badge: velocityPanel.badge || 'Stable',
-          badgeColor: velocityPanel.badgeCol || Colors.amber,
-          detail: velocityPanel.detail || '',
-        },
-      },
-      hpsHistory: [],
-      measurementTable: measurementTable,
-    },
-    organs: organs,
-    organDetails: organDetails,
-    cluster: {
-      name: detailCluster.name || condition.title,
-      description: detailCluster.name ? 'Risk cluster: ' + detailCluster.name : condition.sub || '',
-      riskScore: parseInt((detailCluster.risk || '0').replace('%', ''), 10),
-      diseases: clusterDiseases,
-      timeline: timeline,
-    },
-    care: {
-      actions: careActions,
-      treatment: detail.treatment || [],
-      prevention: detail.prevention || '',
     },
   };
 };
@@ -1011,17 +681,25 @@ const TABS = [
 const SimpleChart = ({data, dates, refLow, refHigh, height = vs(120)}) => {
   if (!data || data.length === 0) return null;
   const chartW = SCREEN_W - s(48);
-  const minV =
-    Math.min(...data, refLow != null ? refLow : Infinity) * 0.92;
-  const maxV =
-    Math.max(...data, refHigh != null ? refHigh : -Infinity) * 1.08;
+  // Smart Y-axis: include ref range but only the nearby portion, not the full 0-100
+  const dataMin = Math.min(...data);
+  const dataMax = Math.max(...data);
+  const lo = refLow != null ? refLow : dataMin;
+  const hi = refHigh != null ? refHigh : dataMax;
+  // Use a tight range around data + ref bounds so the chart isn't squashed
+  const allVals = [...data, lo, hi];
+  const rawMin = Math.min(...allVals);
+  const rawMax = Math.max(...allVals);
+  const padding = (rawMax - rawMin) * 0.15 || 2;
+  const minV = rawMin - padding;
+  const maxV = rawMax + padding;
   const range = maxV - minV || 1;
   const stepX = chartW / (data.length - 1 || 1);
 
   const yPos = v => height - ((v - minV) / range) * height;
 
-  const refBandTop = refHigh != null ? yPos(refHigh) : 0;
-  const refBandBottom = refLow != null ? yPos(refLow) : height;
+  const refBandTop = refHigh != null ? yPos(Math.min(refHigh, maxV)) : 0;
+  const refBandBottom = refLow != null ? yPos(Math.max(refLow, minV)) : height;
 
   return (
     <View style={{height: height + vs(28), marginTop: vs(8)}}>
@@ -1044,11 +722,12 @@ const SimpleChart = ({data, dates, refLow, refHigh, height = vs(120)}) => {
       {data.map((v, i) => {
         const x = i * stepX;
         const y = yPos(v);
-        const dotColor =
-          refHigh != null && v > refHigh
-            ? v > refHigh * 1.15
-              ? Colors.red
-              : Colors.amber
+        const isAbove = refHigh != null && v > refHigh;
+        const isBelow = refLow != null && refLow > 0 && v < refLow;
+        const dotColor = isAbove
+          ? (v > refHigh * 1.15 ? Colors.red : Colors.amber)
+          : isBelow
+            ? (v < refLow * 0.85 ? Colors.red : Colors.amber)
             : Colors.teal;
         return (
           <React.Fragment key={i}>
@@ -1288,7 +967,7 @@ const AyuIntelTab = ({data}) => {
             alignItems: 'center',
             marginBottom: vs(4),
           }}>
-          <AppText variant="body" style={{fontWeight: '700'}}>
+          <AppText variant="sectionTitle">
             Trend
           </AppText>
           <View style={{flexDirection: 'row', gap: s(4)}}>
@@ -1313,10 +992,15 @@ const AyuIntelTab = ({data}) => {
           </View>
         </View>
         <TrendChart
-          data={data.trendChart}
+          data={chartMode === 'rir' && data.refLow != null && data.refHigh != null
+            ? data.trendChart.map(v => {
+                const r = data.refHigh - data.refLow || 1;
+                return ((v - data.refLow) / r);
+              })
+            : data.trendChart}
           dates={data.trendDates}
-          refLow={data.refLow}
-          refHigh={data.refHigh}
+          refLow={chartMode === 'rir' ? 0 : data.refLow}
+          refHigh={chartMode === 'rir' ? 1 : data.refHigh}
           width={SCREEN_W - s(48)}
         />
         <View
@@ -1335,8 +1019,8 @@ const AyuIntelTab = ({data}) => {
       {data.timeline && data.timeline.length > 0 && (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(10)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(10)}}>
             Without Intervention
           </AppText>
           {data.timeline.map((t, i) => (
@@ -1395,8 +1079,8 @@ const AyuIntelTab = ({data}) => {
       {data.about ? (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(6)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(6)}}>
             About {data.name}
           </AppText>
           <AppText
@@ -1412,8 +1096,8 @@ const AyuIntelTab = ({data}) => {
       {data.symptoms && data.symptoms.length > 0 && (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(8)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(8)}}>
             Symptoms
           </AppText>
           {data.symptoms.map((sym, i) => (
@@ -1449,8 +1133,8 @@ const AyuIntelTab = ({data}) => {
       {data.causes && data.causes.length > 0 && (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(8)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(8)}}>
             Causes
           </AppText>
           {data.causes.map((cause, i) => (
@@ -1485,58 +1169,74 @@ const AyuIntelTab = ({data}) => {
       {/* Visit Log */}
       {data.history && data.history.length > 0 && (
         <View style={{gap: vs(8)}}>
-          <AppText variant="body" style={{fontWeight: '700'}}>
-            Visit Log
-          </AppText>
-          {data.history.map((h, i) => (
-            <View key={i} style={sty.visitCard}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <View>
-                  <AppText variant="body" style={{fontWeight: '700'}}>
-                    {h.value}
-                    {typeof h.value === 'number' ? data.unit : ''}
-                  </AppText>
-                  <AppText
-                    variant="small"
-                    color={Colors.textTertiary}
-                    style={{marginTop: vs(2)}}>
-                    {h.date}
-                  </AppText>
-                </View>
-                <View style={{alignItems: 'flex-end', gap: vs(3)}}>
-                  <View
-                    style={[
-                      sty.pill,
-                      {backgroundColor: statusBg(h.status)},
-                    ]}>
-                    <AppText
-                      variant="small"
-                      color={statusColor(h.status)}
-                      style={{fontWeight: '600'}}>
-                      {h.status}
-                    </AppText>
+          <View style={sty.sectionLabel}>
+            <AppText variant="small" color={Colors.textTertiary} style={{fontWeight:'700',textTransform:'uppercase',letterSpacing:0.8,fontSize:ms(9)}}>
+              Visit Log
+            </AppText>
+            <View style={sty.sectionLine} />
+          </View>
+          {data.history.map((h, i) => {
+            const sc = statusColor(h.status);
+            const sb = statusBg(h.status);
+            const rirNum = parseFloat(h.rir || 0);
+            const rirColor = rirNum < 0 || rirNum > 1 ? Colors.red : rirNum < 0.15 || rirNum > 0.85 ? Colors.amber : Colors.teal;
+            return (
+              <View key={i} style={sty.visitCard}>
+                {/* Top row: badge + date/note + status pill */}
+                <View style={{flexDirection:'row',alignItems:'center',gap:s(10),paddingHorizontal:s(12),paddingVertical:vs(10)}}>
+                  <View style={[sty.visitBadge,{backgroundColor:sb}]}>
+                    <AppText style={{fontSize:ms(14),fontWeight:'700',fontFamily:'monospace',lineHeight:ms(16),color:sc}}>{i+1}</AppText>
+                    <AppText style={{fontSize:ms(8),fontWeight:'600',color:sc,marginTop:vs(1)}}>Visit</AppText>
                   </View>
-                  <AppText
-                    variant="small"
-                    color={
-                      (h.delta || '').startsWith('+')
-                        ? Colors.red
-                        : (h.delta || '').startsWith('-')
-                        ? Colors.teal
-                        : Colors.textTertiary
-                    }
-                    style={{fontWeight: '600'}}>
-                    {h.delta}
-                  </AppText>
+                  <View style={{flex:1}}>
+                    <AppText variant="body" style={{fontWeight:'700'}}>{h.date}</AppText>
+                    <AppText variant="small" color="#aaa" style={{marginTop:vs(1)}}>{h.note}</AppText>
+                  </View>
+                  <View style={[sty.pill,{backgroundColor:sb,paddingHorizontal:s(9),paddingVertical:vs(3),borderRadius:ms(12)}]}>
+                    <AppText variant="small" color={sc} style={{fontWeight:'700',fontSize:ms(9)}}>{h.status === 'normal' ? 'Normal' : h.status === 'elevated' ? 'High' : 'Low'}</AppText>
+                  </View>
+                </View>
+
+                {/* Divider */}
+                <View style={{height:0.5,backgroundColor:'#f0f4f2',marginHorizontal:s(12)}} />
+
+                {/* Value / Machine / RIR row */}
+                <View style={{flexDirection:'row',gap:s(4),paddingHorizontal:s(12),paddingVertical:vs(10)}}>
+                  <View style={{flex:1}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(3)}}>Value</AppText>
+                    <AppText style={{fontSize:ms(15),fontWeight:'700',fontFamily:'monospace',lineHeight:ms(18),color:sc}}>{h.value}</AppText>
+                    <AppText style={{fontSize:ms(9),color:'#aaa'}}>{h.unit}</AppText>
+                  </View>
+                  <View style={{flex:1}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(3)}}>Machine</AppText>
+                    <View style={{backgroundColor:Colors.tealBg,paddingHorizontal:s(8),paddingVertical:vs(3),borderRadius:ms(8),alignSelf:'flex-start',marginTop:vs(4)}}>
+                      <AppText style={{fontSize:ms(10),fontWeight:'700',color:Colors.primary}}>TrustLab</AppText>
+                    </View>
+                  </View>
+                  <View style={{flex:1,alignItems:'flex-end'}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(3)}}>RIR</AppText>
+                    <AppText style={{fontSize:ms(15),fontWeight:'700',fontFamily:'monospace',lineHeight:ms(18),color:rirColor}}>{h.rir}</AppText>
+                  </View>
+                </View>
+
+                {/* Stats row: delta / range / status */}
+                <View style={{flexDirection:'row',borderTopWidth:0.5,borderTopColor:'#f0f4f2',marginTop:vs(0),paddingTop:vs(8),marginHorizontal:s(12),paddingBottom:vs(8)}}>
+                  <View style={{flex:1,alignItems:'center',borderRightWidth:0.5,borderRightColor:'#f0f4f2'}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(2)}}>{'\u0394'} vs baseline</AppText>
+                    <AppText style={{fontSize:ms(12),fontWeight:'700',fontFamily:'monospace',color: h.delta === '\u2014' ? '#888' : (h.delta || '').startsWith('-') ? Colors.teal : Colors.red}}>{h.delta}</AppText>
+                  </View>
+                  <View style={{flex:1,alignItems:'center',borderRightWidth:0.5,borderRightColor:'#f0f4f2'}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(2)}}>Range</AppText>
+                    <AppText style={{fontSize:ms(9),fontWeight:'700',color:'#888'}}>{h.refRange}</AppText>
+                  </View>
+                  <View style={{flex:1,alignItems:'center'}}>
+                    <AppText style={{fontSize:ms(8),fontWeight:'700',textTransform:'uppercase',letterSpacing:0.5,color:'#aaa',marginBottom:vs(2)}}>Status</AppText>
+                    <AppText style={{fontSize:ms(12),fontWeight:'700',fontFamily:'monospace',color:sc}}>{h.status === 'normal' ? 'Normal' : h.status === 'elevated' ? 'High' : 'Low'}</AppText>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       )}
     </View>
@@ -1687,15 +1387,35 @@ const ProgressionTab = ({data}) => {
         );
       })}
 
-      {/* Historical Trend Sparkline */}
-      {prog.hpsHistory && prog.hpsHistory.length > 0 && (
-        <View style={sty.card}>
-          <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(4)}}>
-            Health Performance Score Trend
-          </AppText>
-          <SparkLine data={prog.hpsHistory} color={Colors.accent} />
+      {/* Historical Trend */}
+      <View style={sty.sectionLabel}>
+        <AppText variant="small" color={Colors.textTertiary} style={{fontWeight:'700',textTransform:'uppercase',letterSpacing:0.8,fontSize:ms(9)}}>Historical trend</AppText>
+        <View style={sty.sectionLine} />
+      </View>
+      {data.trendChart && data.trendChart.length > 0 && (
+        <View style={{backgroundColor:Colors.background,borderWidth:0.5,borderColor:Colors.borderLight,borderRadius:ms(10),padding:s(10),marginBottom:vs(8)}}>
+          {/* Header with title + legend */}
+          <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:vs(6)}}>
+            <AppText variant="small" color={Colors.textTertiary} style={{fontWeight:'700',textTransform:'uppercase',letterSpacing:0.6,fontSize:ms(9)}}>{data.name}</AppText>
+            <View style={{flexDirection:'row',gap:s(10)}}>
+              <View style={{flexDirection:'row',alignItems:'center',gap:s(4)}}>
+                <View style={{width:ms(12),height:2,borderRadius:1,backgroundColor:Colors.amber}} />
+                <AppText variant="small" color={Colors.textTertiary} style={{fontSize:ms(9)}}>Measured</AppText>
+              </View>
+              <View style={{flexDirection:'row',alignItems:'center',gap:s(4)}}>
+                <AppText variant="small" color={Colors.teal} style={{fontSize:ms(9)}}>— Target</AppText>
+              </View>
+            </View>
+          </View>
+          {/* Chart with ref band */}
+          <TrendChart
+            data={data.trendChart}
+            dates={data.trendDates}
+            refLow={data.refLow}
+            refHigh={data.refHigh}
+            height={vs(72)}
+            width={SCREEN_W - s(48)}
+          />
         </View>
       )}
 
@@ -1703,8 +1423,8 @@ const ProgressionTab = ({data}) => {
       {prog.measurementTable && prog.measurementTable.length > 0 && (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(8)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(8)}}>
             Measurement History
           </AppText>
           {/* Header row */}
@@ -1789,16 +1509,19 @@ const ProgressionTab = ({data}) => {
 };
 
 // --- Organs Tab ---
+const ORGAN_COLORS = {
+  'Pancreas':'#F59E0B','Bones':'#8B5CF6','Muscles':'#F59E0B','Brain':'#7C3AED',
+  'Immune System':'#06B6D4','Heart':'#EF4444','Kidneys':'#3B82F6','Liver':'#06B6D4',
+  'Eyes':'#8B5CF6','Nerves':'#F59E0B','Thyroid':'#16A34A','Arteries':'#EF4444',
+};
+
 const OrgansTab = ({data}) => {
   const organs = data.organs || [];
   const details = data.organDetails || [];
   if (organs.length === 0 && details.length === 0) {
     return (
       <View style={sty.card}>
-        <AppText
-          variant="body"
-          color={Colors.textTertiary}
-          style={{textAlign: 'center', paddingVertical: vs(20)}}>
+        <AppText variant="body" color={Colors.textTertiary} style={{textAlign:'center',paddingVertical:vs(20)}}>
           No organ impact data available yet.
         </AppText>
       </View>
@@ -1806,121 +1529,61 @@ const OrgansTab = ({data}) => {
   }
 
   return (
-    <View style={{gap: vs(12)}}>
-      {/* Organ Grid (2x2) */}
+    <View style={{gap: vs(10)}}>
+      {/* Organ Grid (2-column) */}
       {organs.length > 0 && (
-        <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: s(8)}}>
+        <View style={{flexDirection:'row',flexWrap:'wrap',gap:s(8),marginBottom:vs(2)}}>
           {organs.map((org, i) => {
-            const sevColor =
-              org.severity > 60
-                ? Colors.red
-                : org.severity > 30
-                ? Colors.amber
-                : Colors.teal;
-            const stageColor = statusColor(
-              (org.stage || '').includes('2')
-                ? 'high'
-                : (org.stage || '').includes('1')
-                ? 'elevated'
-                : 'normal',
-            );
+            const oc = ORGAN_COLORS[org.name] || Colors.amber;
+            const sevColor = org.severity > 50 ? Colors.red : org.severity > 30 ? Colors.amber : Colors.teal;
             return (
               <View key={i} style={sty.organGridCard}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: s(6),
-                    marginBottom: vs(6),
-                  }}>
-                  <Icon
-                    family="Ionicons"
-                    name={org.icon}
-                    size={18}
-                    color={Colors.primary}
-                  />
-                  <AppText variant="body" style={{fontWeight: '700'}}>
-                    {org.name}
+                {/* Top row: name + score */}
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-start',marginBottom:vs(7)}}>
+                  <View style={{flex:1}}>
+                    <AppText variant="caption" style={{fontWeight:'700',fontSize:ms(11),color:Colors.textPrimary,marginBottom:vs(1)}}>{org.name}</AppText>
+                    <AppText variant="small" color={oc} style={{fontWeight:'600',fontSize:ms(9)}}>{org.stage}</AppText>
+                  </View>
+                  <AppText style={{fontSize:ms(16),fontWeight:'700',fontFamily:'monospace',color:oc}}>
+                    {org.severity}<AppText style={{fontSize:ms(11),opacity:0.5,color:oc}}>/100</AppText>
                   </AppText>
                 </View>
-                <AppText
-                  variant="small"
-                  color={stageColor}
-                  style={{fontWeight: '600', marginBottom: vs(4)}}>
-                  {org.stage}
+                {/* Progress bar */}
+                <View style={{marginBottom:vs(6)}}>
+                  <ProgressBar progress={org.severity / 100} color={oc} height={5} />
+                </View>
+                {/* Trend */}
+                <AppText variant="small" color={Colors.textTertiary} style={{fontSize:ms(9)}}>
+                  {org.severity > 50 ? '\u2191 Worsening' : '\u2192 Stable'}
                 </AppText>
-                <View style={{marginBottom: vs(4)}}>
-                  <ProgressBar
-                    progress={org.severity / 100}
-                    color={sevColor}
-                    height={5}
-                  />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <AppText variant="small" color={Colors.textTertiary}>
-                    Severity: {org.severity}
-                  </AppText>
-                  <AppText
-                    variant="small"
-                    color={statusColor(org.trend)}
-                    style={{fontWeight: '600'}}>
-                    {org.trend}
-                  </AppText>
-                </View>
               </View>
             );
           })}
         </View>
       )}
 
-      {/* Organ Impact Cards */}
-      {details.map((org, i) => (
-        <View key={i} style={sty.card}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: s(8),
-              marginBottom: vs(6),
-            }}>
-            <View
-              style={{
-                width: ms(32),
-                height: ms(32),
-                borderRadius: ms(16),
-                backgroundColor: Colors.tealBg,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Icon
-                family="Ionicons"
-                name={org.icon}
-                size={16}
-                color={Colors.primary}
-              />
+      {/* Organ Impact Detail Cards */}
+      {details.map((org, i) => {
+        const oc = ORGAN_COLORS[org.name] || Colors.amber;
+        return (
+          <View key={i} style={[sty.card,{paddingHorizontal:s(12),paddingVertical:vs(10)}]}>
+            {/* Header: icon + name + stage */}
+            <View style={{flexDirection:'row',alignItems:'center',gap:s(7),marginBottom:vs(5)}}>
+              <View style={{width:ms(28),height:ms(28),borderRadius:ms(8),backgroundColor:oc + '15',alignItems:'center',justifyContent:'center'}}>
+                <Icon family="Ionicons" name={org.icon || 'body-outline'} size={13} color={oc} />
+              </View>
+              <View style={{flex:1}}>
+                <AppText variant="body" style={{fontWeight:'700',fontSize:ms(12)}}>{org.name}</AppText>
+                <AppText variant="small" color={oc} style={{fontWeight:'600',fontSize:ms(9)}}>{org.stage}</AppText>
+              </View>
             </View>
-            <View style={{flex: 1}}>
-              <AppText variant="body" style={{fontWeight: '700'}}>
-                {org.name}
-              </AppText>
-              <AppText variant="small" color={Colors.textTertiary}>
-                {org.stage}
-              </AppText>
-            </View>
+            {/* Impact text */}
+            <AppText variant="caption" color={Colors.textSecondary} style={{lineHeight:ms(18),fontSize:ms(11)}}>
+              {org.impact}
+            </AppText>
           </View>
-          <AppText
-            variant="caption"
-            color={Colors.textSecondary}
-            style={{lineHeight: ms(17)}}>
-            {org.impact}
-          </AppText>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };
@@ -1964,101 +1627,45 @@ const ClusterTab = ({data}) => {
               {cl.description}
             </AppText>
           </View>
-          <View style={{alignItems: 'center'}}>
+          <View style={{alignItems:'center'}}>
             <AppText
               style={{
-                fontSize: ms(28),
-                fontWeight: '900',
-                color:
-                  cl.riskScore > 60
-                    ? Colors.red
-                    : cl.riskScore > 40
-                    ? Colors.amber
-                    : Colors.teal,
+                fontSize: ms(24),
+                fontWeight:'700',
+                fontFamily:'monospace',
+                lineHeight: ms(28),
+                color: cl.riskScore > 60 ? Colors.red : cl.riskScore > 40 ? '#F97316' : Colors.teal,
               }}>
-              {cl.riskScore}
+              {cl.riskScore}%
             </AppText>
-            <AppText variant="small" color={Colors.textTertiary}>
+            <AppText variant="small" color={Colors.textTertiary} style={{fontSize:ms(8),textTransform:'uppercase',letterSpacing:0.5,fontWeight:'600'}}>
               Risk Score
             </AppText>
           </View>
         </View>
-      </View>
 
-      {/* Disease Progression Bars */}
-      {cl.diseases && cl.diseases.length > 0 && (
-        <View style={sty.card}>
-          <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(10)}}>
-            Disease Progression
-          </AppText>
-          {cl.diseases.map((d, i) => {
-            const pct = d.probability != null ? d.probability : (d.progress != null ? Math.round(d.progress * 100) : 0);
-            const barPct = pct / 100;
-            const barColor =
-              pct > 50
-                ? Colors.red
-                : pct > 30
-                ? Colors.amber
-                : Colors.teal;
-            const typeLabel = d.type === 'active' ? 'Active' : d.type === 'emerging' ? 'Emerging' : d.type === 'watch' ? 'Watch Zone' : d.type || 'Unknown';
-            const typeBg =
-              d.type === 'active' || d.type === 'Primary'
-                ? Colors.redBg
-                : d.type === 'emerging' || d.type === 'Secondary'
-                ? Colors.amberBg
-                : Colors.blueBg;
-            const typeColor =
-              d.type === 'active' || d.type === 'Primary'
-                ? Colors.redText
-                : d.type === 'emerging' || d.type === 'Secondary'
-                ? Colors.amberText
-                : Colors.blueText;
-            return (
-              <View key={i} style={{marginBottom: vs(10)}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: vs(4),
-                  }}>
-                  <AppText variant="caption" style={{fontWeight: '600'}}>
-                    {d.name}
-                  </AppText>
-                  <View style={[sty.pill, {backgroundColor: typeBg}]}>
-                    <AppText
-                      variant="small"
-                      color={typeColor}
-                      style={{fontWeight: '700', fontSize: ms(8)}}>
-                      {typeLabel}
-                    </AppText>
-                  </View>
-                </View>
-                <ProgressBar
-                  progress={barPct}
-                  color={barColor}
-                  height={5}
-                />
-                <AppText
-                  variant="small"
-                  color={Colors.textTertiary}
-                  style={{marginTop: vs(2), textAlign: 'right'}}>
-                  {pct}%
-                </AppText>
+        {/* Disease rows inside same card */}
+        {cl.diseases && cl.diseases.length > 0 && cl.diseases.map((d, i) => {
+          const pct = d.probability != null ? d.probability : (d.progress != null ? Math.round(d.progress * 100) : 0);
+          const barColor = d.type === 'active' ? Colors.red : d.type === 'emerging' ? '#F97316' : Colors.blue;
+          const typeLabel = d.type === 'active' ? 'Active' : d.type === 'emerging' ? 'Emerging' : 'Watch Zone';
+          const typeColor = d.type === 'active' ? Colors.red : d.type === 'emerging' ? '#F97316' : Colors.blue;
+          return (
+            <View key={i} style={{paddingVertical:vs(8),borderBottomWidth:i < cl.diseases.length - 1 ? 0.5 : 0,borderBottomColor:'#f4f4f4'}}>
+              <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginBottom:vs(4)}}>
+                <AppText variant="caption" style={{fontWeight:'600',color:'#374151',fontSize:ms(11)}}>{d.name}</AppText>
+                <AppText variant="small" color={typeColor} style={{fontWeight:'700',fontSize:ms(9)}}>{typeLabel}</AppText>
               </View>
-            );
-          })}
-        </View>
-      )}
+              <ProgressBar progress={pct / 100} color={barColor} height={5} />
+            </View>
+          );
+        })}
+      </View>
 
       {/* Cluster Timeline */}
       {cl.timeline && cl.timeline.length > 0 && (
         <View style={sty.card}>
-          <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(10)}}>
+          <AppText variant="sectionTitle" style={{marginBottom: vs(10)}}>
             Progression Timeline
           </AppText>
           {cl.timeline.map((t, i) => {
@@ -2066,42 +1673,15 @@ const ClusterTab = ({data}) => {
             const tlDetail = t.event || t.detail || '';
             const tlColor = t.color || t.col || Colors.textTertiary;
             return (
-              <View
-                key={i}
-                style={{
-                  flexDirection: 'row',
-                  marginBottom: i < cl.timeline.length - 1 ? vs(2) : 0,
-                }}>
-                <View style={{alignItems: 'center', width: s(16)}}>
-                  <View
-                    style={{
-                      width: ms(10),
-                      height: ms(10),
-                      borderRadius: ms(5),
-                      backgroundColor: tlColor,
-                      zIndex: 1,
-                    }}
-                  />
+              <View key={i} style={{flexDirection:'row',marginBottom:i < cl.timeline.length - 1 ? vs(2) : 0}}>
+                <View style={{alignItems:'center',width:s(16)}}>
+                  <View style={{width:ms(10),height:ms(10),borderRadius:ms(5),backgroundColor:tlColor,zIndex:1}} />
                   {i < cl.timeline.length - 1 && (
-                    <View
-                      style={{
-                        width: 2,
-                        flex: 1,
-                        backgroundColor: Colors.borderLight,
-                        marginVertical: vs(2),
-                      }}
-                    />
+                    <View style={{width:2,flex:1,backgroundColor:Colors.borderLight,marginVertical:vs(2)}} />
                   )}
                 </View>
-                <View
-                  style={{
-                    flex: 1,
-                    marginLeft: s(8),
-                    paddingBottom: vs(12),
-                  }}>
-                  <AppText
-                    variant="caption"
-                    style={{fontWeight: '700'}}
+                <View style={{flex:1,marginLeft:s(8),paddingBottom:vs(12)}}>
+                  <AppText variant="caption" style={{fontWeight:'700'}}
                     color={tlColor}>
                     {tlLabel}
                   </AppText>
@@ -2131,7 +1711,7 @@ const CareTab = ({data}) => {
       {/* Action Cards */}
       {care.actions && care.actions.length > 0 && (
         <View style={{gap: vs(8)}}>
-          <AppText variant="body" style={{fontWeight: '700'}}>
+          <AppText variant="sectionTitle">
             Recommended Actions
           </AppText>
           {care.actions.map((a, i) => (
@@ -2194,8 +1774,8 @@ const CareTab = ({data}) => {
       {care.treatment && care.treatment.length > 0 && (
         <View style={sty.card}>
           <AppText
-            variant="body"
-            style={{fontWeight: '700', marginBottom: vs(8)}}>
+            variant="sectionTitle"
+            style={{marginBottom: vs(8)}}>
             Treatment Plan
           </AppText>
           {care.treatment.map((step, i) => (
@@ -2284,50 +1864,19 @@ const CareTab = ({data}) => {
 // Main Screen
 // ──────────────────────────────────────────────
 
-const BiomarkerDetailScreen = () => {
+const BiomarkerIntelDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-  const {biomarkerId, lifestyleId, medicalId} = route.params || {};
+  const {biomarkerId} = route.params || {};
 
   const [activeTab, setActiveTab] = useState('ayuIntel');
 
-  // Determine data type and load placeholder
-  const dataType = useMemo(() => {
-    if (lifestyleId) return 'lifestyle';
-    if (medicalId) return 'medical';
-    return 'biomarker';
-  }, [lifestyleId, medicalId]);
-
+  // Find biomarker and build detail data
   const data = useMemo(() => {
-    if (dataType === 'lifestyle') {
-      const section = LIFESTYLE_SECTIONS.find(s => s.id === lifestyleId);
-      return mapLifestyleToDetail(section) || mapLifestyleToDetail(LIFESTYLE_SECTIONS[0]);
-    }
-    if (dataType === 'medical') {
-      // Check conditions first, then organs
-      var condition = MEDICAL_CONDITIONS.find(c => c.id === medicalId);
-      if (condition) return mapMedicalToDetail(condition);
-      // Organ clicked - find organ and build a pseudo-condition from detail data
-      var organ = ORGANS.find(o => o.id === medicalId);
-      if (organ && MEDICAL_DETAIL_DATA[medicalId]) {
-        var pseudoCondition = {
-          id: organ.id,
-          ico: 'body-outline',
-          icoBg: organ.icoBg,
-          title: organ.name,
-          sub: organ.detail,
-          badge: organ.pillLabel,
-          badgeStyle: organ.pillStyle,
-          risks: [],
-        };
-        return mapMedicalToDetail(pseudoCondition);
-      }
-      return mapMedicalToDetail(MEDICAL_CONDITIONS[0]);
-    }
     const bm = BIOMARKERS.find(b => b.id === biomarkerId);
     return mapBiomarkerToDetail(bm) || mapBiomarkerToDetail(BIOMARKERS[0]);
-  }, [dataType, biomarkerId, lifestyleId, medicalId]);
+  }, [biomarkerId]);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -2347,27 +1896,13 @@ const BiomarkerDetailScreen = () => {
   };
 
   // Header metric cards config - use hdr from detail data if available
-  const metricCards = useMemo(() => {
-    // For medical/lifestyle, try to get hdr from source detail data
-    if (dataType === 'medical' && medicalId) {
-      var dd = MEDICAL_DETAIL_DATA[medicalId];
-      if (dd && dd.hdr) {
-        return dd.hdr.map(function(h) { return {label: h.lbl, value: h.val, sub: h.unit, color: h.col}; });
-      }
-    }
-    if (dataType === 'lifestyle' && lifestyleId) {
-      var ld = LIFESTYLE_DETAIL_DATA[lifestyleId];
-      if (ld && ld.hdr) {
-        return ld.hdr.map(function(h) { return {label: h.lbl, value: h.val, sub: h.unit, color: h.col}; });
-      }
-    }
-    return [
-      {label: 'Latest RIR', value: String(data.latestRIR), color: Colors.accent},
-      {label: 'Value', value: String(data.latestValue) + (data.unit && typeof data.latestValue === 'number' ? data.unit : ''), color: Colors.blue},
-      {label: '\u0394 Baseline', value: data.delta, color: data.deltaDirection === 'up' ? Colors.red : Colors.teal},
-      {label: 'Readings', value: String(data.readingsCount), color: Colors.purple},
-    ];
-  }, [data, dataType, medicalId, lifestyleId]);
+  // Biomarker-specific metric cards
+  const metricCards = [
+    {label: 'Latest RIR', value: String(data.latestRIR), color: Colors.accent},
+    {label: 'Value', value: String(data.latestValue) + (data.unit && typeof data.latestValue === 'number' ? data.unit : ''), color: Colors.blue},
+    {label: '\u0394 Baseline', value: data.delta, color: data.deltaDirection === 'up' ? Colors.red : Colors.teal},
+    {label: 'Readings', value: String(data.readingsCount), color: Colors.purple},
+  ];
 
   return (
     <View style={sty.container}>
@@ -2403,19 +1938,12 @@ const BiomarkerDetailScreen = () => {
               }}>
               {data.name}
             </AppText>
-            {data.category !== 'Medical Condition' && data.category !== 'Lifestyle' ? (
+            {(
               <AppText
                 variant="caption"
                 color="rgba(255,255,255,0.45)"
                 style={{marginTop: vs(2)}}>
                 Ref: {data.refRange} {data.unit}
-              </AppText>
-            ) : (
-              <AppText
-                variant="caption"
-                color="rgba(255,255,255,0.45)"
-                style={{marginTop: vs(2)}}>
-                {data.category} · March 2026 · Priya Reddy
               </AppText>
             )}
           </View>
@@ -2568,7 +2096,26 @@ const sty = StyleSheet.create({
     borderRadius: ms(13),
     borderWidth: 0.5,
     borderColor: Colors.borderLight,
-    padding: s(12),
+    overflow: 'hidden',
+  },
+  visitBadge: {
+    width: ms(38),
+    height: ms(38),
+    borderRadius: ms(10),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: s(8),
+    marginTop: vs(14),
+    marginBottom: vs(7),
+  },
+  sectionLine: {
+    flex: 1,
+    height: 0.5,
+    backgroundColor: Colors.borderLight,
   },
 
   // Analysis card (gradient)
@@ -2642,4 +2189,4 @@ const sty = StyleSheet.create({
   },
 });
 
-export default BiomarkerDetailScreen;
+export default BiomarkerIntelDetailScreen;
