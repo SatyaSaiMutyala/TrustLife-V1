@@ -18,6 +18,14 @@ import Colors from '../../constants/colors';
 import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
 import TrendChart from '../../components/shared/TrendChart';
+import {AyuIntelPanel, OverviewPanel, TrendsPanel, PatternsPanel} from './GlucoseAyuIntelScreen';
+import {BPOverviewPanel, BPTrendsPanel, BPPatternsPanel} from './BPAyuIntelScreen';
+import {HROverviewPanel, HRTrendsPanel, HRPatternsPanel} from './HRAyuIntelScreen';
+import {WeightOverviewPanel, WeightMeasurementsPanel, WeightPeerGroupPanel, WeightConditionsPanel, WeightPatternsPanel} from './WeightAyuIntelScreen';
+import {TempOverviewPanel, TempTrendsPanel, TempConditionsPanel} from './TempAyuIntelScreen';
+import {AsthmaOverviewPanel, AsthmaTriggersPanel, AsthmaConditionsPanel, AsthmaPatternsPanel} from './AsthmaAyuIntelScreen';
+import {MigraineOverviewPanel, MigraineTriggersPanel, MigraineConditionsPanel, MigrainePatternsPanel} from './MigraineAyuIntelScreen';
+import {AnemiaOverviewPanel, AnemiaIronB12Panel, AnemiaConditionsPanel, AnemiaDietPanel} from './AnemiaAyuIntelScreen';
 
 const {width: SCREEN_W} = Dimensions.get('window');
 
@@ -1138,13 +1146,256 @@ const statusBg = status => {
   return Colors.redBg;
 };
 
-const TABS = [
+// ──────────────────────────────────────────────
+// Glucose Intel Tab (imported panels with sub-tabs)
+// ──────────────────────────────────────────────
+
+const GlucoseIntelTab = () => {
+  const [subTab, setSubTab] = useState('intel');
+  const SUB_TABS = [
+    {key: 'intel', label: 'Ayu Intel'},
+    {key: 'overview', label: 'Overview'},
+    {key: 'trends', label: 'Trends'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'intel' && <AyuIntelPanel />}
+      {subTab === 'overview' && <OverviewPanel />}
+      {subTab === 'trends' && <TrendsPanel />}
+      {subTab === 'patterns' && <PatternsPanel />}
+    </View>
+  );
+};
+
+const BPIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'trends', label: 'Trends'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <BPOverviewPanel />}
+      {subTab === 'trends' && <BPTrendsPanel />}
+      {subTab === 'patterns' && <BPPatternsPanel />}
+    </View>
+  );
+};
+
+const HRIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'trends', label: 'Trends'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <HROverviewPanel />}
+      {subTab === 'trends' && <HRTrendsPanel />}
+      {subTab === 'patterns' && <HRPatternsPanel />}
+    </View>
+  );
+};
+
+const WeightIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'measurements', label: 'Measurements'},
+    {key: 'peergroup', label: 'Peer Group'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <WeightOverviewPanel />}
+      {subTab === 'measurements' && <WeightMeasurementsPanel />}
+      {subTab === 'peergroup' && <WeightPeerGroupPanel />}
+      {subTab === 'conditions' && <WeightConditionsPanel />}
+      {subTab === 'patterns' && <WeightPatternsPanel />}
+    </View>
+  );
+};
+
+const TempIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'trends', label: 'Trends'},
+    {key: 'conditions', label: 'Conditions'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <TempOverviewPanel />}
+      {subTab === 'trends' && <TempTrendsPanel />}
+      {subTab === 'conditions' && <TempConditionsPanel />}
+    </View>
+  );
+};
+
+const AsthmaIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'triggers', label: 'Triggers'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <AsthmaOverviewPanel />}
+      {subTab === 'triggers' && <AsthmaTriggersPanel />}
+      {subTab === 'conditions' && <AsthmaConditionsPanel />}
+      {subTab === 'patterns' && <AsthmaPatternsPanel />}
+    </View>
+  );
+};
+
+const MigraineIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'triggers', label: 'Triggers'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'patterns', label: 'Patterns'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <MigraineOverviewPanel />}
+      {subTab === 'triggers' && <MigraineTriggersPanel />}
+      {subTab === 'conditions' && <MigraineConditionsPanel />}
+      {subTab === 'patterns' && <MigrainePatternsPanel />}
+    </View>
+  );
+};
+
+const AnemiaIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'iron', label: 'Iron & B12'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'diet', label: 'Diet & absorption'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <AnemiaOverviewPanel />}
+      {subTab === 'iron' && <AnemiaIronB12Panel />}
+      {subTab === 'conditions' && <AnemiaConditionsPanel />}
+      {subTab === 'diet' && <AnemiaDietPanel />}
+    </View>
+  );
+};
+
+const BASE_TABS = [
   {key: 'ayuIntel', label: '\uD83E\uDDE0 Ayu Intel'},
   {key: 'progression', label: '\uD83D\uDCC8 Progression'},
   {key: 'organs', label: '\uD83E\uDEC1 Organs'},
   {key: 'cluster', label: '\uD83D\uDD17 Cluster'},
   {key: 'care', label: '\u2713 Care'},
 ];
+
+const INTEL_TABS = {
+  glucose: {key: 'glucoseIntel', label: 'Glucose Intel'},
+  bp: {key: 'bpIntel', label: 'BP Intel'},
+  heartRate: {key: 'hrIntel', label: 'HR Intel'},
+  weight: {key: 'weightIntel', label: 'Weight Intel'},
+  temperature: {key: 'tempIntel', label: 'Temp Intel'},
+  asthma: {key: 'asthmaIntel', label: 'Asthma Intel'},
+  migraine: {key: 'migraineIntel', label: 'Migraine Intel'},
+  anemia: {key: 'anemiaIntel', label: 'Anaemia Intel'},
+};
 
 // ──────────────────────────────────────────────
 // Chart components
@@ -1635,9 +1886,14 @@ const SymptomsDetailScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
-  const {symptomId} = route.params || {};
+  const {symptomId, initialTab} = route.params || {};
 
-  const [activeTab, setActiveTab] = useState('ayuIntel');
+  const [activeTab, setActiveTab] = useState(initialTab || 'ayuIntel');
+
+  const tabs = useMemo(() => {
+    const intelTab = INTEL_TABS[symptomId];
+    return intelTab ? [...BASE_TABS, intelTab] : BASE_TABS;
+  }, [symptomId]);
 
   const ls = useMemo(() => {
     return SYMPTOMS_DATA[symptomId] || SYMPTOMS_DATA.glucose;
@@ -1659,6 +1915,22 @@ const SymptomsDetailScreen = () => {
         return <ClusterTab ls={ls} />;
       case 'care':
         return <CareTab ls={ls} />;
+      case 'glucoseIntel':
+        return <GlucoseIntelTab />;
+      case 'bpIntel':
+        return <BPIntelTab />;
+      case 'hrIntel':
+        return <HRIntelTab />;
+      case 'weightIntel':
+        return <WeightIntelTab />;
+      case 'tempIntel':
+        return <TempIntelTab />;
+      case 'asthmaIntel':
+        return <AsthmaIntelTab />;
+      case 'migraineIntel':
+        return <MigraineIntelTab />;
+      case 'anemiaIntel':
+        return <AnemiaIntelTab />;
       default:
         return <AyuIntelTab ls={ls} />;
     }
@@ -1696,7 +1968,7 @@ const SymptomsDetailScreen = () => {
       {/* Tabs */}
       <View style={sty.tabContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={sty.tabScroll}>
-          {TABS.map(tab => {
+          {tabs.map(tab => {
             const isActive = activeTab === tab.key;
             return (
               <TouchableOpacity key={tab.key} style={[sty.tab, isActive && sty.tabActive]} activeOpacity={0.7} onPress={() => setActiveTab(tab.key)}>

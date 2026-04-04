@@ -1,730 +1,445 @@
-import React, {useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import React, {useState, useMemo} from 'react';
+import {View, StyleSheet, TouchableOpacity, Modal, Pressable} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
-import Svg, {Circle as SvgCircle, Text as SvgText, Path, Rect, Line as SvgLine} from 'react-native-svg';
+import Svg, {Path, Line, Circle, Text as SvgText} from 'react-native-svg';
 import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
 import Icon from '../../../components/shared/Icons';
 
-// ─── Constants & Data ───────────────────────────────────────────────────
+const NP_CONFIG = {
+  weight: {label: 'Weight', hint: 'Weight in kg - Ideal range: 49-61 kg - Target: 61.2 kg', range: 'Range: 30-150 kg', min: 30, max: 150},
+  height: {label: 'Height', hint: 'Height in cm - Your recorded height: 163 cm', range: 'Range: 100-220 cm', min: 100, max: 220},
+  waist: {label: 'Waist circumference', hint: 'Measured at navel - Indian women target: <80 cm', range: 'Range: 50-150 cm', min: 50, max: 150},
+};
 
+// BMI classification bar zones (Indian standard)
 const BMI_ZONES = [
-  {label: 'Under', range: '<18.5', color: '#3b82f6', flex: 2},
-  {label: 'Normal', range: '18.5–23', color: '#10b981', flex: 4.5},
-  {label: 'OW', range: '23–27.5', color: '#f59e0b', flex: 4.5},
-  {label: 'Obese', range: '>27.5', color: '#ef4444', flex: 3},
-  {label: 'Severe', range: '', color: '#991b1b', flex: 2},
+  {label: 'Under', range: '<18.5', color: Colors.blue, flex: 3.5},
+  {label: 'Normal', range: '18.5-23', color: Colors.tealDark, flex: 4.5},
+  {label: 'OW', range: '23-27.5', color: Colors.amber, flex: 4.5},
+  {label: 'Obese', range: '>27.5', color: Colors.red, flex: 5},
 ];
 
-const TIME_CHIPS = ['Morning', 'Evening', 'Random time'];
-const CLOTHING_CHIPS = ['Light clothing', 'Full clothes', 'No clothes', 'With shoes'];
-const MEAL_CHIPS = ['Before breakfast', 'After eating', 'After exercise'];
+// Slider marks
+const WEIGHT_MARKS = ['30', '49', '61.2', '80', '100', '150'];
+const HEIGHT_MARKS = ['100', '140', '155', '163', '175', '190', '220'];
 
-const CONTEXT_TAGS = [
-  'Unwell/fever', 'Menstrual', 'Bloated', 'Heavy meal',
-  'High sodium', 'Intense exercise', 'Travel', 'New medication',
-  'Usual/baseline',
-];
+// Unit conversion helpers
+const kgToLb = (kg) => (parseFloat(kg) * 2.20462).toFixed(1);
+const lbToKg = (lb) => (parseFloat(lb) / 2.20462).toFixed(1);
+const cmToFtIn = (cm) => {
+  const totalIn = parseFloat(cm) / 2.54;
+  const ft = Math.floor(totalIn / 12);
+  const inches = Math.round(totalIn % 12);
+  return `${ft}'${inches}"`;
+};
+const cmToIn = (cm) => (parseFloat(cm) / 2.54).toFixed(1);
+const inToCm = (inches) => (parseFloat(inches) * 2.54).toFixed(1);
 
-const DERIVED_DATA = [
-  {label: 'Ideal weight range', value: '49\u201361 kg', sub: 'BMI 18.5\u201323 at 163 cm', color: Colors.textPrimary},
-  {label: 'To reach BMI 23', value: '\u22127.2 kg', sub: '', color: Colors.amber},
-  {label: 'Waist circumference', value: '84 cm', sub: 'Target <80 cm', color: Colors.red},
-  {label: 'Waist/height ratio', value: '0.52', sub: 'Target <0.50', color: Colors.amber},
-  {label: 'vs Last recorded', value: '\u22120.8 kg', sub: 'vs 69.2 kg Sep 2025', color: Colors.teal},
-  {label: 'Loss rate', value: '\u22120.13 kg/wk', sub: 'Healthy pace', color: Colors.teal},
-];
+const WeightManualEntry = ({weightVal, setWeightVal, heightVal, setHeightVal, waistVal, setWaistVal, unit = 'metric'}) => {
+  const isImp = unit === 'imperial';
+  const [numpadVisible, setNumpadVisible] = useState(false);
+  const [numpadTarget, setNumpadTarget] = useState('weight');
+  const [numpadVal, setNumpadVal] = useState('');
 
-const COMPARISON_ROWS = [
-  {label: 'Last recorded (15 Mar)', weight: '68.4', change: 'Same', color: Colors.textSecondary},
-  {label: '6 months ago (Sep 2025)', weight: '69.2', change: '\u22120.8 kg', color: Colors.teal},
-  {label: 'At T2DM diagnosis (Sep 2019)', weight: '72.4', change: '\u22124.0 kg', color: Colors.teal},
-  {label: 'Peak weight (Jun 2022)', weight: '70.2', change: '\u22121.8 kg', color: Colors.teal},
-  {label: 'Target (BMI 23)', weight: '61.2', change: '+7.2 kg away', color: Colors.red},
-];
+  const bmi = useMemo(() => {
+    const w = parseFloat(weightVal);
+    const h = parseFloat(heightVal);
+    if (isNaN(w) || isNaN(h) || h === 0) return null;
+    return Math.round((w / ((h / 100) * (h / 100))) * 10) / 10;
+  }, [weightVal, heightVal]);
 
-const CONDITION_LINKS = [
-  {icon: 'analytics-outline', title: 'T2DM', bgColor: Colors.amberBg, iconColor: Colors.amber, desc: 'Each 1 kg lost reduces fasting glucose by ~0.2 mmol/L. Weight loss of 5\u201310% can significantly improve HbA1c.'},
-  {icon: 'heart-outline', title: 'HTN', bgColor: Colors.redBg, iconColor: Colors.red, desc: 'Each 1 kg loss \u2248 ~1 mmHg systolic BP drop. Sustained loss reduces medication burden.'},
-  {icon: 'beaker-outline', title: 'Dyslipidaemia', bgColor: Colors.blueBg, iconColor: Colors.blue, desc: 'Visceral fat drives TG and HDL imbalance. Even modest weight loss improves lipid profile.'},
-  {icon: 'body-outline', title: 'NAFLD', bgColor: Colors.amberBg, iconColor: Colors.amber, desc: 'Weight loss of 7\u201310% is most effective intervention for NAFLD regression and fibrosis improvement.'},
-];
+  const idealWeight = useMemo(() => {
+    const h = parseFloat(heightVal);
+    if (isNaN(h) || h === 0) return null;
+    return Math.round(23.0 * (h / 100) * (h / 100) * 10) / 10;
+  }, [heightVal]);
 
-const HISTORY_ROWS = [
-  {date: 'Today', weight: '68.4', bmi: '24.7', change: '\u2014', source: 'Manual', highlight: true},
-  {date: '15 Mar 26', weight: '68.4', bmi: '24.7', change: '\u2014', source: 'Clinic', highlight: false},
-  {date: '10 Sep 25', weight: '69.2', bmi: '26.0', change: '\u22120.8', changeColor: Colors.teal, source: 'Clinic', highlight: false},
-  {date: '12 Mar 25', weight: '69.0', bmi: '25.9', change: '\u22120.2', changeColor: Colors.teal, source: 'Manual', highlight: false},
-  {date: '2 Sep 24', weight: '69.2', bmi: '26.0', change: '+0.2', changeColor: Colors.red, source: 'Clinic', highlight: false},
-  {date: 'Jun 2022', weight: '70.2', bmi: '26.4', change: 'Peak', changeColor: Colors.red, source: 'Clinic', highlight: false},
-  {date: 'Sep 2019', weight: '72.4', bmi: '27.2', change: 'At Dx', changeColor: Colors.textSecondary, source: 'Lab', highlight: false},
-];
+  const toLose = useMemo(() => {
+    const w = parseFloat(weightVal);
+    if (isNaN(w) || !idealWeight) return null;
+    return Math.round((w - idealWeight) * 10) / 10;
+  }, [weightVal, idealWeight]);
 
-const WEIGHT_SLIDER_LABELS = [30, 49, 61.2, 80, 100, 150];
-const HEIGHT_SLIDER_LABELS = [100, 120, 140, 163, 180, 200, 220];
+  const whr = useMemo(() => {
+    const w2 = parseFloat(waistVal);
+    const h = parseFloat(heightVal);
+    if (isNaN(w2) || isNaN(h) || h === 0) return null;
+    return Math.round((w2 / h) * 100) / 100;
+  }, [waistVal, heightVal]);
 
-// ─── BMI Gauge SVG ──────────────────────────────────────────────────────
-
-const BMIGauge = () => {
-  const bmi = 24.7;
-  const minBmi = 15;
-  const maxBmi = 35;
-  const startAngle = -140;
-  const endAngle = 140;
-  const totalAngle = endAngle - startAngle;
-  const fraction = Math.min(1, Math.max(0, (bmi - minBmi) / (maxBmi - minBmi)));
-  const needleAngle = startAngle + fraction * totalAngle;
-  const cx = 40;
-  const cy = 45;
-  const r = 32;
-
-  const toRad = (deg) => (deg * Math.PI) / 180;
-
-  const arcPath = (sA, eA, radius) => {
-    const x1 = cx + radius * Math.cos(toRad(sA));
-    const y1 = cy + radius * Math.sin(toRad(sA));
-    const x2 = cx + radius * Math.cos(toRad(eA));
-    const y2 = cy + radius * Math.sin(toRad(eA));
-    const largeArc = eA - sA > 180 ? 1 : 0;
-    return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`;
+  const getBMICategory = () => {
+    if (!bmi) return {label: '', color: Colors.textTertiary, bg: Colors.background};
+    if (bmi < 18.5) return {label: 'Underweight', color: Colors.blueText, bg: Colors.blueBg};
+    if (bmi < 23) return {label: 'Normal - Indian standard', color: Colors.tealText, bg: Colors.tealBg};
+    if (bmi < 27.5) return {label: 'Overweight - Indian standard', color: Colors.amberDark, bg: Colors.amberBg};
+    return {label: 'Obese - Indian standard', color: Colors.redDark, bg: Colors.redBg};
   };
 
-  // Arc segments for BMI zones
-  const zones = [
-    {color: '#3b82f6', start: -140, end: -95},   // underweight
-    {color: '#10b981', start: -95, end: -10},     // normal
-    {color: '#f59e0b', start: -10, end: 55},      // overweight
-    {color: '#ef4444', start: 55, end: 105},      // obese
-    {color: '#991b1b', start: 105, end: 140},     // severe
-  ];
+  const bmiCat = getBMICategory();
+  const bmiColor = bmi ? (bmi < 18.5 ? '#92c4ff' : bmi < 23 ? Colors.paleGreen : bmi < 27.5 ? '#FAC775' : '#F09595') : '#FAC775';
 
-  const needleX = cx + (r - 10) * Math.cos(toRad(needleAngle));
-  const needleY = cy + (r - 10) * Math.sin(toRad(needleAngle));
+  // SVG dial calculations
+  const dialAngle = useMemo(() => {
+    if (!bmi) return 0;
+    // Map BMI 15-35 to -90 to +90 degrees
+    const clamped = Math.min(35, Math.max(15, bmi));
+    return ((clamped - 15) / 20) * 180 - 90;
+  }, [bmi]);
 
-  return (
-    <Svg width={ms(80)} height={ms(80)} viewBox="0 0 80 80">
-      {/* Background arc */}
-      <Path d={arcPath(-140, 140, r)} fill="none" stroke="#e5e7eb" strokeWidth={5} strokeLinecap="round" />
-      {/* Colored arc segments */}
-      {zones.map((z, i) => (
-        <Path key={i} d={arcPath(z.start, z.end, r)} fill="none" stroke={z.color} strokeWidth={5} strokeLinecap="butt" />
-      ))}
-      {/* Needle */}
-      <SvgLine x1={cx} y1={cy} x2={needleX} y2={needleY} stroke={Colors.white} strokeWidth={2} strokeLinecap="round" />
-      <SvgCircle cx={cx} cy={cy} r={3} fill={Colors.white} />
-      {/* Center text */}
-      <SvgText x={cx} y={cy + 16} fill={Colors.white} fontSize="11" fontWeight="700" textAnchor="middle">
-        24.7
-      </SvgText>
-    </Svg>
-  );
-};
+  // BMI bar marker position (15-40 range mapped to 0-100%)
+  const bmiBarPct = useMemo(() => {
+    if (!bmi) return 0;
+    return Math.min(100, Math.max(0, (bmi - 15) / 25 * 100));
+  }, [bmi]);
 
-// ─── BMI Classification Bar ─────────────────────────────────────────────
+  // Display values based on unit
+  const displayWeight = isImp ? kgToLb(weightVal) : weightVal;
+  const displayHeight = isImp ? cmToIn(heightVal) : heightVal;
+  const displayWaist = isImp ? cmToIn(waistVal) : waistVal;
+  const wUnit = isImp ? 'lb' : 'kg';
+  const hUnit = isImp ? 'in' : 'cm';
+  const displayIdealWeight = idealWeight ? (isImp ? kgToLb(idealWeight) : String(idealWeight)) : null;
+  const displayToLose = toLose ? (isImp ? (parseFloat(kgToLb(weightVal)) - parseFloat(kgToLb(idealWeight))).toFixed(1) : String(toLose)) : null;
+  const displayHeightFtIn = isImp ? cmToFtIn(heightVal) : null;
 
-const BMIClassBar = () => {
-  const barWidth = 280;
-  const totalFlex = BMI_ZONES.reduce((a, b) => a + b.flex, 0);
-  // BMI 24.7 position in range 15–35
-  const bmiMin = 15;
-  const bmiMax = 35;
-  const markerFraction = (24.7 - bmiMin) / (bmiMax - bmiMin);
-  const markerPos = markerFraction * barWidth;
+  // Numpad config (dynamic based on unit)
+  const getNpConfig = () => {
+    if (isImp) {
+      return {
+        weight: {label: 'Weight', hint: `Weight in lb - Ideal range: ${kgToLb(49)}-${kgToLb(61)} lb`, range: 'Range: 66-330 lb', min: 66, max: 330},
+        height: {label: 'Height', hint: `Height in inches - Your recorded: ${cmToIn(heightVal)} in`, range: 'Range: 39-87 in', min: 39, max: 87},
+        waist: {label: 'Waist circumference', hint: 'Measured at navel - Target: <31.5 in', range: 'Range: 20-59 in', min: 20, max: 59},
+      };
+    }
+    return NP_CONFIG;
+  };
+
+  const openNumpad = (target) => {
+    setNumpadTarget(target);
+    setNumpadVal('');
+    setNumpadVisible(true);
+  };
+  const npPress = (d) => setNumpadVal(prev => {
+    if (d === '.' && prev.includes('.')) return prev;
+    if (prev.replace('.', '').length >= 5) return prev;
+    return prev + d;
+  });
+  const npDel = () => setNumpadVal(prev => prev.slice(0, -1));
+  const npConfirm = () => {
+    const val = parseFloat(numpadVal);
+    const npCfg = getNpConfig()[numpadTarget];
+    if (!isNaN(val) && val >= npCfg.min && val <= npCfg.max) {
+      if (numpadTarget === 'weight') {
+        setWeightVal(isImp ? lbToKg(val) : val.toFixed(1));
+      } else if (numpadTarget === 'height') {
+        setHeightVal(isImp ? inToCm(val) : String(val));
+      } else {
+        setWaistVal(isImp ? inToCm(val) : String(val));
+      }
+    }
+    setNumpadVisible(false);
+  };
+
+  const cfg = getNpConfig()[numpadTarget];
 
   return (
     <View>
-      <Svg width={ms(barWidth)} height={ms(20)} viewBox={`0 0 ${barWidth} 20`}>
-        {BMI_ZONES.reduce((acc, zone, i) => {
-          const prevWidth = acc.offset;
-          const w = (zone.flex / totalFlex) * barWidth;
-          acc.elements.push(
-            <Rect
-              key={i}
-              x={prevWidth}
-              y={4}
-              width={w}
-              height={10}
-              rx={i === 0 ? 5 : 0}
-              ry={i === BMI_ZONES.length - 1 ? 5 : 0}
-              fill={zone.color}
-            />,
-          );
-          acc.offset += w;
-          return acc;
-        }, {elements: [], offset: 0}).elements}
-        {/* Marker */}
-        <SvgCircle cx={markerPos} cy={9} r={5} fill={Colors.white} stroke="#f59e0b" strokeWidth={2} />
-      </Svg>
-      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: vs(2), marginLeft: s(markerFraction * 240)}}>
-        <AppText variant="small" color={Colors.amber} style={{fontWeight: '700'}}>
-          {'\u2190'} You 24.7
+      {/* Best practice card */}
+      <View style={st.tipCard}>
+        <AppText variant="subtext" color={Colors.primary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginBottom: vs(7)}}>
+          Best practice - Accurate weigh-in
         </AppText>
-      </View>
-      <View style={styles.bmiScaleLabels}>
-        {BMI_ZONES.map((z, i) => (
-          <View key={i} style={{flex: z.flex, alignItems: 'center'}}>
-            <AppText variant="small" color={Colors.textTertiary} style={{fontSize: ms(9)}}>
-              {z.label}
-            </AppText>
-            {z.range ? (
-              <AppText variant="small" color={Colors.textTertiary} style={{fontSize: ms(8)}}>
-                {z.range}
-              </AppText>
-            ) : null}
+        {[
+          {text: 'Morning, fasting - weigh first thing before eating/drinking', ok: true},
+          {text: 'Minimal clothing - light or no clothing for consistency', ok: true},
+          {text: 'Same time daily - gives most consistent, comparable reading', ok: true},
+          {text: isImp ? 'Evening readings are 1.8-3.3 lb heavier than morning due to food and water. Don\'t compare them.' : 'Evening readings are 0.8-1.5 kg heavier than morning due to food and water. Don\'t compare them.', ok: false},
+        ].map((tip, i) => (
+          <View key={i} style={{flexDirection: 'row', alignItems: 'flex-start', gap: s(8), marginBottom: vs(5)}}>
+            <View style={[st.tipDot, {backgroundColor: tip.ok ? Colors.tealBg : Colors.amberBg}]}>
+              {tip.ok
+                ? <Icon family="Ionicons" name="checkmark" size={ms(9)} color={Colors.tealText} />
+                : <AppText style={{fontSize: ms(9), fontWeight: '700', color: Colors.amberDark}}>!</AppText>
+              }
+            </View>
+            <AppText variant="small" color={tip.ok ? Colors.textPrimary : Colors.textSecondary} style={{flex: 1, lineHeight: ms(16)}}>{tip.text}</AppText>
           </View>
         ))}
       </View>
-    </View>
-  );
-};
 
-// ─── Weight Slider Visual ───────────────────────────────────────────────
-
-const WeightSlider = () => {
-  const barWidth = 260;
-  const fillFraction = (68.4 - 30) / (150 - 30);
-  const fillWidth = fillFraction * barWidth;
-  const targetFraction = (61.2 - 30) / (150 - 30);
-  const targetX = targetFraction * barWidth;
-
-  return (
-    <View>
-      <View style={styles.sliderHeader}>
-        <Icon family="Ionicons" name="scale-outline" size={16} color={Colors.textSecondary} />
-        <View style={styles.sliderValueBadge}>
-          <AppText variant="caption" color={Colors.primary} style={{fontWeight: '700'}}>68.4 kg</AppText>
-        </View>
+      {/* Weight + Height dual input */}
+      <View style={st.secLabel}>
+        <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Weight & height</AppText>
+        <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
       </View>
-      <View style={{marginTop: vs(8), alignItems: 'center'}}>
-        <Svg width={ms(barWidth)} height={ms(18)} viewBox={`0 0 ${barWidth} 18`}>
-          <Rect x={0} y={5} width={barWidth} height={8} rx={4} fill="#e5e7eb" />
-          <Rect x={0} y={5} width={fillWidth} height={8} rx={4} fill={Colors.primary} />
-          {/* Target marker */}
-          <SvgLine x1={targetX} y1={2} x2={targetX} y2={16} stroke={Colors.amber} strokeWidth={1.5} strokeDasharray="2,2" />
-          <SvgCircle cx={fillWidth} cy={9} r={6} fill={Colors.white} stroke={Colors.primary} strokeWidth={2} />
-        </Svg>
-      </View>
-      <View style={styles.sliderLabels}>
-        {WEIGHT_SLIDER_LABELS.map((l, i) => (
-          <AppText key={i} variant="small" color={l === 61.2 ? Colors.amber : Colors.textTertiary} style={l === 61.2 ? {fontWeight: '700'} : {}}>
-            {l}
-          </AppText>
-        ))}
-      </View>
-    </View>
-  );
-};
-
-const HeightSlider = () => {
-  const barWidth = 260;
-  const fillFraction = (163 - 100) / (220 - 100);
-  const fillWidth = fillFraction * barWidth;
-
-  return (
-    <View style={{marginTop: vs(16)}}>
-      <View style={styles.sliderHeader}>
-        <Icon family="Ionicons" name="resize-outline" size={16} color={Colors.textSecondary} />
-        <View style={styles.sliderValueBadge}>
-          <AppText variant="caption" color={Colors.primary} style={{fontWeight: '700'}}>163 cm</AppText>
-        </View>
-      </View>
-      <View style={{marginTop: vs(8), alignItems: 'center'}}>
-        <Svg width={ms(barWidth)} height={ms(14)} viewBox={`0 0 ${barWidth} 14`}>
-          <Rect x={0} y={3} width={barWidth} height={8} rx={4} fill="#e5e7eb" />
-          <Rect x={0} y={3} width={fillWidth} height={8} rx={4} fill={Colors.textSecondary} />
-          <SvgCircle cx={fillWidth} cy={7} r={6} fill={Colors.white} stroke={Colors.textSecondary} strokeWidth={2} />
-        </Svg>
-      </View>
-      <View style={styles.sliderLabels}>
-        {HEIGHT_SLIDER_LABELS.map((l, i) => (
-          <AppText key={i} variant="small" color={Colors.textTertiary}>{l}</AppText>
-        ))}
-      </View>
-    </View>
-  );
-};
-
-// ──────────────────────────────────────────────
-// Main Component
-// ──────────────────────────────────────────────
-
-const WeightManualView = () => {
-  const [activeTime, setActiveTime] = useState('Morning');
-  const [activeClothing, setActiveClothing] = useState('Light clothing');
-  const [activeMeal, setActiveMeal] = useState('After eating');
-  const [selectedContexts, setSelectedContexts] = useState(['Usual/baseline']);
-  const [notes, setNotes] = useState('');
-
-  const toggleTag = (tag, list, setter) => {
-    setter(list.includes(tag) ? list.filter(t => t !== tag) : [...list, tag]);
-  };
-
-  return (
-    <View style={styles.container}>
-      {/* ── 1. Weight & Height Inputs ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>WEIGHT & HEIGHT</AppText>
-      <View style={styles.inputCardsRow}>
-        <TouchableOpacity activeOpacity={0.7} style={[styles.inputCard, {flex: 1, marginRight: s(5)}]}>
-          <AppText variant="small" color={Colors.textSecondary} style={{letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: '700', fontSize: ms(9)}}>Weight</AppText>
-          <View style={styles.inputValueRow}>
-            <AppText style={[styles.bigNumber, {color: Colors.purple}]} numberOfLines={1} adjustsFontSizeToFit>68.4</AppText>
-            <AppText variant="body" color={Colors.textTertiary} style={{marginLeft: s(3)}}>kg</AppText>
+      <View style={st.dualRow}>
+        <TouchableOpacity style={st.dimBox} onPress={() => openNumpad('weight')} activeOpacity={0.6}>
+          <AppText style={st.dimLabel}>WEIGHT</AppText>
+          <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+            <AppText style={[st.dimVal, {color: Colors.primary}]}>{displayWeight ? displayWeight.split('.')[0] : '---'}</AppText>
+            {displayWeight && displayWeight.includes('.') && (
+              <AppText style={[st.dimDec, {color: Colors.primary}]}>.{displayWeight.split('.')[1]}</AppText>
+            )}
           </View>
-          <AppText variant="small" color={Colors.textTertiary}>Tap to edit</AppText>
+          <AppText style={st.dimUnit}>{wUnit}</AppText>
+          <AppText style={st.dimTap}>Tap to edit</AppText>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.7} style={[styles.inputCard, {flex: 1, marginLeft: s(5)}]}>
-          <AppText variant="small" color={Colors.textSecondary} style={{letterSpacing: 0.5, textTransform: 'uppercase', fontWeight: '700', fontSize: ms(9)}}>Height</AppText>
-          <View style={styles.inputValueRow}>
-            <AppText style={[styles.bigNumber, {color: Colors.textSecondary}]} numberOfLines={1} adjustsFontSizeToFit>163</AppText>
-            <AppText variant="body" color={Colors.textTertiary} style={{marginLeft: s(3)}}>cm</AppText>
-          </View>
-          <AppText variant="small" color={Colors.textTertiary}>Tap to edit</AppText>
+        <TouchableOpacity style={st.dimBox} onPress={() => openNumpad('height')} activeOpacity={0.6}>
+          <AppText style={st.dimLabel}>HEIGHT</AppText>
+          <AppText style={[st.dimVal, {color: Colors.textSecondary, fontSize: isImp ? ms(36) : ms(52)}]}>{isImp ? displayHeightFtIn : (heightVal || '---')}</AppText>
+          <AppText style={st.dimUnit}>{isImp ? 'ft / in' : 'cm'}</AppText>
+          <AppText style={st.dimTap}>Tap to edit</AppText>
         </TouchableOpacity>
       </View>
 
-      {/* ── 2. Height Note ── */}
-      <View style={styles.heightNoteCard}>
-        <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-          <Icon family="Ionicons" name="lock-closed-outline" size={14} color={Colors.textSecondary} />
-          <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(6), flex: 1, lineHeight: ms(17)}}>
-            Height carried forward from last record (163 cm {'\u00b7'} Sep 2025). Tap to update if changed.
-          </AppText>
+      {/* Height carried forward note */}
+      <View style={st.noteRow}>
+        <Icon family="Ionicons" name="lock-closed-outline" size={ms(14)} color={Colors.textTertiary} />
+        <AppText variant="small" color={Colors.textSecondary} style={{flex: 1}}>Height carried forward from last record ({isImp ? cmToFtIn('163') : '163 cm'} - Sep 2025). Tap to update.</AppText>
+      </View>
+
+      {/* BMI live card with SVG dial */}
+      {bmi && (
+        <View style={st.bmiCard}>
+          <View style={{flexShrink: 0}}>
+            <Svg viewBox="0 0 80 80" width={ms(80)} height={ms(80)}>
+              <Path d="M14 62 A34 34 0 0 1 66 62" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="7" strokeLinecap="round" />
+              <Path
+                d="M14 62 A34 34 0 0 1 66 62"
+                fill="none"
+                stroke={Colors.paleGreen}
+                strokeWidth="7"
+                strokeLinecap="round"
+                strokeDasharray="106.8"
+                strokeDashoffset={106.8 - (106.8 * Math.min(1, Math.max(0, (bmi - 15) / 20)))}
+              />
+              <Line
+                x1="40" y1="40" x2="40" y2="14"
+                stroke="#fff" strokeWidth="2.5" strokeLinecap="round"
+                transform={`rotate(${dialAngle} 40 40)`}
+              />
+              <Circle cx="40" cy="40" r="4" fill="#fff" />
+              <SvgText x="40" y="55" textAnchor="middle" fontSize="13" fontWeight="700" fill="#fff">{bmi}</SvgText>
+            </Svg>
+          </View>
+          <View style={{flex: 1}}>
+            <AppText variant="subtext" color="rgba(255,255,255,0.45)" style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginBottom: vs(4)}}>BMI - Indian standard</AppText>
+            <View style={{flexDirection: 'row', alignItems: 'baseline', gap: s(6)}}>
+              <AppText style={{fontSize: ms(38), fontWeight: '700', color: bmiColor, lineHeight: ms(40)}}>{bmi}</AppText>
+              <AppText style={{fontSize: ms(13), fontWeight: '600', color: bmiColor}}>{bmiCat.label.split(' - ')[0]}</AppText>
+            </View>
+            {toLose > 0 && idealWeight && (
+              <View style={{marginTop: vs(8)}}>
+                <View style={{flexDirection: 'row', alignItems: 'center', gap: s(8)}}>
+                  <AppText variant="small" color="rgba(255,255,255,0.5)">To BMI 23:</AppText>
+                  <View style={{flex: 1, height: ms(4), backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: ms(2), overflow: 'hidden'}}>
+                    <View style={{height: '100%', width: `${Math.min(100, Math.max(0, Math.round((72.4 - parseFloat(weightVal)) / (72.4 - idealWeight) * 100)))}%`, backgroundColor: Colors.paleGreen, borderRadius: ms(2)}} />
+                  </View>
+                  <AppText variant="small" color="rgba(255,255,255,0.5)">-{displayToLose} {wUnit}</AppText>
+                </View>
+                <AppText variant="small" color="rgba(255,255,255,0.45)" style={{marginTop: vs(4)}}>Ideal weight: {displayIdealWeight} {wUnit} - Height: {isImp ? displayHeightFtIn : `${heightVal} cm`}</AppText>
+              </View>
+            )}
+          </View>
+        </View>
+      )}
+
+      {/* BMI classification bar */}
+      {bmi && (
+        <View style={st.classBarCard}>
+          <AppText style={{fontSize: ms(11), fontWeight: '600', color: Colors.textPrimary, marginBottom: vs(6)}}>BMI classification - Indian/WHO Asia-Pacific 2004</AppText>
+          <View style={{position: 'relative', marginBottom: vs(2)}}>
+            <View style={{flexDirection: 'row', borderRadius: ms(5), overflow: 'hidden', height: ms(10)}}>
+              {BMI_ZONES.map((z, i) => (
+                <View key={i} style={{flex: z.flex, backgroundColor: z.color, height: '100%'}} />
+              ))}
+            </View>
+            {/* Marker */}
+            <View style={{position: 'absolute', top: ms(-4), left: `${bmiBarPct}%`, marginLeft: ms(-2), width: ms(4), height: ms(18), backgroundColor: Colors.textPrimary, borderRadius: ms(2)}} />
+          </View>
+          <View style={{position: 'relative', height: ms(16), marginBottom: vs(4)}}>
+            <View style={{position: 'absolute', left: `${Math.max(0, bmiBarPct - 5)}%`}}>
+              <AppText style={{fontSize: ms(8), fontWeight: '700', color: Colors.primary}}>You {bmi}</AppText>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <AppText style={{fontSize: ms(8), color: Colors.blueText}}>Under{'<'}18.5</AppText>
+            <AppText style={{fontSize: ms(8), color: Colors.tealText}}>Normal 18.5-23</AppText>
+            <AppText style={{fontSize: ms(8), color: Colors.amberDark}}>OW 23-27.5</AppText>
+            <AppText style={{fontSize: ms(8), color: Colors.redDark}}>Obese {'>'}27.5</AppText>
+          </View>
+        </View>
+      )}
+
+      {/* Derived values grid */}
+      <View style={st.derivedGrid}>
+        <View style={st.derivedBox}>
+          <AppText style={st.dgLabel}>Ideal weight range</AppText>
+          <AppText style={[st.dgVal, {fontSize: ms(14), color: Colors.primary}]}>{isImp ? `${kgToLb(49)}-${kgToLb(61)} lb` : '49-61 kg'}</AppText>
+          <AppText style={st.dgSub}>BMI 18.5-23 at {isImp ? displayHeightFtIn : `${heightVal}cm`}</AppText>
+        </View>
+        <View style={st.derivedBox}>
+          <AppText style={st.dgLabel}>To reach BMI 23</AppText>
+          <AppText style={[st.dgVal, {color: Colors.amber}]}>{toLose > 0 ? `-${displayToLose} ${wUnit}` : 'At target'}</AppText>
+          <AppText style={st.dgSub}>{displayWeight} to {displayIdealWeight} {wUnit}</AppText>
+        </View>
+        <TouchableOpacity style={st.derivedBox} onPress={() => openNumpad('waist')} activeOpacity={0.7}>
+          <AppText style={st.dgLabel}>Waist circumference</AppText>
+          <AppText style={[st.dgVal, {color: Colors.red}]}>{displayWaist} {isImp ? 'in' : 'cm'}</AppText>
+          <AppText style={st.dgSub}>Target {'<'}{isImp ? '31.5 in' : '80 cm'} - Tap to update</AppText>
+        </TouchableOpacity>
+        <View style={st.derivedBox}>
+          <AppText style={st.dgLabel}>Waist / height ratio</AppText>
+          <AppText style={[st.dgVal, {color: whr && whr > 0.5 ? Colors.amber : Colors.primary}]}>{whr || '--'}</AppText>
+          <AppText style={st.dgSub}>Target {'<'}0.50</AppText>
+        </View>
+        <View style={st.derivedBox}>
+          <AppText style={st.dgLabel}>vs Last recorded</AppText>
+          <AppText style={[st.dgVal, {color: Colors.primary}]}>{isImp ? '-1.8 lb' : '-0.8 kg'}</AppText>
+          <AppText style={st.dgSub}>vs {isImp ? `${kgToLb('69.2')} lb` : '69.2 kg'} (Sep 2025)</AppText>
+        </View>
+        <View style={st.derivedBox}>
+          <AppText style={st.dgLabel}>Loss rate (6 months)</AppText>
+          <AppText style={[st.dgVal, {color: Colors.primary}]}>{isImp ? '-0.29' : '-0.13'}</AppText>
+          <AppText style={st.dgSub}>{isImp ? 'lb' : 'kg'}/week - Healthy pace</AppText>
         </View>
       </View>
 
-      {/* ── 3. BMI Live Card ── */}
-      <View style={styles.bmiLiveCard}>
-        <View style={styles.bmiLiveRow}>
-          <BMIGauge />
-          <View style={{flex: 1, marginLeft: s(12)}}>
-            <AppText variant="small" color={Colors.heroTextMuted}>BMI {'\u00b7'} Indian standard</AppText>
-            <AppText style={styles.bmiBigValue}>24.7</AppText>
-            <AppText variant="bodyBold" color={Colors.amber} style={{marginTop: vs(2)}}>Overweight</AppText>
-            <View style={styles.bmiProgressRow}>
-              <View style={styles.bmiProgressTrack}>
-                <View style={[styles.bmiProgressFill, {width: '60%'}]} />
+      {/* ── "or use sliders" section ── */}
+      <AppText variant="small" color={Colors.textTertiary} style={{textAlign: 'center', marginBottom: vs(6)}}>-- or use sliders --</AppText>
+      <View style={st.sliderSection}>
+        {/* Weight slider */}
+        <View style={{marginBottom: vs(14)}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: vs(8)}}>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: s(6)}}>
+              <Icon family="Ionicons" name="scale-outline" size={ms(16)} color={Colors.textPrimary} />
+              <AppText style={{fontSize: ms(12), fontWeight: '600', color: Colors.textPrimary}}>Weight</AppText>
+            </View>
+            <View style={[st.sliderBadge, {backgroundColor: Colors.purpleBg}]}>
+              <AppText style={{fontSize: ms(13), fontWeight: '700', color: Colors.purpleText}}>{displayWeight} {wUnit}</AppText>
+            </View>
+          </View>
+          {/* Track */}
+          <View style={st.sliderTrack}>
+            <View style={[st.sliderFill, {width: `${((parseFloat(weightVal) - 30) / 120) * 100}%`}]}>
+              <View style={{flex: 1, flexDirection: 'row', borderRadius: ms(4), overflow: 'hidden'}}>
+                <View style={{flex: 1, backgroundColor: Colors.blue}} />
+                <View style={{flex: 1, backgroundColor: Colors.tealDark}} />
+                <View style={{flex: 1, backgroundColor: Colors.amber}} />
+                <View style={{flex: 1, backgroundColor: Colors.red}} />
               </View>
             </View>
-            <AppText variant="small" color={Colors.heroTextMuted} style={{marginTop: vs(4)}}>
-              To BMI 23: {'\u22127.2 kg'}
-            </AppText>
-            <AppText variant="small" color={Colors.heroTextMuted} style={{marginTop: vs(2)}}>
-              Ideal weight: 61.2 kg {'\u00b7'} Height: 163 cm
-            </AppText>
           </View>
-        </View>
-      </View>
-
-      {/* ── 4. BMI Classification Bar ── */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginBottom: vs(4)}}>
-          BMI classification {'\u00b7'} Indian/WHO Asia-Pacific 2004
-        </AppText>
-        <View style={{marginTop: vs(8), alignItems: 'center'}}>
-          <BMIClassBar />
-        </View>
-      </View>
-
-      {/* ── 5. Derived Values ── */}
-      <View style={styles.derivedGrid}>
-        {DERIVED_DATA.map((item, i) => (
-          <View key={i} style={styles.derivedBox}>
-            <AppText variant="small" color={Colors.textSecondary}>{item.label}</AppText>
-            <AppText variant="bodyBold" color={item.color} style={{marginTop: vs(2)}}>{item.value}</AppText>
-            {item.sub ? (
-              <AppText variant="small" color={Colors.textTertiary} style={{marginTop: vs(1)}}>{item.sub}</AppText>
-            ) : null}
-          </View>
-        ))}
-      </View>
-
-      {/* ── 6. Sliders ── */}
-      <View style={styles.card}>
-        <WeightSlider />
-        <HeightSlider />
-      </View>
-
-      {/* ── 7. Measurement Conditions ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>MEASUREMENT CONDITIONS</AppText>
-      <View style={styles.card}>
-        <AppText variant="bodyBold" color={Colors.textPrimary}>Time of day</AppText>
-        <View style={styles.chipRow}>
-          {TIME_CHIPS.map(chip => (
-            <TouchableOpacity
-              key={chip}
-              activeOpacity={0.7}
-              onPress={() => setActiveTime(chip)}
-              style={[styles.chip, activeTime === chip && styles.chipActive]}>
-              <AppText
-                variant="caption"
-                color={activeTime === chip ? Colors.white : Colors.textSecondary}
-                style={{fontWeight: activeTime === chip ? '700' : '400'}}>
-                {chip}
-              </AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginTop: vs(12)}}>Clothing</AppText>
-        <View style={styles.chipRow}>
-          {CLOTHING_CHIPS.map(chip => (
-            <TouchableOpacity
-              key={chip}
-              activeOpacity={0.7}
-              onPress={() => setActiveClothing(chip)}
-              style={[styles.chip, activeClothing === chip && styles.chipActive]}>
-              <AppText
-                variant="caption"
-                color={activeClothing === chip ? Colors.white : Colors.textSecondary}
-                style={{fontWeight: activeClothing === chip ? '700' : '400'}}>
-                {chip}
-              </AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginTop: vs(12)}}>Meal / activity</AppText>
-        <View style={styles.chipRow}>
-          {MEAL_CHIPS.map(chip => (
-            <TouchableOpacity
-              key={chip}
-              activeOpacity={0.7}
-              onPress={() => setActiveMeal(chip)}
-              style={[styles.chip, activeMeal === chip && styles.chipActive]}>
-              <AppText
-                variant="caption"
-                color={activeMeal === chip ? Colors.white : Colors.textSecondary}
-                style={{fontWeight: activeMeal === chip ? '700' : '400'}}>
-                {chip}
-              </AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={styles.insightCard}>
-          <Icon family="Ionicons" name="bulb-outline" size={14} color={Colors.purpleText} />
-          <AppText variant="caption" color={Colors.purpleText} style={{marginLeft: s(6), flex: 1, lineHeight: ms(17)}}>
-            Best practice: weigh first thing in the morning, after bathroom, in light clothing, before eating or drinking.
-          </AppText>
-        </View>
-      </View>
-
-      {/* ── 8. Context Tags ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>CONTEXT</AppText>
-      <View style={styles.card}>
-        <View style={styles.chipRow}>
-          {CONTEXT_TAGS.map(tag => {
-            const isActive = selectedContexts.includes(tag);
-            return (
-              <TouchableOpacity
-                key={tag}
-                activeOpacity={0.7}
-                onPress={() => toggleTag(tag, selectedContexts, setSelectedContexts)}
-                style={[styles.chip, isActive && styles.chipActive]}>
-                <AppText
-                  variant="caption"
-                  color={isActive ? Colors.white : Colors.textSecondary}
-                  style={{fontWeight: isActive ? '700' : '400'}}>
-                  {tag}
-                </AppText>
+          {/* Thumb - touchable area to adjust */}
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: vs(6)}}>
+            {WEIGHT_MARKS.map((m, i) => (
+              <TouchableOpacity key={i} onPress={() => setWeightVal(m)} activeOpacity={0.7}>
+                <AppText style={{fontSize: ms(8), color: m === '61.2' ? Colors.primary : Colors.textTertiary, fontWeight: m === '61.2' ? '700' : '400'}}>{m === '61.2' ? '61.2 target' : m}</AppText>
               </TouchableOpacity>
-            );
-          })}
+            ))}
+          </View>
+        </View>
+
+        {/* Height slider */}
+        <View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: vs(8)}}>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: s(6)}}>
+              <Icon family="Ionicons" name="resize-outline" size={ms(16)} color={Colors.textPrimary} />
+              <AppText style={{fontSize: ms(12), fontWeight: '600', color: Colors.textPrimary}}>Height</AppText>
+            </View>
+            <View style={[st.sliderBadge, {backgroundColor: '#f0f0f0'}]}>
+              <AppText style={{fontSize: ms(13), fontWeight: '700', color: Colors.textSecondary}}>{isImp ? displayHeightFtIn : `${heightVal} cm`}</AppText>
+            </View>
+          </View>
+          <View style={st.sliderTrack}>
+            <View style={[st.sliderFill, {width: `${((parseFloat(heightVal) - 100) / 120) * 100}%`}]}>
+              <View style={{flex: 1, backgroundColor: Colors.textSecondary, borderRadius: ms(4)}} />
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: vs(6)}}>
+            {HEIGHT_MARKS.map((m, i) => (
+              <TouchableOpacity key={i} onPress={() => setHeightVal(m)} activeOpacity={0.7}>
+                <AppText style={{fontSize: ms(8), color: m === '163' ? Colors.primary : Colors.textTertiary, fontWeight: m === '163' ? '700' : '400'}}>{m}</AppText>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
 
-      {/* ── 9. Comparison ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>HOW THIS COMPARES</AppText>
-      <View style={styles.card}>
-        {COMPARISON_ROWS.map((row, i) => (
-          <View key={i} style={[styles.comparisonRow, i < COMPARISON_ROWS.length - 1 && styles.comparisonRowBorder]}>
-            <View style={{flex: 1}}>
-              <AppText variant="caption" color={Colors.textSecondary}>{row.label}</AppText>
+      {/* Numpad Modal */}
+      <Modal visible={numpadVisible} transparent animationType="slide" onRequestClose={() => setNumpadVisible(false)}>
+        <Pressable style={st.numpadOverlay} onPress={() => setNumpadVisible(false)}>
+          <Pressable style={st.numpadSheet} onPress={e => e.stopPropagation()}>
+            <View style={st.numpadHeader}>
+              <AppText variant="bodyBold" color={Colors.textPrimary}>{cfg.label}</AppText>
+              <TouchableOpacity onPress={() => setNumpadVisible(false)} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                <Icon family="Ionicons" name="close" size={ms(22)} color={Colors.textSecondary} />
+              </TouchableOpacity>
             </View>
-            <AppText variant="body" color={Colors.textPrimary} style={{marginRight: s(10)}}>{row.weight} kg</AppText>
-            <AppText variant="bodyBold" color={row.color}>{row.change}</AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* ── 10. Milestone Badge ── */}
-      <View style={styles.milestoneCard}>
-        <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: vs(6)}}>
-          <Icon family="Ionicons" name="trophy-outline" size={18} color={Colors.tealText} />
-          <AppText variant="bodyBold" color={Colors.tealText} style={{marginLeft: s(8)}}>
-            {'\u22124 kg from diagnosis \u00b7 Progress noted'}
-          </AppText>
-        </View>
-        <AppText variant="caption" color={Colors.tealText} style={{lineHeight: ms(17)}}>
-          Slow, consistent loss of ~0.13 kg/week is sustainable. At this pace, reaching BMI 23 (61.2 kg) would take approximately 54 weeks. Continue daily walks of 30{'\u201345'} min to maintain momentum.
-        </AppText>
-      </View>
-
-      {/* ── 11. Weight-Condition Links ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>WHY WEIGHT MATTERS {'\u00b7'} YOUR CONDITIONS</AppText>
-      <View style={styles.card}>
-        {CONDITION_LINKS.map((item, i) => (
-          <View key={i} style={[styles.conditionRow, i < CONDITION_LINKS.length - 1 && styles.comparisonRowBorder]}>
-            <View style={[styles.conditionIcon, {backgroundColor: item.bgColor}]}>
-              <Icon family="Ionicons" name={item.icon} size={16} color={item.iconColor} />
+            <View style={st.numpadDisplay}>
+              <AppText style={[st.numpadValue, !numpadVal && {color: Colors.textTertiary}]}>{numpadVal || '---'}</AppText>
             </View>
-            <View style={{flex: 1, marginLeft: s(10)}}>
-              <AppText variant="bodyBold" color={Colors.textPrimary}>{item.title}</AppText>
-              <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(2), lineHeight: ms(16)}}>
-                {item.desc}
-              </AppText>
+            <AppText variant="small" color={Colors.textSecondary} style={{textAlign: 'center', marginTop: vs(4)}}>{cfg.hint}</AppText>
+            <AppText variant="small" color={Colors.textTertiary} style={{textAlign: 'center', marginTop: vs(2), marginBottom: vs(8)}}>{cfg.range}</AppText>
+            <View style={st.numpadGrid}>
+              {['1','2','3','4','5','6','7','8','9'].map(d => (
+                <TouchableOpacity key={d} style={st.npBtn} onPress={() => npPress(d)} activeOpacity={0.6}>
+                  <AppText style={st.npBtnText}>{d}</AppText>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity style={st.npBtn} onPress={() => npPress('.')} activeOpacity={0.6}>
+                <AppText style={st.npBtnText}>.</AppText>
+              </TouchableOpacity>
+              <TouchableOpacity style={st.npBtn} onPress={() => npPress('0')} activeOpacity={0.6}>
+                <AppText style={st.npBtnText}>0</AppText>
+              </TouchableOpacity>
+              <TouchableOpacity style={st.npBtn} onPress={npDel} activeOpacity={0.6}>
+                <Icon family="Ionicons" name="backspace-outline" size={ms(22)} color={Colors.textSecondary} />
+              </TouchableOpacity>
             </View>
-          </View>
-        ))}
-      </View>
-
-      {/* ── 12. Weight History ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>WEIGHT HISTORY</AppText>
-      <View style={styles.card}>
-        {/* Table header */}
-        <View style={styles.tableHeaderRow}>
-          <AppText variant="small" color={Colors.textTertiary} style={styles.colDate}>Date</AppText>
-          <AppText variant="small" color={Colors.textTertiary} style={styles.colWeight}>Weight</AppText>
-          <AppText variant="small" color={Colors.textTertiary} style={styles.colBmi}>BMI</AppText>
-          <AppText variant="small" color={Colors.textTertiary} style={styles.colChange}>Change</AppText>
-          <AppText variant="small" color={Colors.textTertiary} style={styles.colSource}>Source</AppText>
-        </View>
-        {HISTORY_ROWS.map((row, i) => (
-          <View key={i} style={[styles.tableRow, row.highlight && styles.tableRowHighlight]}>
-            <AppText variant="caption" color={row.highlight ? Colors.primary : Colors.textPrimary} style={[styles.colDate, row.highlight && {fontWeight: '700'}]}>
-              {row.date}
-            </AppText>
-            <AppText variant="caption" color={Colors.textPrimary} style={styles.colWeight}>{row.weight}</AppText>
-            <AppText variant="caption" color={Colors.textSecondary} style={styles.colBmi}>{row.bmi}</AppText>
-            <AppText variant="caption" color={row.changeColor || Colors.textSecondary} style={styles.colChange}>{row.change}</AppText>
-            <AppText variant="small" color={Colors.textTertiary} style={styles.colSource}>{row.source}</AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* ── 13. Notes ── */}
-      <AppText variant="sectionTitle" style={styles.sectionHeading}>NOTE</AppText>
-      <View style={styles.card}>
-        <TextInput
-          style={styles.noteInput}
-          placeholder="Add notes about this measurement..."
-          placeholderTextColor={Colors.textTertiary}
-          multiline
-          textAlignVertical="top"
-          value={notes}
-          onChangeText={setNotes}
-        />
-      </View>
+            <TouchableOpacity style={st.npOkBtn} onPress={npConfirm} activeOpacity={0.7}>
+              <AppText variant="bodyBold" color={Colors.white}>Confirm</AppText>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
 
-// ─── Styles ─────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: vs(6),
-  },
-  sectionHeading: {
-    marginTop: vs(18),
-    marginBottom: vs(8),
-  },
-  card: {
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(14),
-    padding: ms(14),
-    backgroundColor: Colors.white,
-    marginBottom: vs(8),
-  },
-  inputCardsRow: {
-    flexDirection: 'row',
-  },
-  inputCard: {
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(14),
-    paddingVertical: vs(14),
-    paddingHorizontal: s(10),
-    backgroundColor: Colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: vs(8),
-    minHeight: vs(100),
-  },
-  inputValueRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'center',
-    marginVertical: vs(6),
-  },
-  bigNumber: {
-    fontSize: ms(38),
-    fontWeight: '700',
-    lineHeight: ms(42),
-  },
-  heightNoteCard: {
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(14),
-    padding: ms(12),
-    backgroundColor: '#f9fafb',
-    marginBottom: vs(8),
-  },
-  bmiLiveCard: {
-    borderRadius: ms(14),
-    padding: ms(14),
-    backgroundColor: Colors.primary,
-    marginBottom: vs(8),
-  },
-  bmiLiveRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bmiBigValue: {
-    fontSize: ms(28),
-    fontWeight: '700',
-    color: '#f59e0b',
-    marginTop: vs(2),
-  },
-  bmiProgressRow: {
-    marginTop: vs(6),
-  },
-  bmiProgressTrack: {
-    height: ms(4),
-    borderRadius: ms(2),
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-  bmiProgressFill: {
-    height: ms(4),
-    borderRadius: ms(2),
-    backgroundColor: '#f59e0b',
-  },
-  bmiScaleLabels: {
-    flexDirection: 'row',
-    marginTop: vs(4),
-  },
-  derivedGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: vs(8),
-  },
-  derivedBox: {
-    width: '33.33%',
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(14),
-    padding: ms(10),
-    backgroundColor: Colors.white,
-    marginBottom: vs(0),
-  },
-  sliderHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sliderValueBadge: {
-    backgroundColor: Colors.tealBg,
-    paddingHorizontal: s(10),
-    paddingVertical: vs(3),
-    borderRadius: ms(10),
-    marginLeft: s(8),
-  },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: vs(4),
-    paddingHorizontal: s(2),
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: vs(8),
-    gap: ms(6),
-  },
-  chip: {
-    paddingHorizontal: s(12),
-    paddingVertical: vs(6),
-    borderRadius: ms(20),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    backgroundColor: Colors.white,
-  },
-  chipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  insightCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: Colors.purpleBg,
-    borderRadius: ms(10),
-    padding: ms(10),
-    marginTop: vs(12),
-  },
-  comparisonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: vs(8),
-  },
-  comparisonRowBorder: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e7eb',
-  },
-  milestoneCard: {
-    borderRadius: ms(14),
-    padding: ms(14),
-    backgroundColor: Colors.tealBg,
-    marginBottom: vs(8),
-  },
-  conditionRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: vs(10),
-  },
-  conditionIcon: {
-    width: ms(32),
-    height: ms(32),
-    borderRadius: ms(16),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tableHeaderRow: {
-    flexDirection: 'row',
-    paddingBottom: vs(6),
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e7eb',
-    marginBottom: vs(2),
-  },
-  tableRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: vs(6),
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#f3f4f6',
-  },
-  tableRowHighlight: {
-    backgroundColor: Colors.tealBg,
-    borderRadius: ms(6),
-    marginHorizontal: -ms(4),
-    paddingHorizontal: ms(4),
-  },
-  colDate: {flex: 2.2},
-  colWeight: {flex: 1.2},
-  colBmi: {flex: 1},
-  colChange: {flex: 1.2},
-  colSource: {flex: 1.2},
-  noteInput: {
-    minHeight: vs(80),
-    fontSize: ms(14),
-    color: Colors.textPrimary,
-    padding: 0,
-    lineHeight: ms(20),
-  },
+const st = StyleSheet.create({
+  tipCard: {backgroundColor: Colors.background, borderRadius: ms(13), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(11), marginBottom: vs(12)},
+  tipDot: {width: ms(18), height: ms(18), borderRadius: ms(9), alignItems: 'center', justifyContent: 'center', marginTop: vs(1)},
+  secLabel: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(8)},
+  dualRow: {flexDirection: 'row', gap: s(10), marginBottom: vs(10)},
+  dimBox: {flex: 1, backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(14), alignItems: 'center'},
+  dimLabel: {fontSize: ms(9), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, color: Colors.textSecondary, marginBottom: vs(5)},
+  dimVal: {fontSize: ms(52), fontWeight: '700', lineHeight: ms(54)},
+  dimDec: {fontSize: ms(28), fontWeight: '700'},
+  dimUnit: {fontSize: ms(12), color: Colors.textTertiary, marginTop: vs(4)},
+  dimTap: {fontSize: ms(9), color: Colors.textTertiary, marginTop: vs(5)},
+  noteRow: {flexDirection: 'row', alignItems: 'center', gap: s(7), backgroundColor: Colors.background, borderRadius: ms(10), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(9), marginBottom: vs(10)},
+  bmiCard: {backgroundColor: Colors.primary, borderRadius: ms(14), padding: ms(14), marginBottom: vs(10), flexDirection: 'row', alignItems: 'center', gap: s(12)},
+  classBarCard: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(13), marginBottom: vs(10)},
+  derivedGrid: {flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: vs(10)},
+  derivedBox: {width: '48%', backgroundColor: Colors.white, borderRadius: ms(12), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(10), marginBottom: vs(8)},
+  dgLabel: {fontSize: ms(8), fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: Colors.textTertiary, marginBottom: vs(4)},
+  dgVal: {fontSize: ms(18), fontWeight: '700', lineHeight: ms(20)},
+  dgSub: {fontSize: ms(9), color: Colors.textSecondary, marginTop: vs(3)},
+  sliderSection: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(14), marginBottom: vs(10)},
+  sliderTrack: {height: ms(8), backgroundColor: '#edf2ef', borderRadius: ms(4), overflow: 'hidden'},
+  sliderFill: {height: '100%', borderRadius: ms(4), overflow: 'hidden'},
+  sliderBadge: {paddingHorizontal: s(10), paddingVertical: vs(3), borderRadius: ms(20)},
+  numpadOverlay: {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end'},
+  numpadSheet: {backgroundColor: Colors.white, borderTopLeftRadius: ms(22), borderTopRightRadius: ms(22), paddingBottom: vs(28)},
+  numpadHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: s(20), paddingVertical: vs(14), borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb'},
+  numpadDisplay: {alignItems: 'center', paddingVertical: vs(12), borderBottomWidth: 0.5, borderBottomColor: '#e5e7eb'},
+  numpadValue: {fontSize: ms(52), fontWeight: '700', color: Colors.primary, letterSpacing: 3, lineHeight: ms(56)},
+  numpadGrid: {flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: s(16), paddingTop: vs(8)},
+  npBtn: {width: '33.33%', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(14)},
+  npBtnText: {fontSize: ms(22), fontWeight: '500', color: Colors.textPrimary},
+  npOkBtn: {backgroundColor: Colors.primary, borderRadius: ms(13), paddingVertical: vs(14), marginHorizontal: s(16), marginTop: vs(8), alignItems: 'center'},
 });
 
-export default WeightManualView;
+export default WeightManualEntry;

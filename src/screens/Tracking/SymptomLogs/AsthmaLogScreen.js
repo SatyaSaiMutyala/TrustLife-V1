@@ -1,242 +1,195 @@
-import React, {useState} from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import React, {useState, useMemo} from 'react';
+import {View, ScrollView, StyleSheet, StatusBar, TouchableOpacity, TextInput, Platform} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {
-  scale as s,
-  verticalScale as vs,
-  moderateScale as ms,
-} from 'react-native-size-matters';
+import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
 import Icon from '../../../components/shared/Icons';
 import AsthmaManualView from './AsthmaManualView';
 import AsthmaAutoView from './AsthmaAutoView';
 
-// ──────────────────────────────────────────────
-// Constants & Data
-// ──────────────────────────────────────────────
+const MODE_TABS = [{id: 'manual', label: 'Manual'}, {id: 'auto', label: 'Auto / Smart device'}];
+const TIME_CHIPS = ['Morning (on waking)', 'Evening (before bed)', 'During symptoms', 'After rescue inhaler', 'After exercise', 'Clinic check'];
+const SYMPTOM_CHIPS = ['Wheeze', 'Shortness of breath', 'Chest tightness', 'Cough', 'Night cough / waking', 'Exercise-induced', 'Can\'t sleep', 'No symptoms today'];
+const TRIGGER_CHIPS = ['Dust / pollen', 'Pet dander', 'Air pollution', 'Cold air', 'Respiratory infection', 'Stress / anxiety', 'Strong smell / smoke', 'Weather change', 'No trigger identified'];
 
-const MODE_TABS = [
-  {id: 'manual', label: 'Manual log'},
-  {id: 'auto', label: 'Auto \u00b7 Sensors'},
-];
+const PERSONAL_BEST = 380;
 
-const MEMBERS = [
-  {id: 'priya', label: 'Priya'},
-  {id: 'aarav', label: 'Aarav \u00b7 9y'},
-  {id: 'raj', label: 'Raj'},
-  {id: 'add', label: '+ Add'},
-];
-
-// ──────────────────────────────────────────────
-// Subcomponents
-// ──────────────────────────────────────────────
-
-const MemberChip = ({item, isActive, onPress}) => (
-  <TouchableOpacity
-    activeOpacity={0.7}
-    onPress={onPress}
-    style={[
-      styles.memberChip,
-      isActive && styles.memberChipActive,
-    ]}>
-    <AppText
-      variant="small"
-      color={isActive ? Colors.white : 'rgba(255,255,255,0.7)'}
-      style={{fontWeight: isActive ? '700' : '500'}}>
-      {item.label}
-    </AppText>
-  </TouchableOpacity>
-);
-
-const ZoneBanner = () => (
-  <View style={styles.zoneBanner}>
-    <View style={styles.zoneBannerTop}>
-      <View style={styles.zoneIconRow}>
-        <Icon
-          family="Ionicons"
-          name="warning-outline"
-          size={ms(20)}
-          color={Colors.amberText}
-        />
-        <AppText
-          variant="bodyBold"
-          color={Colors.amberText}
-          style={{marginLeft: s(8)}}>
-          Yellow Zone {'\u2014'} Caution
-        </AppText>
-      </View>
-      <View style={styles.zoneBadge}>
-        <AppText variant="small" color={Colors.amberText} style={{fontWeight: '700'}}>
-          74% PB
-        </AppText>
-      </View>
-    </View>
-    <AppText
-      variant="caption"
-      color={Colors.amberText}
-      style={{marginTop: vs(6), lineHeight: ms(17)}}>
-      Peak flow 74% of personal best {'\u00b7'} Mild wheeze {'\u00b7'} Add reliever inhaler {'\u00b7'} Monitor closely
-    </AppText>
-  </View>
-);
-
-// ──────────────────────────────────────────────
-// Main Screen
-// ──────────────────────────────────────────────
+const getZone = (pef, pb) => {
+  const pct = Math.round(pef / pb * 100);
+  if (pct >= 80) return {label: 'Green zone - Well controlled', color: Colors.tealText, bg: Colors.tealBg, icon: 'checkmark-circle-outline', badge: `${pef} L/min`, pct};
+  if (pct >= 50) return {label: 'Yellow zone - Caution', color: Colors.amberDark, bg: Colors.amberBg, icon: 'warning-outline', badge: `${pef} L/min`, pct};
+  return {label: 'Red zone - Medical emergency', color: Colors.redDark, bg: Colors.redBg, icon: 'alert-circle-outline', badge: 'EMERGENCY', pct};
+};
 
 const AsthmaLogScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
-  const [activeMode, setActiveMode] = useState('manual');
-  const [activeMember, setActiveMember] = useState('aarav');
+  const [mode, setMode] = useState('manual');
+  const [pef, setPef] = useState(335);
+  const [rescuePuffs, setRescuePuffs] = useState(0);
+  const [selectedTime, setSelectedTime] = useState(['Morning (on waking)']);
+  const [selectedSymptoms, setSelectedSymptoms] = useState(['No symptoms today']);
+  const [selectedTriggers, setSelectedTriggers] = useState(['No trigger identified']);
+  const [notes, setNotes] = useState('');
+  const [selectedDate] = useState(new Date());
+
+  const zone = useMemo(() => getZone(pef, PERSONAL_BEST), [pef]);
+
+  const formatDate = (d) => { const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const isToday = d.toDateString() === new Date().toDateString(); return `${isToday ? 'Today, ' : ''}${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`; };
+  const formatTime = (d) => { let h = d.getHours(); const m = d.getMinutes().toString().padStart(2, '0'); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${m} ${ap}`; };
+
+  const toggleChip = (chip, list, setter, exclusive) => {
+    if (exclusive) { setter([chip]); return; }
+    setter(prev => {
+      const excl = list === SYMPTOM_CHIPS ? 'No symptoms today' : 'No trigger identified';
+      const without = prev.filter(c => c !== excl);
+      const next = without.includes(chip) ? without.filter(c => c !== chip) : [...without, chip];
+      return next.length === 0 ? [excl] : next;
+    });
+  };
 
   return (
-    <View style={styles.container}>
+    <View style={st.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      {/* ── Compact Header (fixed) ── */}
-      <View style={[styles.header, {paddingTop: insets.top}]}>
-        <View style={styles.topRow}>
-          <View style={styles.topRowLeft}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon
-                family="Ionicons"
-                name="chevron-back"
-                size={ms(22)}
-                color={Colors.white}
-              />
-            </TouchableOpacity>
-            <AppText
-              variant="body"
-              color="rgba(255,255,255,0.8)"
-              style={{marginLeft: s(10)}}>
-              Tracking
-            </AppText>
+      <View style={[st.header, {paddingTop: insets.top}]}>
+        <View style={st.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={st.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText style={st.headerTitle}>Asthma & Peak Flow</AppText>
+            <AppText style={st.headerSub}>{formatDate(selectedDate)} - {formatTime(selectedDate)}</AppText>
           </View>
-          <View style={styles.topRowRight}>
-            <View style={styles.routinePill}>
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>
-                Routine check
+        </View>
+
+        {/* Zone banner */}
+        <View style={{paddingTop: vs(8), paddingBottom: vs(10)}}>
+          <View style={[st.zoneBanner, {backgroundColor: zone.bg}]}>
+            <Icon family="Ionicons" name={zone.icon} size={ms(26)} color={zone.color} style={{flexShrink: 0, marginTop: vs(1)}} />
+            <View style={{flex: 1}}>
+              <AppText style={{fontSize: ms(13), fontWeight: '700', color: zone.color, lineHeight: ms(16)}}>{zone.label}</AppText>
+              <AppText style={{fontSize: ms(10), color: zone.color, marginTop: vs(3), opacity: 0.8, lineHeight: ms(15)}}>
+                PEF {zone.pct}% of personal best. {zone.pct >= 80 ? 'Continue preventer inhaler as scheduled.' : zone.pct >= 50 ? 'Take 2-4 puffs Salbutamol now.' : 'Seek emergency care immediately.'}
               </AppText>
             </View>
-            <TouchableOpacity style={styles.savePill} activeOpacity={0.7}>
-              <AppText variant="small" color={Colors.primary} style={{fontWeight: '700'}}>
-                Save
-              </AppText>
-            </TouchableOpacity>
+            <View style={[st.zoneBadge, {backgroundColor: zone.color}]}>
+              <AppText style={{fontSize: ms(9), fontWeight: '700', color: Colors.white}}>{zone.badge}</AppText>
+            </View>
           </View>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
-          Asthma log
-        </AppText>
+
+        {/* Mode tabs */}
+        <View style={st.modeTabs}>
+          {MODE_TABS.map(tab => (
+            <TouchableOpacity key={tab.id} style={[st.modeTab, mode === tab.id && st.modeTabOn]} onPress={() => setMode(tab.id)} activeOpacity={0.7}>
+              <AppText variant="caption" color={mode === tab.id ? Colors.white : 'rgba(255,255,255,0.5)'} style={{fontWeight: mode === tab.id ? '700' : '500'}}>{tab.label}</AppText>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
-      {/* ── Scrollable Body ── */}
-      <ScrollView
-        style={styles.body}
-        contentContainerStyle={styles.bodyContent}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={st.scroll} contentContainerStyle={st.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+        {mode === 'auto' && <AsthmaAutoView />}
+        {mode === 'manual' && (
+          <View>
+            <AsthmaManualView pef={pef} setPef={setPef} personalBest={PERSONAL_BEST} />
 
-        {/* Scrollable header content (green bg) */}
-        <View style={styles.scrollableHeader}>
-          <AppText
-            variant="caption"
-            color="rgba(255,255,255,0.7)">
-            Tuesday, 24 Mar 2026 {'\u00b7'} 7:22 AM
-          </AppText>
+            {/* When is this reading */}
+            <View style={st.secLabel}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>When is this reading?</AppText>
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            <View style={st.chipWrap}>
+              {TIME_CHIPS.map(chip => {
+                const isOn = selectedTime.includes(chip);
+                return (
+                  <TouchableOpacity key={chip} style={[st.chip, isOn && st.chipOnG]} onPress={() => toggleChip(chip, TIME_CHIPS, setSelectedTime, false)} activeOpacity={0.7}>
+                    <AppText variant="small" color={isOn ? Colors.tealText : Colors.textSecondary} style={{fontWeight: isOn ? '700' : '500'}}>{chip}</AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
-          {/* Mode tabs */}
-          <View style={styles.modeTabsContainer}>
-            {MODE_TABS.map(tab => (
-              <TouchableOpacity
-                key={tab.id}
-                activeOpacity={0.7}
-                onPress={() => setActiveMode(tab.id)}
-                style={[
-                  styles.modeTab,
-                  activeMode === tab.id && styles.modeTabActive,
-                ]}>
-                <AppText
-                  variant="caption"
-                  color={activeMode === tab.id ? Colors.primary : 'rgba(255,255,255,0.7)'}
-                  style={{fontWeight: activeMode === tab.id ? '700' : '500'}}>
-                  {tab.label}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+            {/* Rescue inhaler */}
+            <View style={st.secLabel}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Rescue inhaler - Salbutamol</AppText>
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            <View style={st.rescueRow}>
+              <Icon family="Ionicons" name="medkit-outline" size={ms(22)} color={Colors.red} />
+              <View style={{flex: 1, marginLeft: s(10)}}>
+                <AppText style={{fontSize: ms(12), fontWeight: '600', color: Colors.textPrimary}}>Puffs used today</AppText>
+                <AppText variant="small" color={Colors.textSecondary} style={{marginTop: vs(2)}}>Before this reading - Salbutamol 100mcg</AppText>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
+                <TouchableOpacity style={st.rcBtn} onPress={() => setRescuePuffs(p => Math.max(0, p - 1))}><AppText style={{fontSize: ms(18), fontWeight: '700', color: Colors.textSecondary}}>-</AppText></TouchableOpacity>
+                <AppText style={{fontSize: ms(20), fontWeight: '800', color: Colors.red, minWidth: s(28), textAlign: 'center'}}>{rescuePuffs}</AppText>
+                <TouchableOpacity style={st.rcBtn} onPress={() => setRescuePuffs(p => p + 1)}><AppText style={{fontSize: ms(18), fontWeight: '700', color: Colors.textSecondary}}>+</AppText></TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Symptoms */}
+            <View style={st.secLabel}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Symptoms</AppText>
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            <View style={st.chipWrap}>
+              {SYMPTOM_CHIPS.map(chip => {
+                const isOn = selectedSymptoms.includes(chip);
+                const isNoSym = chip === 'No symptoms today';
+                return (
+                  <TouchableOpacity key={chip} style={[st.chip, isOn && (isNoSym ? st.chipOnG : st.chipOnR)]} onPress={() => toggleChip(chip, SYMPTOM_CHIPS, setSelectedSymptoms, isNoSym)} activeOpacity={0.7}>
+                    <AppText variant="small" color={isOn ? (isNoSym ? Colors.tealText : Colors.redDark) : Colors.textSecondary} style={{fontWeight: isOn ? '700' : '500'}}>{chip}</AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Triggers */}
+            <View style={[st.secLabel, {marginTop: vs(8)}]}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Triggers</AppText>
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            <View style={st.chipWrap}>
+              {TRIGGER_CHIPS.map(chip => {
+                const isOn = selectedTriggers.includes(chip);
+                const isNone = chip === 'No trigger identified';
+                return (
+                  <TouchableOpacity key={chip} style={[st.chip, isOn && st.chipOnG]} onPress={() => toggleChip(chip, TRIGGER_CHIPS, setSelectedTriggers, isNone)} activeOpacity={0.7}>
+                    <AppText variant="small" color={isOn ? Colors.tealText : Colors.textSecondary} style={{fontWeight: isOn ? '700' : '500'}}>{chip}</AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Note */}
+            <View style={[st.secLabel, {marginTop: vs(8)}]}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Note</AppText>
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            <TextInput style={st.notesInput} placeholder="e.g. 'Dusty house cleaning today', 'Walking outside in cold air'..." placeholderTextColor={Colors.textTertiary} multiline value={notes} onChangeText={setNotes} />
           </View>
-
-          {/* Who tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.memberChipsContainer}
-            style={{marginTop: vs(10)}}>
-            {MEMBERS.map(item => (
-              <MemberChip
-                key={item.id}
-                item={item}
-                isActive={activeMember === item.id}
-                onPress={() => setActiveMember(item.id)}
-              />
-            ))}
-          </ScrollView>
-
-          <ZoneBanner />
-        </View>
-
-        {/* Tab content */}
-        {activeMode === 'manual' ? <AsthmaManualView /> : <AsthmaAutoView />}
-        <View style={{height: vs(90)}} />
+        )}
+        <View style={{height: vs(100)}} />
       </ScrollView>
 
-      {/* ── BOTTOM BAR ── */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.7}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.white}
-            style={{textAlign: 'center'}}>
-            Save {'\u00b7'} Aarav {'\u00b7'} PEF 74% {'\u00b7'} Yellow zone {'\u00b7'} SpO{'\u2082'} 97%
+      {/* Bottom bar */}
+      <View style={st.bottomBar}>
+        <TouchableOpacity style={st.savePrimary} activeOpacity={0.8}>
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
+          <AppText variant="body" color={Colors.white} style={{fontWeight: '700', fontSize: ms(15)}}>
+            Save - {pef} L/min - {zone.pct}% - {zone.pct >= 80 ? 'Green zone' : zone.pct >= 50 ? 'Yellow zone' : 'Red zone'}
           </AppText>
         </TouchableOpacity>
-        <View style={styles.secondaryButtonRow}>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="share-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Share with school
-            </AppText>
+        <View style={st.saveSecRow}>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'asthma'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="alert-circle-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Alert doctor
-            </AppText>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'asthma', initialTab: 'asthmaIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -244,160 +197,32 @@ const AsthmaLogScreen = ({navigation}) => {
   );
 };
 
-// ──────────────────────────────────────────────
-// Styles
-// ──────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-
-  // Header (compact)
-  header: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: s(13),
-    paddingBottom: vs(8),
-  },
-  scrollableHeader: {
-    backgroundColor: Colors.primary,
-    marginHorizontal: s(-13),
-    paddingHorizontal: s(13),
-    paddingTop: vs(4),
-    paddingBottom: vs(12),
-    marginBottom: vs(10),
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  topRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  topRowRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: s(8),
-  },
-  routinePill: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(4),
-    borderRadius: ms(20),
-  },
-  savePill: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: s(14),
-    paddingVertical: vs(5),
-    borderRadius: ms(20),
-  },
-
-  // Member chips
-  memberChipsContainer: {
-    paddingRight: s(16),
-    gap: s(8),
-  },
-  memberChip: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: s(14),
-    paddingVertical: vs(6),
-    borderRadius: ms(20),
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-  },
-  memberChipActive: {
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderColor: 'rgba(255,255,255,0.4)',
-  },
-
-  // Mode tabs
-  modeTabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderRadius: ms(10),
-    padding: ms(3),
-    marginTop: vs(10),
-  },
-  modeTab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: vs(6),
-    borderRadius: ms(8),
-  },
-  modeTabActive: {
-    backgroundColor: Colors.white,
-  },
-
-  // Zone banner
-  zoneBanner: {
-    backgroundColor: Colors.amberBg,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    padding: ms(14),
-    marginTop: vs(14),
-  },
-  zoneBannerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  zoneIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  zoneBadge: {
-    backgroundColor: Colors.amberBg,
-    borderWidth: 1,
-    borderColor: Colors.amberText,
-    paddingHorizontal: s(10),
-    paddingVertical: vs(3),
-    borderRadius: ms(12),
-  },
-
-  // Body
-  body: {
-    flex: 1,
-  },
-  bodyContent: {
-    paddingHorizontal: s(13),
-  },
-
-  // Bottom bar
-  bottomBar: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: s(13),
-    paddingTop: vs(8),
-    paddingBottom: Platform.OS === 'ios' ? vs(24) : vs(10),
-    borderTopWidth: 0.5,
-    borderTopColor: '#d1d5db',
-  },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: vs(11),
-    borderRadius: ms(12),
-    alignItems: 'center',
-  },
-  secondaryButtonRow: {
-    flexDirection: 'row',
-    marginTop: vs(6),
-    gap: s(8),
-  },
-  secondaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: vs(7),
-    borderRadius: ms(10),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    backgroundColor: Colors.white,
-  },
+const st = StyleSheet.create({
+  container: {flex: 1, backgroundColor: Colors.background},
+  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16)},
+  topBar: {flexDirection: 'row', alignItems: 'center', paddingTop: vs(10)},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
+  zoneBanner: {borderRadius: ms(14), padding: ms(12), flexDirection: 'row', alignItems: 'flex-start', gap: s(11)},
+  zoneBadge: {paddingHorizontal: s(9), paddingVertical: vs(3), borderRadius: ms(20), flexShrink: 0, marginTop: vs(2)},
+  modeTabs: {flexDirection: 'row', marginTop: vs(6), marginBottom: vs(10), backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: ms(20), borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.12)', overflow: 'hidden'},
+  modeTab: {flex: 1, paddingVertical: vs(6), alignItems: 'center'},
+  modeTabOn: {backgroundColor: 'rgba(255,255,255,0.18)'},
+  scroll: {flex: 1},
+  body: {paddingHorizontal: s(13), paddingTop: vs(12)},
+  secLabel: {flexDirection: 'row', alignItems: 'center', marginTop: vs(4), marginBottom: vs(8)},
+  chipWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: ms(6)},
+  chip: {paddingHorizontal: s(12), paddingVertical: vs(7), borderRadius: ms(22), borderWidth: 0.5, borderColor: '#dde8e2', backgroundColor: Colors.white, marginBottom: vs(3)},
+  chipOnG: {backgroundColor: Colors.tealBg, borderColor: Colors.paleGreen},
+  chipOnR: {backgroundColor: Colors.redBg, borderColor: '#FBBCBC'},
+  rescueRow: {flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: ms(13), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(13), marginBottom: vs(10)},
+  rcBtn: {width: ms(32), height: ms(32), borderRadius: ms(16), backgroundColor: Colors.background, borderWidth: 0.5, borderColor: '#dde8e2', alignItems: 'center', justifyContent: 'center'},
+  notesInput: {width: '100%', borderWidth: 0.5, borderColor: '#dde8e2', borderRadius: ms(11), padding: ms(11), backgroundColor: Colors.white, minHeight: vs(60), fontSize: ms(12), color: Colors.textPrimary, textAlignVertical: 'top', lineHeight: ms(18)},
+  bottomBar: {backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
+  savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(13), paddingVertical: vs(15), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(10), marginBottom: vs(8)},
+  saveSecRow: {flexDirection: 'row', gap: s(8)},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(5), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(11), borderWidth: 0.5, borderColor: '#dde8e2'},
 });
 
 export default AsthmaLogScreen;

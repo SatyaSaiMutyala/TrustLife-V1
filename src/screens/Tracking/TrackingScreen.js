@@ -35,7 +35,7 @@ const TrackingScreen = () => (
       <TrackerGrid />
       <PriorityReadings />
       <SymptomLogs />
-      <LogTimeline />
+      {/* <LogTimeline /> */}
       <View style={{height: vs(20)}} />
     </ScrollView>
   </View>

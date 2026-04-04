@@ -60,6 +60,7 @@ const SymptomLogs = () => {
     }
   };
 
+
   return (
     <View>
       <SectionTitle title="All Symptom Logs" />

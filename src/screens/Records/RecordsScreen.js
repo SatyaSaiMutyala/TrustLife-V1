@@ -10,6 +10,14 @@ import VisitSummaryTab from '../../components/Records/VisitSummaryTab';
 import IndividualRecordsTab from '../../components/Records/IndividualRecordsTab';
 import ServiceRecordsTab from '../../components/Records/ServiceRecordsTab';
 import RecordsFinalTab from '../../components/Records/RecordsFinalTab';
+import GlucoseRecordsTab from '../../components/Records/GlucoseRecordsTab';
+import BPRecordsTab from '../../components/Records/BPRecordsTab';
+import HRRecordsTab from '../../components/Records/HRRecordsTab';
+import WeightRecordsTab from '../../components/Records/WeightRecordsTab';
+import TempRecordsTab from '../../components/Records/TempRecordsTab';
+import AsthmaRecordsTab from '../../components/Records/AsthmaRecordsTab';
+import MigraineRecordsTab from '../../components/Records/MigraineRecordsTab';
+import AnemiaRecordsTab from '../../components/Records/AnemiaRecordsTab';
 const SERVICE_FILTERS = [
   {key: 'all', label: 'All', icon: 'grid-outline', bg: 'rgba(255,255,255,0.15)'},
   {key: 'lab', label: 'Lab', icon: 'flask-outline', bg: 'rgba(255,255,255,0.1)'},
@@ -30,6 +38,24 @@ const mainTabs = [
   {key: 'individual', label: 'Individual records'},
   {key: 'services', label: 'Service records'},
   {key: 'final', label: 'My records'},
+  {key: 'healthlogs', label: 'Log screens'},
+];
+
+const HEALTHLOG_FILTERS = [
+  {key: 'glucose', label: 'Glucose', icon: 'water-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'bp', label: 'BP', icon: 'heart-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'heartrate', label: 'Heart Rate', icon: 'pulse-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'ecg', label: 'ECG', icon: 'analytics-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'temp', label: 'Temperature', icon: 'thermometer-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'weight', label: 'Weight', icon: 'scale-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'mood', label: 'Mood', icon: 'happy-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'migraine', label: 'Migraine', icon: 'flash-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'asthma', label: 'Asthma', icon: 'cloud-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'anemia', label: 'Anemia', icon: 'water-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'msk', label: 'MSK', icon: 'body-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'symptoms', label: 'Symptoms', icon: 'bandage-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'menstrual', label: 'Menstrual', icon: 'calendar-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'vaccination', label: 'Vaccination', icon: 'shield-checkmark-outline', bg: 'rgba(255,255,255,0.1)'},
 ];
 
 const FILTERS = [
@@ -45,12 +71,15 @@ const FILTERS = [
   {key: 'otherLogs', label: 'Other logs', icon: 'analytics-outline', bg: 'rgba(255,255,255,0.1)'},
 ];
 
-const RecordsScreen = () => {
+const RecordsScreen = ({route}) => {
 
   const navigation = useNavigation();
-  const [activeTab, setActiveTab] = useState('summary');
+  const initialTab = route?.params?.tab || 'summary';
+  const initialLogFilter = route?.params?.logFilter || 'glucose';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [activeFilter, setActiveFilter] = useState('all');
   const [serviceFilter, setServiceFilter] = useState('all');
+  const [healthlogFilter, setHealthlogFilter] = useState(initialLogFilter);
   const addRef = useRef(null);
 
   return (
@@ -163,6 +192,40 @@ const RecordsScreen = () => {
             })}
           </ScrollView>
         )}
+
+        {activeTab === 'healthlogs' && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.ribbonScroll}>
+            {HEALTHLOG_FILTERS.map(f => {
+              const active = healthlogFilter === f.key;
+              return (
+                <TouchableOpacity
+                  key={f.key}
+                  style={styles.ribbonItem}
+                  onPress={() => setHealthlogFilter(f.key)}
+                  activeOpacity={0.7}>
+                  <View style={[styles.ribbonIcon, {backgroundColor: active ? Colors.white : f.bg}]}>
+                    <Icon
+                      family="Ionicons"
+                      name={f.icon}
+                      size={16}
+                      color={active ? Colors.primary : 'rgba(255,255,255,0.85)'}
+                    />
+                  </View>
+                  <AppText
+                    variant="small"
+                    color={active ? Colors.white : 'rgba(255,255,255,0.6)'}
+                    style={[styles.ribbonLabel, active && {fontWeight: '700'}]}
+                    numberOfLines={1}>
+                    {f.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        )}
       </View>
 
       <ScrollView
@@ -173,6 +236,21 @@ const RecordsScreen = () => {
         {activeTab === 'individual' && <IndividualRecordsTab activeFilter={activeFilter} />}
         {activeTab === 'services' && <ServiceRecordsTab navigation={navigation} onAddRef={addRef} activeFilter={serviceFilter} />}
         {activeTab === 'final' && <RecordsFinalTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'glucose' && <GlucoseRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'bp' && <BPRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'heartrate' && <HRRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'weight' && <WeightRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'temp' && <TempRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'asthma' && <AsthmaRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'migraine' && <MigraineRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'anemia' && <AnemiaRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter !== 'glucose' && healthlogFilter !== 'bp' && healthlogFilter !== 'heartrate' && healthlogFilter !== 'weight' && healthlogFilter !== 'temp' && healthlogFilter !== 'asthma' && healthlogFilter !== 'migraine' && healthlogFilter !== 'anemia' && (
+          <View style={{alignItems: 'center', paddingVertical: vs(40)}}>
+            <AppText variant="body" color={Colors.textTertiary}>
+              {HEALTHLOG_FILTERS.find(f => f.key === healthlogFilter)?.label} records coming soon
+            </AppText>
+          </View>
+        )}
         <View style={{height: vs(80)}} />
       </ScrollView>
 

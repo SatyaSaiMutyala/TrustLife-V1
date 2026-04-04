@@ -92,6 +92,7 @@ import GlucoseLogScreen from '../screens/Tracking/SymptomLogs/GlucoseLogScreen';
 import BPLogScreen from '../screens/Tracking/SymptomLogs/BPLogScreen';
 import HeartRateLogScreen from '../screens/Tracking/SymptomLogs/HeartRateLogScreen';
 import MoodLogScreen from '../screens/Tracking/SymptomLogs/MoodLogScreen';
+import DailyLogScreen from '../screens/Tracking/DailyLogScreen';
 import AnemiaLogScreen from '../screens/Tracking/SymptomLogs/AnemiaLogScreen';
 import MenstrualLogScreen from '../screens/Tracking/SymptomLogs/MenstrualLogScreen';
 import SymptomsLogScreen from '../screens/Tracking/SymptomLogs/SymptomsLogScreen';
@@ -471,6 +472,11 @@ const AppNavigator = () => {
       <Stack.Screen
         name="AnemiaLog"
         component={AnemiaLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="DailyLog"
+        component={DailyLogScreen}
         options={{animation: 'slide_from_right'}}
       />
       <Stack.Screen

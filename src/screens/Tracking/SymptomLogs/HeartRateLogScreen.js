@@ -1,609 +1,311 @@
-import React, {useState} from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import React, {useState, useCallback} from 'react';
+import {View, ScrollView, StyleSheet, StatusBar, TouchableOpacity, TextInput, Platform} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {
-  scale as s,
-  verticalScale as vs,
-  moderateScale as ms,
-} from 'react-native-size-matters';
+import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
+import Fonts from '../../../constants/fonts';
 import AppText from '../../../components/shared/AppText';
 import Icon from '../../../components/shared/Icons';
-import HRManualView from './HRManualView';
-import HRAutoView from './HRAutoView';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import HRDeviceSync from './HRAutoView';
+import HRManualEntry from './HRManualView';
 
-// ──────────────────────────────────────────────
-// Constants & Data
-// ──────────────────────────────────────────────
-
-const MODE_TABS = [
-  {id: 'manual', label: 'Manual'},
-  {id: 'auto', label: 'Auto measure'},
+const ACTIVITY_CHIPS = [
+  'Just woke up', 'Rested 5+ min', 'Light walk', 'Exercise / workout',
+  'Climbed stairs', 'Caffeine', 'Alcohol', 'Took medication',
+  'Feeling anxious', 'Stressful moment', 'Feeling unwell', 'Smoking',
+  'Nothing in particular',
 ];
 
-const CONTEXT_TABS = [
-  {id: 'rest', label: 'Resting', icon: 'bed-outline'},
-  {id: 'active', label: 'Active', icon: 'walk-outline'},
-  {id: 'sleep', label: 'Sleep', icon: 'moon-outline'},
-  {id: 'recovery', label: 'Recovery', icon: 'refresh-outline'},
+const SYMPTOM_CHIPS = [
+  'None', 'Palpitations', 'Chest tightness', 'Short of breath',
+  'Dizziness', 'Fatigue', 'Headache', 'Anxiety',
+  "Can't catch breath", 'Flushing / warmth', 'Nausea', 'Skipped beats',
 ];
 
-const SOURCE_CHIPS = [
-  {id: 'manual', label: 'Manual'},
-  {id: 'wearable', label: 'Wearable'},
-  {id: 'bp', label: 'BP device'},
-  {id: 'applehealth', label: 'Apple Health'},
-  {id: 'camera', label: 'Camera PPG'},
+const TARGET_DATA = [
+  {label: 'Resting HR', value: '60-100', unit: 'bpm'},
+  {label: 'HRV target', value: '>40', unit: 'ms'},
+  {label: 'Sleep HR', value: '50-70', unit: 'bpm'},
+  {label: 'Recovery', value: '<2 min', unit: 'to normal'},
 ];
-
-const ZONE_ROWS = [
-  {id: 'z0', label: 'Zone 0', name: 'Very low', range: '<60', color: Colors.blueText, barColor: Colors.blueBg, detail: 'Bradycardia territory'},
-  {id: 'z1', label: 'Zone 1', name: 'Resting', range: '60\u2013100', color: Colors.tealText, barColor: Colors.tealBg, detail: '72 \u2713', highlight: true},
-  {id: 'z2', label: 'Zone 2', name: 'Light aerobic', range: '100\u2013127', color: '#4d7c0f', barColor: '#ecfccb', detail: 'Fat burning'},
-  {id: 'z3', label: 'Zone 3', name: 'Moderate', range: '127\u2013145', color: Colors.amberText, barColor: Colors.amberBg, detail: 'Cardio fitness'},
-  {id: 'z4', label: 'Zone 4', name: 'Hard', range: '145\u2013163', color: '#c2410c', barColor: '#ffedd5', detail: 'Lactate threshold'},
-  {id: 'z5', label: 'Zone 5', name: 'Maximum', range: '163\u2013182', color: Colors.redText, barColor: Colors.redBg, detail: 'Sprint / HIIT'},
-  {id: 'z6', label: 'Zone 6', name: 'Danger', range: '>182', color: '#7f1d1d', barColor: '#fecaca', detail: 'Above max HR'},
-];
-
-// ──────────────────────────────────────────────
-// Subcomponents
-// ──────────────────────────────────────────────
-
-const ContextChip = ({item, isActive, onPress}) => (
-  <TouchableOpacity
-    activeOpacity={0.7}
-    onPress={onPress}
-    style={[
-      styles.contextChip,
-      isActive && styles.contextChipActive,
-    ]}>
-    <Icon
-      family="Ionicons"
-      name={item.icon}
-      size={ms(14)}
-      color={isActive ? Colors.white : 'rgba(255,255,255,0.7)'}
-    />
-    <AppText
-      variant="small"
-      color={isActive ? Colors.white : 'rgba(255,255,255,0.7)'}
-      style={{marginLeft: s(5), fontWeight: isActive ? '700' : '500'}}>
-      {item.label}
-    </AppText>
-  </TouchableOpacity>
-);
-
-const ZoneBanner = () => (
-  <View style={styles.zoneBanner}>
-    <View style={styles.zoneBannerTop}>
-      <View style={styles.zoneIconRow}>
-        <Icon
-          family="Ionicons"
-          name="checkmark-circle-outline"
-          size={ms(20)}
-          color={Colors.tealText}
-        />
-        <AppText
-          variant="bodyBold"
-          color={Colors.tealText}
-          style={{marginLeft: s(8)}}>
-          Normal resting heart rate
-        </AppText>
-      </View>
-      <View style={styles.zoneBadge}>
-        <AppText variant="small" color={Colors.tealText} style={{fontWeight: '700'}}>
-          Normal
-        </AppText>
-      </View>
-    </View>
-    <AppText
-      variant="caption"
-      color={Colors.tealText}
-      style={{marginTop: vs(6), lineHeight: ms(17)}}>
-      60{'\u2013'}100 bpm {'\u00b7'} Your resting HR 72 bpm is in the healthy range
-    </AppText>
-  </View>
-);
-
-const SourceChip = ({item, isActive, onPress}) => (
-  <TouchableOpacity
-    activeOpacity={0.7}
-    onPress={onPress}
-    style={[
-      styles.sourceChip,
-      isActive && styles.sourceChipActive,
-    ]}>
-    <AppText
-      variant="small"
-      color={isActive ? Colors.primary : Colors.textSecondary}
-      style={{fontWeight: isActive ? '700' : '500'}}>
-      {item.label}
-    </AppText>
-  </TouchableOpacity>
-);
-
-const ZoneRow = ({zone, isLast}) => (
-  <View
-    style={[
-      styles.zoneRow,
-      !isLast && styles.zoneRowBorder,
-    ]}>
-    <View style={{flex: 1}}>
-      <View style={styles.zoneRowHeader}>
-        <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700'}}>
-          {zone.label} {zone.name}
-        </AppText>
-        <AppText variant="small" color={Colors.textSecondary}>
-          {zone.range} bpm
-        </AppText>
-      </View>
-      <View style={[styles.zoneBar, {backgroundColor: zone.barColor}]}>
-        <AppText variant="small" color={zone.color} style={{fontWeight: '600'}}>
-          {zone.detail}
-        </AppText>
-        {zone.highlight && (
-          <View style={[styles.zoneHighlightBadge, {borderColor: zone.color}]}>
-            <AppText variant="small" color={zone.color} style={{fontWeight: '700'}}>
-              You are here
-            </AppText>
-          </View>
-        )}
-      </View>
-    </View>
-  </View>
-);
-
-const HRZonesCard = () => (
-  <View style={styles.zonesCard}>
-    <AppText variant="bodyBold" color={Colors.textPrimary}>
-      Heart rate zones reference
-    </AppText>
-    {ZONE_ROWS.map((zone, index) => (
-      <ZoneRow
-        key={zone.id}
-        zone={zone}
-        isLast={index === ZONE_ROWS.length - 1}
-      />
-    ))}
-  </View>
-);
-
-const InsightCard = () => (
-  <View style={styles.insightCard}>
-    <View style={styles.insightIconRow}>
-      <Icon
-        family="Ionicons"
-        name="information-circle-outline"
-        size={ms(18)}
-        color={Colors.blueText}
-      />
-      <AppText
-        variant="bodyBold"
-        color={Colors.blueText}
-        style={{marginLeft: s(8)}}>
-        Heart rate and your conditions
-      </AppText>
-    </View>
-    <AppText
-      variant="caption"
-      color={Colors.blueText}
-      style={{marginTop: vs(6), lineHeight: ms(17)}}>
-      T2DM + HTN: resting HR {'>'}80 bpm = higher CV risk. Keeping resting heart rate in the 60{'\u2013'}75 bpm range is associated with lower cardiovascular events. Regular monitoring helps detect early autonomic neuropathy.
-    </AppText>
-  </View>
-);
-
-// ──────────────────────────────────────────────
-// Main Screen
-// ──────────────────────────────────────────────
 
 const HeartRateLogScreen = ({navigation}) => {
   const insets = useSafeAreaInsets();
-  const [activeMode, setActiveMode] = useState('manual');
-  const [activeCtx, setActiveCtx] = useState('rest');
-  const [activeSource, setActiveSource] = useState('manual');
+  const [hrVal, setHrVal] = useState('');
+  const [hrvVal, setHrvVal] = useState('');
+  const [spo2Val, setSpo2Val] = useState('');
+  const [selectedActivities, setSelectedActivities] = useState([]);
+  const [mood, setMood] = useState(7);
+  const [energy, setEnergy] = useState('Moderate');
+  const [stress, setStress] = useState('Very low');
+  const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+  const [notes, setNotes] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const formatDate = (d) => {
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${isToday ? 'Today, ' : ''}${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  };
+  const formatTime = (d) => {
+    let h = d.getHours(); const m = d.getMinutes().toString().padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    return `${h}:${m} ${ampm}`;
+  };
+  const onDateChange = (event, date) => { setShowDatePicker(false); if (date) setSelectedDate(prev => { const d = new Date(prev); d.setFullYear(date.getFullYear(), date.getMonth(), date.getDate()); return d; }); };
+  const onTimeChange = (event, date) => { setShowTimePicker(false); if (date) setSelectedDate(prev => { const d = new Date(prev); d.setHours(date.getHours(), date.getMinutes()); return d; }); };
+
+  const getHRIndicator = useCallback(() => {
+    const v = parseInt(hrVal);
+    if (isNaN(v)) return null;
+    if (v < 40) return {bg: '#EFF6FF', color: '#185FA5', text: 'Very low - seek medical advice if symptomatic'};
+    if (v < 60) return {bg: Colors.tealBg, color: Colors.tealText, text: 'Athletic range - excellent cardiac fitness'};
+    if (v <= 75) return {bg: Colors.tealBg, color: Colors.tealText, text: 'Normal resting HR'};
+    if (v <= 90) return {bg: Colors.amberBg, color: Colors.amberDark, text: 'Slightly elevated - check stress / caffeine / sleep'};
+    if (v <= 100) return {bg: Colors.amberBg, color: Colors.amberDark, text: 'Upper-normal range - monitor closely'};
+    return {bg: Colors.redBg, color: Colors.redDark, text: 'Elevated resting HR - log context and retake if settled'};
+  }, [hrVal]);
+
+  const toggleActivity = (chip) => {
+    if (chip === 'Nothing in particular') { setSelectedActivities([chip]); return; }
+    setSelectedActivities(prev => {
+      const without = prev.filter(c => c !== 'Nothing in particular');
+      const next = without.includes(chip) ? without.filter(c => c !== chip) : [...without, chip];
+      return next.length === 0 ? [] : next;
+    });
+  };
+  const toggleSymptom = (chip) => {
+    if (chip === 'None') { setSelectedSymptoms([chip]); return; }
+    setSelectedSymptoms(prev => {
+      const without = prev.filter(c => c !== 'None');
+      const next = without.includes(chip) ? without.filter(c => c !== chip) : [...without, chip];
+      return next.length === 0 ? [] : next;
+    });
+  };
+
+  const hrIndicator = getHRIndicator();
 
   return (
-    <View style={styles.container}>
+    <View style={st.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
-
-      {/* ── Compact Header (fixed) ── */}
-      <View style={[styles.header, {paddingTop: insets.top}]}>
-        <View style={styles.topRow}>
-          <View style={styles.topRowLeft}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon
-                family="Ionicons"
-                name="chevron-back"
-                size={ms(22)}
-                color={Colors.white}
-              />
-            </TouchableOpacity>
-            <AppText
-              variant="body"
-              color="rgba(255,255,255,0.8)"
-              style={{marginLeft: s(10)}}>
-              Tracking
-            </AppText>
-          </View>
-          <TouchableOpacity style={styles.savePill} activeOpacity={0.7}>
-            <AppText variant="small" color={Colors.primary} style={{fontWeight: '700'}}>
-              Save
-            </AppText>
+      <View style={[st.header, {paddingTop: insets.top}]}>
+        <View style={st.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={st.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={st.headerTitle}>Heart Rate</AppText>
+            <AppText variant="caption" style={st.headerSub}>Apple Watch - Finger oximeter - Manual entry</AppText>
+          </View>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
-          Log heart rate
-        </AppText>
       </View>
 
-      {/* ── Scrollable Body ── */}
-      <ScrollView
-        style={styles.body}
-        contentContainerStyle={styles.bodyContent}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={st.scroll} contentContainerStyle={st.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+        <HRDeviceSync />
 
-        {/* Scrollable header content (green bg) */}
-        <View style={styles.scrollableHeader}>
-          <AppText
-            variant="caption"
-            color="rgba(255,255,255,0.7)">
-            Tuesday, 24 Mar 2026 {'\u00b7'} 7:22 AM
-          </AppText>
-
-          {/* Mode tabs */}
-          <View style={styles.modeTabsContainer}>
-            {MODE_TABS.map(tab => (
-              <TouchableOpacity
-                key={tab.id}
-                activeOpacity={0.7}
-                onPress={() => setActiveMode(tab.id)}
-                style={[
-                  styles.modeTab,
-                  activeMode === tab.id && styles.modeTabActive,
-                ]}>
-                <AppText
-                  variant="caption"
-                  color={activeMode === tab.id ? Colors.primary : 'rgba(255,255,255,0.7)'}
-                  style={{fontWeight: activeMode === tab.id ? '700' : '500'}}>
-                  {tab.label}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+        {/* Ayu Intel */}
+        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'heartRate', initialTab: 'hrIntel'})}>
+          <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} /></View>
+          <View style={{flex: 1}}>
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Heart Rate</AppText>
+            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>HRV analysis - Sleep quality - Recovery patterns</AppText>
           </View>
-
-          {/* Context chips */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.contextChipsContainer}
-            style={{marginTop: vs(10)}}>
-            {CONTEXT_TABS.map(item => (
-              <ContextChip
-                key={item.id}
-                item={item}
-                isActive={activeCtx === item.id}
-                onPress={() => setActiveCtx(item.id)}
-              />
-            ))}
-          </ScrollView>
-
-          <ZoneBanner />
-        </View>
-
-        {/* Source strip card */}
-        <View style={styles.sourceCard}>
-          <AppText
-            variant="caption"
-            color={Colors.textSecondary}
-            style={{marginRight: s(8)}}>
-            Source:
-          </AppText>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.sourceChipsContainer}>
-            {SOURCE_CHIPS.map(item => (
-              <SourceChip
-                key={item.id}
-                item={item}
-                isActive={activeSource === item.id}
-                onPress={() => setActiveSource(item.id)}
-              />
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Tab content */}
-        {activeMode === 'manual' ? <HRManualView /> : <HRAutoView />}
-
-        {/* Shared section — always visible */}
-        <HRZonesCard />
-
-        {/* Blue insight card */}
-        <InsightCard />
-
-        <View style={{height: vs(90)}} />
-      </ScrollView>
-
-      {/* ── BOTTOM BAR ── */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.7}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.white}
-            style={{textAlign: 'center'}}>
-            Save {'\u00b7'} 72 bpm {'\u00b7'} Resting {'\u00b7'} Regular
-          </AppText>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
         </TouchableOpacity>
-        <View style={styles.secondaryButtonRow}>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="add-circle-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Add to session
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="trash-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Discard
-            </AppText>
-          </TouchableOpacity>
+
+        <View style={st.dividerRow}>
+          <View style={st.dividerLine} />
+          <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>or enter manually</AppText>
+          <View style={st.dividerLine} />
         </View>
-      </View>
+
+        <HRManualEntry hrVal={hrVal} setHrVal={setHrVal} hrvVal={hrvVal} setHrvVal={setHrvVal} spo2Val={spo2Val} setSpo2Val={setSpo2Val} hrIndicator={hrIndicator} />
+
+        {/* Date / Time */}
+        <View style={st.inputCard}>
+          <View style={st.dateTimeRow}>
+            <TouchableOpacity style={{flex: 1}} onPress={() => setShowDatePicker(true)} activeOpacity={0.7}>
+              <AppText variant="subtext" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginBottom: vs(5)}}>Date</AppText>
+              <AppText variant="bodyBold" color={Colors.textPrimary}>{formatDate(selectedDate)}</AppText>
+            </TouchableOpacity>
+            <View style={st.dateTimeDivider} />
+            <TouchableOpacity style={{flex: 1}} onPress={() => setShowTimePicker(true)} activeOpacity={0.7}>
+              <AppText variant="subtext" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginBottom: vs(5)}}>Time</AppText>
+              <AppText variant="bodyBold" color={Colors.textPrimary}>{formatTime(selectedDate)}</AppText>
+            </TouchableOpacity>
+          </View>
+          {showDatePicker && <DateTimePicker value={selectedDate} mode="date" display={Platform.OS === 'ios' ? 'spinner' : 'default'} maximumDate={new Date()} onChange={onDateChange} />}
+          {showTimePicker && <DateTimePicker value={selectedDate} mode="time" display={Platform.OS === 'ios' ? 'spinner' : 'default'} maximumDate={new Date()} onChange={onTimeChange} />}
+        </View>
+
+        {/* Notes */}
+        <View style={st.inputCard}>
+          <AppText variant="subtext" color={Colors.textSecondary} style={st.icLabel}>Notes (optional)</AppText>
+          <TextInput style={st.notesInput} placeholder="e.g. Felt heart racing after climbing stairs..." placeholderTextColor={Colors.textTertiary} multiline value={notes} onChangeText={setNotes} />
+        </View>
+
+        {/* Activity chips */}
+        <View style={st.inputCard}>
+          <AppText variant="subtext" color={Colors.textSecondary} style={st.icLabel}>Before this reading</AppText>
+          <AppText variant="caption" color={Colors.textSecondary} style={{marginBottom: vs(10), lineHeight: ms(17)}}>
+            What did you do <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700'}}>just before</AppText>? Tap all that apply.
+          </AppText>
+          <View style={st.chipWrap}>
+            {ACTIVITY_CHIPS.map(chip => {
+              const isOn = selectedActivities.includes(chip);
+              return (
+                <TouchableOpacity key={chip} style={[st.symChip, isOn && st.symChipOn]} onPress={() => toggleActivity(chip)} activeOpacity={0.7}>
+                  <AppText variant="small" color={isOn ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{chip}</AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Symptoms & Mood */}
+        <View style={st.inputCard}>
+          <AppText variant="subtext" color={Colors.textSecondary} style={st.icLabel}>Symptoms & mood</AppText>
+          <View style={{marginBottom: vs(12)}}>
+            <View style={st.moodHeader}>
+              <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '600'}}>How are you feeling?</AppText>
+              <AppText variant="header" color={Colors.primary} style={{fontWeight: '800'}}>{mood}</AppText>
+            </View>
+            <View style={st.sliderTrack}>
+              <View style={[st.sliderFill, {width: `${(mood / 10) * 100}%`}]} />
+              <View style={[st.sliderThumb, {left: `${(mood / 10) * 100}%`}]} />
+            </View>
+            <View style={st.sliderLabels}>
+              <AppText variant="subtext" color={Colors.textTertiary}>Very low</AppText>
+              <AppText variant="subtext" color={Colors.textTertiary}>Neutral</AppText>
+              <AppText variant="subtext" color={Colors.textTertiary}>Great</AppText>
+            </View>
+            <View style={st.moodBtnRow}>
+              <TouchableOpacity style={st.moodBtn} onPress={() => setMood(prev => Math.max(1, prev - 1))}><AppText variant="bodyBold" color={Colors.primary}>-</AppText></TouchableOpacity>
+              <TouchableOpacity style={st.moodBtn} onPress={() => setMood(prev => Math.min(10, prev + 1))}><AppText variant="bodyBold" color={Colors.primary}>+</AppText></TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={{flexDirection: 'row', gap: s(10), marginBottom: vs(12)}}>
+            <View style={{flex: 1}}>
+              <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '600', marginBottom: vs(7)}}>Energy</AppText>
+              {['Very low', 'Low', 'Moderate', 'Good'].map(opt => {
+                const isOn = energy === opt;
+                return (<TouchableOpacity key={opt} style={[st.optionBtn, isOn && st.optionBtnOn]} onPress={() => setEnergy(opt)} activeOpacity={0.7}><AppText variant="caption" color={isOn ? Colors.white : Colors.textSecondary} style={{fontWeight: isOn ? '700' : '500'}}>{opt}</AppText></TouchableOpacity>);
+              })}
+            </View>
+            <View style={{flex: 1}}>
+              <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '600', marginBottom: vs(7)}}>Stress</AppText>
+              {['Very low', 'Low', 'Moderate', 'High'].map(opt => {
+                const isOn = stress === opt;
+                return (<TouchableOpacity key={opt} style={[st.optionBtn, isOn && st.optionBtnOn]} onPress={() => setStress(opt)} activeOpacity={0.7}><AppText variant="caption" color={isOn ? Colors.white : Colors.textSecondary} style={{fontWeight: isOn ? '700' : '500'}}>{opt}</AppText></TouchableOpacity>);
+              })}
+            </View>
+          </View>
+
+          <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '600', marginBottom: vs(7)}}>
+            Symptoms right now <AppText variant="small" color={Colors.textTertiary} style={{fontWeight: '400'}}>(tap all that apply)</AppText>
+          </AppText>
+          <View style={st.chipWrap}>
+            {SYMPTOM_CHIPS.map(chip => {
+              const isOn = selectedSymptoms.includes(chip);
+              const isNone = chip === 'None';
+              return (
+                <TouchableOpacity key={chip} style={[st.symChip, isOn && st.symChipOn, isNone && isOn && {backgroundColor: Colors.tealBg, borderColor: '#a5d6c0'}]} onPress={() => toggleSymptom(chip)} activeOpacity={0.7}>
+                  <AppText variant="small" color={isOn ? (isNone ? Colors.tealText : Colors.white) : Colors.textSecondary} style={{fontWeight: '600'}}>{chip}</AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Targets */}
+        <View style={[st.inputCard, {padding: 0, overflow: 'hidden'}]}>
+          <View style={{paddingHorizontal: s(13), paddingTop: vs(10), paddingBottom: vs(6)}}>
+            <AppText variant="subtext" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6}}>Your targets - Apple Watch + Dr. Meera</AppText>
+          </View>
+          <View style={st.targetRow}>
+            {TARGET_DATA.map((t, i) => (
+              <View key={i} style={st.targetItem}>
+                <AppText variant="subtext" color={Colors.textTertiary} style={{marginBottom: vs(2)}}>{t.label}</AppText>
+                <AppText variant="caption" color={Colors.primary} style={{fontWeight: '700'}}>{t.value}</AppText>
+                <AppText variant="subtext" color={Colors.textTertiary} style={{fontSize: Fonts.sizes.xs}}>{t.unit}</AppText>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <TouchableOpacity style={st.logBtn} activeOpacity={0.8}>
+          <AppText variant="body" color={Colors.white} style={{fontWeight: '700', fontSize: ms(15)}}>Save reading</AppText>
+        </TouchableOpacity>
+
+        <View style={st.secLabel}>
+          <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Past readings</AppText>
+          <View style={st.secLabelLine} />
+        </View>
+
+        <TouchableOpacity style={st.linkCard} activeOpacity={0.8} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'heartrate'})}>
+          <View style={st.lcIconWrap}>
+            <Icon family="Ionicons" name="pulse" size={ms(20)} color={Colors.red} />
+          </View>
+          <View style={{flex: 1, minWidth: 0}}>
+            <AppText variant="subtext" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginBottom: vs(2)}}>Heart rate records</AppText>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginBottom: vs(3)}}>62 readings - March 2026</AppText>
+            <View style={{flexDirection: 'row', gap: s(5), flexWrap: 'wrap'}}>
+              <View style={[st.lcChip, {backgroundColor: Colors.tealBg}]}><AppText variant="small" color={Colors.tealText} style={{fontWeight: '600'}}>Avg resting 74 bpm</AppText></View>
+              <View style={[st.lcChip, {backgroundColor: Colors.redBg}]}><AppText variant="small" color={Colors.redDark} style={{fontWeight: '600'}}>HRV 28 ms - Low</AppText></View>
+            </View>
+          </View>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.primary} />
+        </TouchableOpacity>
+
+        <View style={{height: vs(30)}} />
+      </ScrollView>
     </View>
   );
 };
 
-// ──────────────────────────────────────────────
-// Styles
-// ──────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-
-  // Header (compact)
-  header: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: s(13),
-    paddingBottom: vs(8),
-  },
-  scrollableHeader: {
-    backgroundColor: Colors.primary,
-    marginHorizontal: s(-13),
-    paddingHorizontal: s(13),
-    paddingTop: vs(4),
-    paddingBottom: vs(12),
-    marginBottom: vs(10),
-  },
-  topRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  topRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  savePill: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: s(14),
-    paddingVertical: vs(5),
-    borderRadius: ms(20),
-  },
-
-  // Context chips
-  contextChipsContainer: {
-    paddingRight: s(16),
-    gap: s(8),
-  },
-  contextChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(6),
-    borderRadius: ms(20),
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-  },
-  contextChipActive: {
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderColor: 'rgba(255,255,255,0.4)',
-  },
-
-  // Mode tabs
-  modeTabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderRadius: ms(10),
-    padding: ms(3),
-    marginTop: vs(10),
-  },
-  modeTab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: vs(6),
-    borderRadius: ms(8),
-  },
-  modeTabActive: {
-    backgroundColor: Colors.white,
-  },
-
-  // Zone banner
-  zoneBanner: {
-    backgroundColor: Colors.tealBg,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    padding: ms(14),
-    marginTop: vs(14),
-  },
-  zoneBannerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  zoneIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  zoneBadge: {
-    backgroundColor: Colors.tealBg,
-    borderWidth: 1,
-    borderColor: Colors.tealText,
-    paddingHorizontal: s(10),
-    paddingVertical: vs(3),
-    borderRadius: ms(12),
-  },
-
-  // Source strip card
-  sourceCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(10),
-    marginBottom: vs(10),
-  },
-  sourceChipsContainer: {
-    gap: s(6),
-  },
-  sourceChip: {
-    backgroundColor: Colors.background,
-    paddingHorizontal: s(12),
-    paddingVertical: vs(5),
-    borderRadius: ms(20),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-  },
-  sourceChipActive: {
-    backgroundColor: Colors.tealBg,
-    borderColor: Colors.primary,
-  },
-
-  // HR Zones card
-  zonesCard: {
-    backgroundColor: Colors.white,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    padding: ms(14),
-    marginTop: vs(10),
-  },
-  zoneRow: {
-    paddingVertical: vs(8),
-  },
-  zoneRowBorder: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#d1d5db',
-  },
-  zoneRowHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  zoneBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: vs(4),
-    paddingHorizontal: s(10),
-    paddingVertical: vs(4),
-    borderRadius: ms(8),
-  },
-  zoneHighlightBadge: {
-    borderWidth: 1,
-    paddingHorizontal: s(8),
-    paddingVertical: vs(2),
-    borderRadius: ms(10),
-  },
-
-  // Insight card
-  insightCard: {
-    backgroundColor: Colors.blueBg,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    padding: ms(14),
-    marginTop: vs(10),
-  },
-  insightIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  // Body
-  body: {
-    flex: 1,
-  },
-  bodyContent: {
-    paddingHorizontal: s(13),
-  },
-
-  // Bottom bar
-  bottomBar: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: s(13),
-    paddingTop: vs(8),
-    paddingBottom: Platform.OS === 'ios' ? vs(24) : vs(10),
-    borderTopWidth: 0.5,
-    borderTopColor: '#d1d5db',
-  },
-  primaryButton: {
-    backgroundColor: Colors.primary,
-    paddingVertical: vs(11),
-    borderRadius: ms(12),
-    alignItems: 'center',
-  },
-  secondaryButtonRow: {
-    flexDirection: 'row',
-    marginTop: vs(6),
-    gap: s(8),
-  },
-  secondaryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: vs(7),
-    borderRadius: ms(10),
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    backgroundColor: Colors.white,
-  },
+const st = StyleSheet.create({
+  container: {flex: 1, backgroundColor: Colors.background},
+  header: {backgroundColor: Colors.primary, paddingTop: vs(10), paddingBottom: vs(10), paddingHorizontal: s(16)},
+  topBar: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(2)},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
+  scroll: {flex: 1},
+  body: {paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: vs(30)},
+  dividerRow: {flexDirection: 'row', alignItems: 'center', gap: s(10), marginBottom: vs(12)},
+  dividerLine: {flex: 1, height: 0.5, backgroundColor: '#dde8e2'},
+  inputCard: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(16), marginBottom: vs(12)},
+  icLabel: {textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginBottom: vs(10)},
+  dateTimeRow: {flexDirection: 'row', alignItems: 'center', gap: s(10)},
+  dateTimeDivider: {width: 0.5, height: vs(36), backgroundColor: '#edf2ef'},
+  notesInput: {width: '100%', borderWidth: 0.5, borderColor: '#dde8e2', borderRadius: ms(10), padding: ms(10), backgroundColor: Colors.background, minHeight: vs(60), fontSize: ms(12), color: Colors.textPrimary, textAlignVertical: 'top'},
+  chipWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: ms(7)},
+  symChip: {paddingHorizontal: s(10), paddingVertical: vs(5), borderRadius: ms(8), borderWidth: 0.5, borderColor: '#dde8e2', backgroundColor: Colors.background},
+  symChipOn: {backgroundColor: Colors.primary, borderColor: Colors.primary},
+  moodHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: vs(8)},
+  sliderTrack: {height: ms(6), backgroundColor: '#e5e7eb', borderRadius: ms(3), overflow: 'visible', position: 'relative'},
+  sliderFill: {height: '100%', backgroundColor: Colors.primary, borderRadius: ms(3)},
+  sliderThumb: {position: 'absolute', top: -ms(5), width: ms(16), height: ms(16), borderRadius: ms(8), backgroundColor: Colors.white, borderWidth: 2, borderColor: Colors.primary, marginLeft: -ms(8)},
+  sliderLabels: {flexDirection: 'row', justifyContent: 'space-between', marginTop: vs(3)},
+  moodBtnRow: {flexDirection: 'row', justifyContent: 'center', gap: s(12), marginTop: vs(8)},
+  moodBtn: {width: ms(36), height: ms(36), borderRadius: ms(18), backgroundColor: Colors.background, borderWidth: 0.5, borderColor: '#dde8e2', alignItems: 'center', justifyContent: 'center'},
+  optionBtn: {paddingVertical: vs(6), paddingHorizontal: s(10), borderRadius: ms(10), borderWidth: 0.5, borderColor: '#dde8e2', backgroundColor: Colors.background, marginBottom: vs(5)},
+  optionBtnOn: {backgroundColor: Colors.primary, borderColor: Colors.primary},
+  targetRow: {flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#f0f4f2', paddingVertical: vs(7), paddingHorizontal: s(13)},
+  targetItem: {flex: 1, alignItems: 'center'},
+  logBtn: {width: '100%', paddingVertical: vs(15), borderRadius: ms(14), backgroundColor: Colors.primary, alignItems: 'center', marginTop: vs(4), marginBottom: vs(12)},
+  secLabel: {flexDirection: 'row', alignItems: 'center', marginTop: vs(4), marginBottom: vs(10)},
+  secLabelLine: {flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'},
+  linkCard: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(13), flexDirection: 'row', alignItems: 'center', gap: s(12), marginBottom: vs(10)},
+  lcIconWrap: {width: ms(44), height: ms(44), borderRadius: ms(12), backgroundColor: '#FBEAF0', alignItems: 'center', justifyContent: 'center'},
+  lcChip: {paddingHorizontal: s(8), paddingVertical: vs(3), borderRadius: ms(7)},
+  ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
+  ayuIconWrap: {width: ms(36), height: ms(36), borderRadius: ms(10), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
 });
 
 export default HeartRateLogScreen;
