@@ -346,38 +346,26 @@ const BPLogScreen = ({navigation}) => {
           </View>
         </View>
 
-        {/* Save button */}
-        <TouchableOpacity style={st.logBtn} activeOpacity={0.8}>
+        <View style={{height: vs(100)}} />
+      </ScrollView>
+
+      {/* ── BOTTOM ACTION BAR ── */}
+      <View style={st.bottomBar}>
+        <TouchableOpacity style={st.savePrimary} activeOpacity={0.8}>
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
           <AppText variant="body" color={Colors.white} style={{fontWeight: '700', fontSize: ms(15)}}>Save reading</AppText>
         </TouchableOpacity>
-
-        {/* Past readings */}
-        <View style={st.secLabel}>
-          <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>Past readings</AppText>
-          <View style={st.secLabelLine} />
+        <View style={st.saveSecRow}>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'bp'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'bp', initialTab: 'bpIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={st.linkCard} activeOpacity={0.8} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'bp'})}>
-          <View style={st.lcIconWrap}>
-            <Icon family="Ionicons" name="heart" size={ms(20)} color={Colors.red} />
-          </View>
-          <View style={{flex: 1, minWidth: 0}}>
-            <AppText variant="subtext" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginBottom: vs(2)}}>Blood pressure records</AppText>
-            <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginBottom: vs(3)}}>31 readings - March 2026</AppText>
-            <View style={{flexDirection: 'row', gap: s(5), flexWrap: 'wrap'}}>
-              <View style={[st.lcChip, {backgroundColor: Colors.amberBg}]}>
-                <AppText variant="small" color={Colors.amberDark} style={{fontWeight: '600'}}>Avg 136/86 mmHg</AppText>
-              </View>
-              <View style={[st.lcChip, {backgroundColor: Colors.blueBg}]}>
-                <AppText variant="small" color={Colors.blueText} style={{fontWeight: '600'}}>74 bpm avg</AppText>
-              </View>
-            </View>
-          </View>
-          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.primary} />
-        </TouchableOpacity>
-
-        <View style={{height: vs(30)}} />
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -390,7 +378,7 @@ const st = StyleSheet.create({
   headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
   headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
   scroll: {flex: 1},
-  body: {paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: vs(30)},
+  body: {paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: vs(90)},
   dividerRow: {flexDirection: 'row', alignItems: 'center', gap: s(10), marginBottom: vs(12)},
   dividerLine: {flex: 1, height: 0.5, backgroundColor: '#dde8e2'},
   inputCard: {backgroundColor: Colors.white, borderRadius: ms(16), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(16), marginBottom: vs(12)},
@@ -412,12 +400,10 @@ const st = StyleSheet.create({
   optionBtnOn: {backgroundColor: Colors.primary, borderColor: Colors.primary},
   targetRow: {flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#f0f4f2', paddingVertical: vs(7), paddingHorizontal: s(13)},
   targetItem: {flex: 1, alignItems: 'center'},
-  logBtn: {width: '100%', paddingVertical: vs(15), borderRadius: ms(14), backgroundColor: Colors.primary, alignItems: 'center', marginTop: vs(4), marginBottom: vs(12)},
-  secLabel: {flexDirection: 'row', alignItems: 'center', marginTop: vs(4), marginBottom: vs(10)},
-  secLabelLine: {flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'},
-  linkCard: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(13), flexDirection: 'row', alignItems: 'center', gap: s(12), marginBottom: vs(10)},
-  lcIconWrap: {width: ms(44), height: ms(44), borderRadius: ms(12), backgroundColor: '#FBEAF0', alignItems: 'center', justifyContent: 'center'},
-  lcChip: {paddingHorizontal: s(8), paddingVertical: vs(3), borderRadius: ms(7)},
+  bottomBar: {position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(10), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
+  savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(14), paddingVertical: vs(14), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(8)},
+  saveSecRow: {flexDirection: 'row', gap: s(8), marginTop: vs(8)},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(6), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(10), borderWidth: 0.5, borderColor: '#dde8e2'},
   ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
   ayuIconWrap: {width: ms(36), height: ms(36), borderRadius: ms(10), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
 });

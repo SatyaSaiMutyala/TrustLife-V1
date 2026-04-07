@@ -38,222 +38,126 @@ const IAP_TAG = {bg: '#F4F3FF', color: '#2D1F70', label: 'IAP'};
 
 const FAMILY_MEMBERS = [
   {id: 'priya', name: 'Priya', badge: null},
-  {id: 'aarav', name: 'Aarav', subtitle: '9y', badge: '3'},
+  {id: 'aarav', name: 'Aarav', subtitle: '9y', badge: '1'},
   {id: 'raj', name: 'Raj', badge: null},
 ];
 
-const VIEW_TABS = ['Schedule', 'Log', 'Reactions', 'Travel', 'Certs'];
+const VIEW_TABS = [
+  {key: 'Schedule', icon: 'calendar-outline', label: 'Schedule'},
+  {key: 'Log', icon: 'create-outline', label: 'Log vaccine'},
+  {key: 'Reactions', icon: 'bandage-outline', label: 'Reactions'},
+  {key: 'Travel', icon: 'airplane-outline', label: 'Travel'},
+  {key: 'Certs', icon: 'document-outline', label: 'Certs'},
+];
 
 const ACTION_CARDS = [
   {
     id: 'tdap',
     name: 'Tdap booster',
+    date: 'Due Sep 2023',
     status: 'overdue',
-    badgeLabel: 'OVERDUE 18m',
+    badgeLabel: 'OVERDUE 18 mo',
     borderColor: Colors.red,
     icon: 'shield-checkmark-outline',
   },
   {
     id: 'typhoid',
     name: 'Typhoid booster',
+    date: 'Due Apr 2026',
     status: 'due',
     badgeLabel: 'Due this month',
     borderColor: Colors.amber,
     icon: 'medkit-outline',
   },
   {
-    id: 'hpv',
-    name: 'HPV-1 Gardasil 9',
-    status: 'due',
-    badgeLabel: 'Discuss now',
-    borderColor: Colors.amber,
-    icon: 'shield-outline',
-  },
-  {
     id: 'influenza',
-    name: 'Influenza annual',
+    name: 'Influenza (annual)',
+    date: 'Due Oct 2026',
     status: 'upcoming',
-    badgeLabel: '7 months away',
+    badgeLabel: 'In 7 months',
     borderColor: '#d1d5db',
     icon: 'fitness-outline',
+  },
+  {
+    id: 'hepA',
+    name: 'Hepatitis A',
+    date: 'Due Jan 2027',
+    status: 'future',
+    badgeLabel: 'Upcoming',
+    borderColor: '#d1d5db',
+    icon: 'water-outline',
   },
 ];
 
 const AGE_GROUPS = [
   {
-    label: 'Birth (0-4 weeks)',
-    tag: 'GOI UIP',
-    completion: '3/3',
+    label: 'At birth',
+    tag: '',
+    completion: '3/3 complete',
     allDone: true,
     vaccines: [
-      {name: 'BCG', tags: ['GOI'], detail: 'Tuberculosis \u00b7 ID left arm', date: '14 Jan 2017', status: 'done'},
-      {name: 'OPV birth dose (bOPV-0)', tags: ['GOI'], detail: 'Polio \u00b7 Oral', date: '14 Jan 2017', status: 'done'},
-      {name: 'Hepatitis B birth dose', tags: ['GOI'], detail: 'IM thigh \u00b7 Within 24h', date: '14 Jan 2017', status: 'done'},
+      {name: 'BCG', tags: ['GOI'], detail: 'Tuberculosis - ID left arm - Single dose - GMCH, Hyd', date: '14 Jan 2017', status: 'done'},
+      {name: 'OPV-0 (bOPV)', tags: ['GOI'], detail: 'Polio - Oral - Birth dose - GMCH, Hyd', date: '14 Jan 2017', status: 'done'},
+      {name: 'Hepatitis B (birth dose)', tags: ['GOI'], detail: 'Hep B - IM thigh - Within 24h of birth - GMCH, Hyd', date: '14 Jan 2017', status: 'done'},
     ],
   },
   {
     label: '6 weeks',
-    tag: 'GOI UIP',
-    completion: '5/5',
-    allDone: true,
-    vaccines: [
-      {name: 'Pentavalent-1 (DTwP+Hib+HepB)', tags: ['GOI'], detail: 'IM left thigh', date: '28 Feb 2017', status: 'done'},
-      {name: 'OPV-1 + fIPV-1', tags: ['GOI'], detail: 'Oral + Fractional IPV', date: '28 Feb 2017', status: 'done'},
-      {name: 'Rotavirus-1 (ROTAVAC)', tags: ['GOI'], detail: 'Oral \u00b7 Must start before 15 weeks', date: '28 Feb 2017', status: 'done'},
-      {name: 'PCV-1 (PCV13)', tags: ['GOI', 'IAP'], detail: 'Pneumonia \u00b7 IM right thigh', date: '28 Feb 2017', status: 'done'},
-      {name: 'Influenza (first dose)', tags: ['IAP'], detail: 'Under 9y: 2 doses first season', date: 'Mar 2017', status: 'done'},
-    ],
-  },
-  {
-    label: '10 weeks',
-    tag: 'GOI UIP',
-    completion: '3/3',
-    allDone: true,
-    vaccines: [
-      {name: 'Pentavalent-2', tags: ['GOI'], detail: 'Second dose', date: '11 Apr 2017', status: 'done'},
-      {name: 'OPV-2', tags: ['GOI'], detail: 'Oral', date: '11 Apr 2017', status: 'done'},
-      {name: 'Rotavirus-2', tags: ['GOI'], detail: 'Oral', date: '11 Apr 2017', status: 'done'},
-    ],
-  },
-  {
-    label: '14 weeks',
-    tag: 'GOI UIP',
-    completion: '4/4',
-    allDone: true,
-    vaccines: [
-      {name: 'Pentavalent-3', tags: ['GOI'], detail: 'Third final primary', date: '9 May 2017', status: 'done'},
-      {name: 'OPV-3 + fIPV-2', tags: ['GOI'], detail: 'Polio series complete', date: '9 May 2017', status: 'done'},
-      {name: 'Rotavirus-3', tags: ['GOI'], detail: 'ROTAVAC third dose', date: '9 May 2017', status: 'done'},
-      {name: 'PCV-3', tags: ['GOI', 'IAP'], detail: 'Third primary \u00b7 Booster still due', date: '9 May 2017', status: 'done'},
-    ],
-  },
-  {
-    label: '6 months',
-    tag: 'IAP',
-    completion: '2/2',
-    allDone: true,
-    vaccines: [
-      {name: 'Influenza second first-season dose', tags: ['IAP'], detail: 'Second dose first season', date: 'Apr 2017', status: 'done'},
-      {name: 'Vitamin A 1st supplementation', tags: ['GOI'], detail: '1 lakh IU oral', date: 'Oct 2017', status: 'done'},
-    ],
-  },
-  {
-    label: '9-12 months',
-    tag: 'GOI+IAP',
-    completion: '6/6',
-    allDone: true,
-    vaccines: [
-      {name: 'MR-1/MMR-1', tags: ['GOI', 'IAP'], detail: 'SC upper arm', date: '15 Oct 2017', status: 'done'},
-      {name: 'Japanese Encephalitis JE-1', tags: ['GOI'], detail: 'Endemic districts', date: 'Oct 2017', status: 'done'},
-      {name: 'PCV Booster', tags: ['GOI', 'IAP'], detail: 'After 3-dose primary', date: 'Oct 2017', status: 'done'},
-      {name: 'Typhoid Conjugate TCV-1', tags: ['GOI', 'IAP'], detail: 'Primary dose', date: 'Oct 2017', status: 'done'},
-      {name: 'Hepatitis A dose 1', tags: ['IAP'], detail: '12 months \u00b7 IM', date: '14 Jan 2018', status: 'done'},
-      {name: 'Varicella dose 1', tags: ['IAP'], detail: '12-15 months \u00b7 SC', date: '14 Jan 2018', status: 'done'},
-    ],
-  },
-  {
-    label: '15-18 months',
-    tag: 'GOI+IAP',
-    completion: '4/4',
-    allDone: true,
-    vaccines: [
-      {name: 'DTwP Booster-1', tags: ['GOI', 'IAP'], detail: '16-18 months', date: 'Apr 2018', status: 'done'},
-      {name: 'OPV Booster-1', tags: ['GOI'], detail: 'Oral', date: 'Apr 2018', status: 'done'},
-      {name: 'MR-2/MMR-2', tags: ['GOI', 'IAP'], detail: 'SC', date: 'Aug 2018', status: 'done'},
-      {name: 'Hepatitis A dose 2', tags: ['IAP'], detail: '6 months after dose 1', date: 'Jul 2018', status: 'done'},
-    ],
-  },
-  {
-    label: '2 years',
     tag: '',
-    completion: '2/2',
+    completion: '5/5 complete',
     allDone: true,
     vaccines: [
-      {name: 'Typhoid booster', tags: ['IAP'], detail: '3-yearly', date: 'Oct 2020', status: 'done'},
-      {name: 'JE-2 (JENVAC)', tags: ['GOI'], detail: 'Endemic', date: 'Nov 2018', status: 'done'},
+      {name: 'DTwP-1 + Hib-1 + HepB-1', tags: ['GOI'], detail: 'Diphtheria, Tetanus, Pertussis, Hib, Hep B - IM thigh - Pentavalent', date: '28 Feb 2017', status: 'done'},
+      {name: 'OPV-1 + IPV-1', tags: ['GOI'], detail: 'Polio - Oral bOPV + IM IPV fractional dose', date: '28 Feb 2017', status: 'done'},
+      {name: 'Rotavirus-1 (ROTAVAC)', tags: ['GOI'], detail: 'Rotavirus gastroenteritis - Oral drops', date: '28 Feb 2017', status: 'done'},
+      {name: 'PCV-1 (PCV13/Prevnar)', tags: ['GOI', 'IAP'], detail: 'Pneumococcal disease, pneumonia, meningitis - IM thigh', date: '28 Feb 2017', status: 'done'},
     ],
   },
   {
-    label: '4-6 years',
-    tag: 'GOI UIP',
-    completion: '4/4',
-    allDone: true,
-    vaccines: [
-      {name: 'DT Booster-2', tags: ['GOI'], detail: '5 years mandatory', date: 'Mar 2022', status: 'done'},
-      {name: 'OPV Booster-2', tags: ['GOI'], detail: 'Final OPV', date: 'Mar 2022', status: 'done'},
-      {name: 'Varicella dose 2', tags: ['IAP'], detail: '4-6 years', date: 'Mar 2022', status: 'done'},
-      {name: 'Typhoid booster', tags: ['IAP'], detail: '3-yearly', date: 'Oct 2023', status: 'done'},
-    ],
-  },
-  {
-    label: '6-7 years',
+    label: '9 - 12 months',
     tag: '',
-    completion: '2/2',
+    completion: '4/4 complete',
     allDone: true,
     vaccines: [
-      {name: 'Influenza annual', tags: ['IAP'], detail: 'Annual dose', date: 'Last Oct 2025', status: 'done'},
-      {name: 'COVID-19 vaccine', tags: ['GOI'], detail: 'Primary + booster', date: 'Aug 2023', status: 'done'},
+      {name: 'MMR-1 (Measles-Mumps-Rubella)', tags: ['GOI', 'IAP'], detail: 'MMR - SC upper arm - First dose', date: '15 Oct 2017', status: 'done'},
+      {name: 'Typhoid conjugate (TCV-1)', tags: ['GOI', 'IAP'], detail: 'Typhoid fever - IM - Primary dose 9 months', date: '15 Oct 2017', status: 'done'},
+      {name: 'Hepatitis A-1 (Havrix/Twinrix)', tags: ['IAP'], detail: 'Hepatitis A - IM - First dose at 12 months', date: '14 Jan 2018', status: 'done'},
+      {name: 'Varicella-1 (Chickenpox)', tags: ['IAP'], detail: 'Varicella - SC arm - First dose', date: '14 Jan 2018', status: 'done'},
     ],
   },
   {
-    label: '9-10 years',
-    tag: 'AARAV NOW',
-    completion: '1/3 done, 2 due',
+    label: '4 - 6 years',
+    tag: '',
+    completion: '3/3 complete',
+    allDone: true,
+    vaccines: [
+      {name: 'MMR-2 (Booster)', tags: ['GOI', 'IAP'], detail: 'Second MMR dose - SC upper arm', date: '10 Mar 2022', status: 'done'},
+      {name: 'Varicella-2 (Booster)', tags: ['IAP'], detail: 'Second varicella dose - SC arm', date: '10 Mar 2022', status: 'done'},
+      {name: 'DT booster (5 years)', tags: ['GOI'], detail: 'Diphtheria-Tetanus - IM arm', date: '10 Mar 2022', status: 'done'},
+    ],
+  },
+  {
+    label: '9 - 10 years',
+    tag: 'Aarav now',
+    completion: '1/2 done - 1 overdue',
     allDone: false,
     isCurrentAge: true,
     vaccines: [
-      {name: 'Tdap booster', tags: ['GOI', 'IAP'], detail: 'OVERDUE 18 months', date: null, status: 'overdue', badgeLabel: 'Log now \u2192'},
-      {name: 'Typhoid booster', tags: ['IAP'], detail: 'DUE NOW Apr 2026', date: null, status: 'due', pulsing: true},
-      {name: 'HPV Gardasil 9', tags: ['GOI', 'IAP'], detail: '9-14yr window', date: null, status: 'recommended', badgeLabel: 'IAP Priority'},
-      {name: 'Influenza annual', tags: ['IAP'], detail: 'Oct 2026', date: null, status: 'upcoming'},
+      {name: 'Tdap booster', tags: [], detail: 'Diphtheria, Tetanus, acellular Pertussis booster - IM upper arm - Due Sep 2023 - OVERDUE 18 months', date: 'Sep 2023', status: 'overdue', badgeLabel: 'Log now'},
+      {name: 'Typhoid booster (TCV / Vi-PS)', tags: [], detail: '3-year booster from TCV-1 given Jan 2018 - Due Apr 2026 - this month', date: 'Apr 2026', status: 'due', pulsing: true, badgeLabel: 'Due now'},
+      {name: 'HPV (Gardasil 9)', tags: ['IAP'], detail: 'HPV-related cancer prevention - IAP recommended 9-14 years - 2-dose - Discuss with paediatrician', date: 'Discuss', status: 'recommended', badgeLabel: 'IAP rec.'},
     ],
   },
   {
-    label: '11-12 years',
+    label: 'Annual / Recurrent',
     tag: '',
-    completion: 'Future',
+    completion: '2/4 up to date',
     allDone: false,
-    isFuture: true,
     vaccines: [
-      {name: 'HPV dose 2', tags: ['IAP'], detail: '~2027', date: null, status: 'future'},
-      {name: 'Meningococcal ACWY', tags: ['IAP'], detail: 'Hostel/boarding school', date: null, status: 'future'},
-      {name: 'Typhoid booster', tags: ['IAP'], detail: 'Oct 2029', date: null, status: 'future'},
-      {name: 'Influenza annual', tags: ['IAP'], detail: 'Annual', date: null, status: 'future'},
-    ],
-  },
-  {
-    label: '13-14 years',
-    tag: '',
-    completion: 'Future',
-    allDone: false,
-    isFuture: true,
-    vaccines: [
-      {name: 'HPV catch-up', tags: ['IAP'], detail: 'Last 2-dose window before 15', date: null, status: 'future'},
-      {name: 'Typhoid booster', tags: ['IAP'], detail: '3-yearly', date: null, status: 'future'},
-    ],
-  },
-  {
-    label: '15-16 years',
-    tag: 'GOI',
-    completion: 'Future',
-    allDone: false,
-    isFuture: true,
-    vaccines: [
-      {name: 'Td/Tdap booster', tags: ['GOI', 'IAP'], detail: '16 years mandatory', date: null, status: 'future'},
-      {name: 'Meningococcal ACWY booster', tags: ['IAP'], detail: 'Booster dose', date: null, status: 'future'},
-      {name: 'Influenza annual', tags: ['IAP'], detail: 'Annual', date: null, status: 'future'},
-    ],
-  },
-  {
-    label: '17-18 years',
-    tag: '',
-    completion: 'Future',
-    allDone: false,
-    isFuture: true,
-    vaccines: [
-      {name: 'HPV catch-up', tags: ['GOI', 'IAP'], detail: '3-dose if not done', date: null, status: 'future'},
-      {name: 'Hepatitis B check', tags: ['IAP'], detail: 'Check immunity status', date: null, status: 'future'},
-      {name: 'Typhoid booster', tags: ['IAP'], detail: '3-yearly', date: null, status: 'future'},
+      {name: 'Influenza (flu) - Annual', tags: ['IAP'], detail: 'Annual seasonal flu shot - IM deltoid - Oct 2025 given - Due again Oct 2026', date: 'Oct 2025', status: 'done'},
+      {name: 'COVID-19 - Booster', tags: ['GOI'], detail: 'Covaxin/Covishield primary series + booster - Discuss updated booster', date: 'Aug 2023', status: 'done'},
+      {name: 'Hepatitis A booster (2nd dose)', tags: ['IAP'], detail: '6 months after first dose - 1st dose Jan 2018 - Long overdue', date: '2018 (missed)', status: 'overdue', badgeLabel: 'Check needed'},
+      {name: 'Meningococcal ACWY (MCV4)', tags: ['IAP'], detail: 'Bacterial meningitis - Optional - IAP recommends for endemic areas, hostel-bound, hajj travel', date: 'Not given', status: 'recommended', badgeLabel: 'Optional'},
     ],
   },
 ];
@@ -262,61 +166,27 @@ const AGE_GROUPS = [
 // Subcomponents
 // ──────────────────────────────────────────────
 
-const CoverageRing = () => {
-  const size = ms(80);
-  const strokeWidth = ms(8);
+const CoverageRing = ({pct = 84, title = 'Aarav - 84% complete', sub = '18 of 22 schedule vaccines given - 1 overdue - 1 due now - 2 upcoming - IAP 2024 schedule'}) => {
+  const size = ms(56);
+  const strokeWidth = ms(5);
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = 0.79;
-  const strokeDashoffset = circumference * (1 - progress);
+  const strokeDashoffset = circumference * (1 - pct / 100);
 
   return (
     <View style={styles.coverageBanner}>
       <View style={styles.coverageRingWrap}>
         <Svg width={size} height={size}>
-          <SvgCircle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="rgba(255,255,255,0.2)"
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          <SvgCircle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="#5DCAA5"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            rotation="-90"
-            origin={`${size / 2}, ${size / 2}`}
-          />
-          <SvgText
-            x={size / 2}
-            y={size / 2 + ms(6)}
-            textAnchor="middle"
-            fontSize={ms(18)}
-            fontWeight="700"
-            fill="#FFFFFF"
-          >
-            79%
-          </SvgText>
+          <SvgCircle cx={size / 2} cy={size / 2} r={radius} stroke="rgba(255,255,255,0.15)" strokeWidth={strokeWidth} fill="none" />
+          <SvgCircle cx={size / 2} cy={size / 2} r={radius} stroke="#9FE1CB" strokeWidth={strokeWidth} fill="none"
+            strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} strokeLinecap="round" rotation="-90" origin={`${size / 2}, ${size / 2}`} />
+          <SvgText x={size / 2} y={size / 2 - ms(1)} textAnchor="middle" fontSize={ms(11)} fontWeight="700" fill="#FFFFFF" fontFamily="System">{pct}%</SvgText>
+          <SvgText x={size / 2} y={size / 2 + ms(8)} textAnchor="middle" fontSize={ms(7)} fill="rgba(255,255,255,0.4)" fontFamily="System">covered</SvgText>
         </Svg>
       </View>
       <View style={styles.coverageTextWrap}>
-        <AppText variant="bodyBold" color={Colors.white}>
-          23 of 29 vaccines
-        </AppText>
-        <AppText variant="caption" color="rgba(255,255,255,0.8)" style={{marginTop: vs(3)}}>
-          1 overdue {'\u00b7'} 2 due now {'\u00b7'} 3 upcoming
-        </AppText>
-        <AppText variant="small" color="rgba(255,255,255,0.65)" style={{marginTop: vs(2)}}>
-          UIP + IAP 2024
-        </AppText>
+        <AppText variant="bodyBold" color={Colors.white}>{title}</AppText>
+        <AppText variant="small" color="rgba(255,255,255,0.65)" style={{marginTop: vs(3), lineHeight: ms(15)}}>{sub}</AppText>
       </View>
     </View>
   );
@@ -354,12 +224,13 @@ const StatusDot = ({status, pulsing}) => {
 const ActionCard = ({item}) => {
   const sData = STATUS[item.status] || STATUS.upcoming;
   return (
-    <View style={[styles.actionCard, {borderColor: item.borderColor}]}>
+    <View style={[styles.actionCard, {borderColor: item.borderColor, borderWidth: item.status === 'overdue' ? 1.5 : 0.5}]}>
       <Icon family="Ionicons" name={item.icon} size={ms(22)} color={sData.dot} />
-      <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginTop: vs(6)}} numberOfLines={2}>
+      <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700', marginTop: vs(5)}} numberOfLines={2}>
         {item.name}
       </AppText>
-      <View style={{marginTop: vs(8)}}>
+      {item.date && <AppText variant="small" color={Colors.textSecondary} style={{marginTop: vs(2)}}>{item.date}</AppText>}
+      <View style={{marginTop: vs(4)}}>
         <StatusBadge status={item.status} label={item.badgeLabel} />
       </View>
     </View>
@@ -381,13 +252,13 @@ const VaccineRow = ({vaccine, isLast}) => (
           <TagBadge key={tag} tag={tag} />
         ))}
       </View>
-      <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(1)}}>
+      <AppText variant="caption" color={vaccine.status === 'overdue' ? Colors.redDark : vaccine.status === 'due' ? Colors.amberDark : Colors.textSecondary} style={{marginTop: vs(1), lineHeight: ms(15)}}>
         {vaccine.detail}
       </AppText>
     </View>
     <View style={styles.vaccineRight}>
       {vaccine.date ? (
-        <AppText variant="small" color={Colors.textSecondary} style={{textAlign: 'right', marginBottom: vs(3)}}>
+        <AppText variant="small" color={vaccine.status === 'overdue' ? Colors.redDark : vaccine.status === 'due' ? Colors.amberDark : Colors.textSecondary} style={{textAlign: 'right', fontWeight: '600', marginBottom: vs(3)}}>
           {vaccine.date}
         </AppText>
       ) : null}
@@ -403,17 +274,17 @@ const AgeGroupCard = ({group}) => (
   <View style={styles.ageGroupCard}>
     <View style={[styles.ageGroupHeader, group.allDone ? styles.ageGroupHeaderDone : styles.ageGroupHeaderPending]}>
       <View style={styles.ageGroupLabelRow}>
-        <AppText variant="bodyBold" color={group.allDone ? Colors.tealText : Colors.textPrimary}>
+        <AppText variant="small" color={Colors.primary} style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4}}>
           {group.label}
         </AppText>
         {group.tag ? (
           <View style={[
             styles.ageGroupTagBadge,
-            group.isCurrentAge ? {backgroundColor: Colors.red} : {backgroundColor: 'rgba(0,0,0,0.06)'},
+            group.isCurrentAge ? {backgroundColor: 'rgba(226,75,74,0.15)'} : {backgroundColor: 'rgba(0,0,0,0.06)'},
           ]}>
             <AppText
               variant="small"
-              color={group.isCurrentAge ? Colors.white : Colors.textSecondary}
+              color={group.isCurrentAge ? Colors.redDark : Colors.textSecondary}
               style={{fontWeight: '700', fontSize: ms(9)}}
             >
               {group.tag}
@@ -421,7 +292,7 @@ const AgeGroupCard = ({group}) => (
           </View>
         ) : null}
       </View>
-      <AppText variant="caption" color={group.allDone ? Colors.tealText : Colors.textSecondary}>
+      <AppText variant="caption" color={group.allDone ? Colors.tealText : group.isCurrentAge ? Colors.redDark : Colors.textSecondary} style={{fontWeight: '600'}}>
         {group.completion}
         {group.allDone ? ' \u2713' : ''}
       </AppText>
@@ -434,46 +305,19 @@ const AgeGroupCard = ({group}) => (
   </View>
 );
 
-const StatusLegend = () => (
-  <View style={styles.legendRow}>
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, {backgroundColor: Colors.teal}]} />
-      <AppText variant="small" color={Colors.textSecondary}>Given</AppText>
-    </View>
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, {backgroundColor: Colors.redDark}]} />
-      <AppText variant="small" color={Colors.textSecondary}>Overdue</AppText>
-    </View>
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, {backgroundColor: Colors.red}]} />
-      <AppText variant="small" color={Colors.textSecondary}>Due now</AppText>
-    </View>
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, {backgroundColor: Colors.amber}]} />
-      <AppText variant="small" color={Colors.textSecondary}>Upcoming</AppText>
-    </View>
-    <View style={styles.legendItem}>
-      <View style={[styles.legendDot, {backgroundColor: Colors.blue}]} />
-      <AppText variant="small" color={Colors.textSecondary}>Recommended</AppText>
-    </View>
-    <View style={[styles.tagBadge, {backgroundColor: GOI_TAG.bg, marginLeft: s(4)}]}>
-      <AppText variant="small" color={GOI_TAG.color} style={{fontWeight: '700', fontSize: ms(8)}}>GOI</AppText>
-    </View>
-    <View style={[styles.tagBadge, {backgroundColor: IAP_TAG.bg, marginLeft: s(4)}]}>
-      <AppText variant="small" color={IAP_TAG.color} style={{fontWeight: '700', fontSize: ms(8)}}>IAP</AppText>
-    </View>
+
+const Section = ({title, sub}) => (
+  <View style={{flexDirection: 'row', alignItems: 'center', marginTop: vs(16), marginBottom: vs(8)}}>
+    <AppText variant="subtext" color={Colors.textSecondary} style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, marginRight: s(4)}}>{title}</AppText>
+    {sub && <AppText variant="subtext" color={Colors.textTertiary} style={{marginRight: s(4)}}>{sub}</AppText>}
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#c8dfc0'}} />
   </View>
 );
 
 const ScheduleView = () => (
   <View>
     {/* Action Required */}
-    <View style={styles.sectionHeader}>
-      <Icon family="Ionicons" name="alert-circle-outline" size={ms(18)} color={Colors.red} />
-      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginLeft: s(6)}}>
-        Action required
-      </AppText>
-    </View>
+    <Section title="Action required" />
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
@@ -484,8 +328,8 @@ const ScheduleView = () => (
       ))}
     </ScrollView>
 
-    {/* Status Legend */}
-    <StatusLegend />
+    {/* IAP Schedule */}
+    <Section title="IAP 2024 immunization schedule" sub="- Aarav - 9 years 2 months" />
 
     {/* Age Group Cards */}
     {AGE_GROUPS.map((group, idx) => (
@@ -494,9 +338,9 @@ const ScheduleView = () => (
 
     {/* Info Insight Card */}
     <View style={styles.insightCard}>
-      <Icon family="Ionicons" name="information-circle-outline" size={ms(18)} color={Colors.blueText} />
-      <AppText variant="caption" color={Colors.blueText} style={{flex: 1, marginLeft: s(8)}}>
-        Schedule sources: GOI UIP 2024 + IAP 2024. [GOI] = Government UIP - free, mandatory. [IAP] = IAP recommended privately.
+      <Icon family="Ionicons" name="book-outline" size={ms(16)} color={Colors.blueText} />
+      <AppText variant="caption" color={Colors.blueText} style={{flex: 1, lineHeight: ms(17)}}>
+        <AppText style={{fontWeight: '700'}}>Schedule source: IAP 2024 National Immunization Schedule.</AppText> This schedule follows the Indian Academy of Pediatrics 2024 revised guidelines. Vaccines marked "IAP rec." are strongly recommended by IAP but not yet in the Government of India Universal Immunization Programme (UIP). Always confirm with your paediatrician before each vaccine appointment.
       </AppText>
     </View>
   </View>
@@ -531,57 +375,48 @@ const VaccinationLogScreen = ({navigation}) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      {/* ── Compact Header (fixed) ── */}
+      {/* ── Header (fixed) ── */}
       <View style={styles.header}>
         <View style={styles.headerTopRow}>
-          <View style={styles.headerLeft}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-              style={{padding: s(13)}}
-            >
-              <Icon family="Ionicons" name="chevron-back" size={ms(22)} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(4)}}>
-              Health Vault
-            </AppText>
-          </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: 'row', alignItems: 'center', gap: s(6)}}>
+            <Icon family="Ionicons" name="chevron-back" size={ms(18)} color="rgba(255,255,255,0.55)" />
+            <AppText variant="small" color="rgba(255,255,255,0.55)">Health Vault</AppText>
+          </TouchableOpacity>
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.duePill}>
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '700'}}>
-                3 due
-              </AppText>
+              <Icon family="Ionicons" name="warning-outline" size={ms(12)} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '700'}}>2 due</AppText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.logPill}>
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>
-                + Log vaccine
-              </AppText>
+            <TouchableOpacity style={styles.logPill} onPress={() => setActiveView('Log')}>
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>+ Log vaccine</AppText>
             </TouchableOpacity>
           </View>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6), marginLeft: s(13)}}>
-          Vaccination record
-        </AppText>
+        <View style={{paddingHorizontal: s(16), paddingTop: vs(8)}}>
+          <AppText variant="screenName" color={Colors.white} style={{fontSize: ms(20)}}>Vaccination record</AppText>
+          <AppText variant="small" color="rgba(255,255,255,0.5)" style={{marginTop: vs(2)}}>Family - National Immunization Schedule + Lifetime tracker</AppText>
+        </View>
       </View>
 
       {/* ── View Tabs (sticky) ── */}
       <View style={styles.viewTabsContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.viewTabsScroll}>
           {VIEW_TABS.map((tab) => {
-            const isActive = activeView === tab;
+            const isActive = activeView === tab.key;
             return (
               <TouchableOpacity
-                key={tab}
+                key={tab.key}
                 style={[styles.viewTab, isActive && styles.viewTabActive]}
-                onPress={() => setActiveView(tab)}
+                onPress={() => setActiveView(tab.key)}
                 activeOpacity={0.7}
               >
+                <Icon family="Ionicons" name={tab.icon} size={ms(13)} color={isActive ? Colors.primary : Colors.textTertiary} />
                 <AppText
                   variant="caption"
                   color={isActive ? Colors.primary : Colors.textSecondary}
-                  style={{fontWeight: isActive ? '700' : '500'}}
+                  style={{fontWeight: isActive ? '700' : '500', marginLeft: s(4)}}
                 >
-                  {tab}
+                  {tab.label}
                 </AppText>
               </TouchableOpacity>
             );
@@ -645,22 +480,22 @@ const VaccinationLogScreen = ({navigation}) => {
       {/* ── Bottom Bar ── */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.primaryBtn} activeOpacity={0.8}>
-          <Icon family="Ionicons" name="checkmark-circle-outline" size={ms(18)} color={Colors.white} />
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
           <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(6)}}>
             Save {'\u00b7'} Aarav vaccination log
           </AppText>
         </TouchableOpacity>
         <View style={styles.secondaryRow}>
-          <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7}>
-            <Icon family="Ionicons" name="share-outline" size={ms(16)} color={Colors.primary} />
-            <AppText variant="small" color={Colors.primary} style={{marginLeft: s(5), fontWeight: '600'}}>
-              Share with doctor
+          <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'vaccination'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>
+              Records
             </AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7}>
-            <Icon family="Ionicons" name="notifications-outline" size={ms(16)} color={Colors.primary} />
-            <AppText variant="small" color={Colors.primary} style={{marginLeft: s(5), fontWeight: '600'}}>
-              Set reminders
+          <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'vaccine', initialTab: 'vaccineIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>
+              Ayu Intel
             </AppText>
           </TouchableOpacity>
         </View>
@@ -681,7 +516,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  // ── Header (compact) ──
+  // ── Header ──
   header: {
     backgroundColor: Colors.primary,
     paddingTop: vs(10),
@@ -690,59 +525,61 @@ const styles = StyleSheet.create({
   scrollableHeader: {
     backgroundColor: Colors.primary,
     marginHorizontal: s(-13),
-    paddingHorizontal: s(13),
+    paddingHorizontal: s(16),
     paddingTop: vs(4),
-    paddingBottom: vs(12),
+    paddingBottom: vs(13),
     marginBottom: vs(10),
   },
   headerTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingRight: s(13),
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: s(16),
+    paddingVertical: vs(6),
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: s(8),
+    gap: s(7),
   },
   duePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: s(4),
     backgroundColor: Colors.red,
-    paddingHorizontal: s(10),
-    paddingVertical: vs(4),
+    paddingHorizontal: s(13),
+    paddingVertical: vs(6),
     borderRadius: ms(20),
   },
   logPill: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    paddingHorizontal: s(10),
-    paddingVertical: vs(4),
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    paddingHorizontal: s(13),
+    paddingVertical: vs(6),
     borderRadius: ms(20),
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.18)',
   },
 
   // ── Who tabs ──
   whoTabsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: vs(14),
+    marginTop: vs(10),
     backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: ms(10),
-    padding: s(3),
+    borderRadius: ms(20),
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.12)',
+    overflow: 'hidden',
   },
   whoTab: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(6),
-    borderRadius: ms(8),
+    justifyContent: 'center',
+    paddingVertical: vs(8),
   },
   whoTabActive: {
-    backgroundColor: Colors.white,
+    backgroundColor: 'rgba(255,255,255,0.18)',
   },
   whoBadge: {
     backgroundColor: Colors.red,
@@ -758,14 +595,15 @@ const styles = StyleSheet.create({
   coverageBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: vs(14),
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderRadius: ms(12),
-    padding: s(12),
+    marginTop: vs(10),
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: ms(14),
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.15)',
+    padding: ms(11),
+    gap: s(12),
   },
-  coverageRingWrap: {
-    marginRight: s(14),
-  },
+  coverageRingWrap: {},
   coverageTextWrap: {
     flex: 1,
   },
@@ -774,15 +612,18 @@ const styles = StyleSheet.create({
   viewTabsContainer: {
     backgroundColor: Colors.white,
     borderBottomWidth: 0.5,
-    borderBottomColor: BORDER_COLOR,
+    borderBottomColor: '#c8dfc0',
   },
   viewTabsScroll: {
     paddingHorizontal: s(13),
   },
   viewTab: {
-    paddingVertical: vs(8),
-    marginRight: s(18),
-    borderBottomWidth: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: vs(10),
+    paddingHorizontal: s(4),
+    marginRight: s(10),
+    borderBottomWidth: 2.5,
     borderBottomColor: 'transparent',
   },
   viewTabActive: {
@@ -810,30 +651,11 @@ const styles = StyleSheet.create({
   actionCard: {
     width: ms(130),
     backgroundColor: Colors.white,
-    borderRadius: ms(14),
+    borderRadius: ms(13),
     borderWidth: 0.5,
-    padding: s(12),
-    marginRight: s(10),
-  },
-
-  // ── Status Legend ──
-  legendRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginTop: vs(14),
-    marginBottom: vs(14),
-    gap: s(6),
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: s(3),
-  },
-  legendDot: {
-    width: ms(8),
-    height: ms(8),
-    borderRadius: ms(4),
+    borderColor: '#c8dfc0',
+    padding: ms(11),
+    marginRight: s(8),
   },
 
   // ── Tag badges ──
@@ -849,22 +671,24 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: ms(14),
     borderWidth: 0.5,
-    borderColor: BORDER_COLOR,
-    marginBottom: vs(12),
+    borderColor: '#c8dfc0',
+    marginBottom: vs(8),
     overflow: 'hidden',
   },
   ageGroupHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(10),
+    paddingHorizontal: s(13),
+    paddingVertical: vs(8),
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#e8f3e4',
   },
   ageGroupHeaderDone: {
-    backgroundColor: Colors.tealBg,
+    backgroundColor: '#f0f8ee',
   },
   ageGroupHeaderPending: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f0f8ee',
   },
   ageGroupLabelRow: {
     flexDirection: 'row',
@@ -889,7 +713,7 @@ const styles = StyleSheet.create({
   },
   vaccineRowBorder: {
     borderBottomWidth: 0.5,
-    borderBottomColor: BORDER_COLOR,
+    borderBottomColor: '#e8f3e4',
   },
   vaccineNameRow: {
     flexDirection: 'row',
@@ -928,42 +752,46 @@ const styles = StyleSheet.create({
   insightCard: {
     flexDirection: 'row',
     backgroundColor: Colors.blueBg,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: BORDER_COLOR,
-    padding: s(12),
+    borderRadius: ms(11),
+    padding: ms(10),
     marginTop: vs(6),
     marginBottom: vs(10),
+    gap: s(8),
   },
 
   // ── Bottom bar ──
   bottomBar: {
     backgroundColor: Colors.white,
     borderTopWidth: 0.5,
-    borderTopColor: BORDER_COLOR,
+    borderTopColor: '#c8dfc0',
     paddingHorizontal: s(13),
-    paddingTop: vs(8),
-    paddingBottom: Platform.OS === 'ios' ? vs(22) : vs(10),
+    paddingTop: vs(12),
+    paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12),
   },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
-    borderRadius: ms(12),
-    paddingVertical: vs(11),
+    borderRadius: ms(13),
+    paddingVertical: vs(14),
+    gap: s(10),
+    marginBottom: vs(8),
   },
   secondaryRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: vs(6),
-    gap: s(12),
+    gap: s(8),
   },
   secondaryBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: vs(6),
-    paddingHorizontal: s(10),
+    justifyContent: 'center',
+    paddingVertical: vs(10),
+    borderRadius: ms(11),
+    backgroundColor: Colors.background,
+    borderWidth: 0.5,
+    borderColor: '#c8dfc0',
   },
 });
 

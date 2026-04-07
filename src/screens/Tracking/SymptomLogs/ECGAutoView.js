@@ -110,7 +110,7 @@ const ECGAutoView = () => {
   /* ── 1. Device Grid ── */
   const renderDeviceGrid = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         CONNECT ECG DEVICE
       </AppText>
       <View style={st.deviceGrid}>
@@ -158,7 +158,7 @@ const ECGAutoView = () => {
   /* ── 2. Apple Watch Panel ── */
   const renderWatchPanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         APPLE WATCH SERIES 9 · ECG RECORDING
       </AppText>
 
@@ -277,7 +277,7 @@ const ECGAutoView = () => {
   /* ── 3. KardiaMobile Panel ── */
   const renderKardiaPanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         KARDIAMOBILE 6L BY ALIVECOR
       </AppText>
 
@@ -334,7 +334,7 @@ const ECGAutoView = () => {
   /* ── 4. Holter Panel ── */
   const renderHolterPanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         HOLTER / AMBULATORY ECG MONITOR
       </AppText>
 
@@ -443,7 +443,7 @@ const ECGAutoView = () => {
   /* ── 5. 12-Lead Import Panel ── */
   const render12LeadPanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         12-LEAD ECG IMPORT
       </AppText>
 
@@ -502,7 +502,7 @@ const ECGAutoView = () => {
   /* ── 6. Wellue Panel ── */
   const renderWelluePanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         WELLUE DUOEK · 12-LEAD HOME DEVICE
       </AppText>
 
@@ -546,7 +546,7 @@ const ECGAutoView = () => {
   /* ── 7. Pulse Oximeter Panel ── */
   const renderOximeterPanel = () => (
     <View style={st.section}>
-      <AppText variant="sectionTitle" color={Colors.textPrimary}>
+      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginBottom: vs(8)}}>
         IHEALTH PO3 · SPO₂ + PLETHYSMOGRAPHY
       </AppText>
 

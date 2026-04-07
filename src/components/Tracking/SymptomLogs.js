@@ -63,7 +63,7 @@ const SymptomLogs = () => {
 
   return (
     <View>
-      <SectionTitle title="All Symptom Logs" />
+      <SectionTitle title="All Symptoms & Logs" />
       <View style={styles.grid}>
         {logs.map((l, i) => (
           <TouchableOpacity

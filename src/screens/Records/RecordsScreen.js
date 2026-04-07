@@ -18,6 +18,11 @@ import TempRecordsTab from '../../components/Records/TempRecordsTab';
 import AsthmaRecordsTab from '../../components/Records/AsthmaRecordsTab';
 import MigraineRecordsTab from '../../components/Records/MigraineRecordsTab';
 import AnemiaRecordsTab from '../../components/Records/AnemiaRecordsTab';
+import StressMoodRecordsTab from '../../components/Records/StressMoodRecordsTab';
+import VaccineRecordsTab from '../../components/Records/VaccineRecordsTab';
+import ECGRecordsTab from '../../components/Records/ECGRecordsTab';
+import MSKRecordsTab from '../../components/Records/MSKRecordsTab';
+import MenstrualRecordsTab from '../../components/Records/MenstrualRecordsTab';
 const SERVICE_FILTERS = [
   {key: 'all', label: 'All', icon: 'grid-outline', bg: 'rgba(255,255,255,0.15)'},
   {key: 'lab', label: 'Lab', icon: 'flask-outline', bg: 'rgba(255,255,255,0.1)'},
@@ -244,7 +249,12 @@ const RecordsScreen = ({route}) => {
         {activeTab === 'healthlogs' && healthlogFilter === 'asthma' && <AsthmaRecordsTab navigation={navigation} />}
         {activeTab === 'healthlogs' && healthlogFilter === 'migraine' && <MigraineRecordsTab navigation={navigation} />}
         {activeTab === 'healthlogs' && healthlogFilter === 'anemia' && <AnemiaRecordsTab navigation={navigation} />}
-        {activeTab === 'healthlogs' && healthlogFilter !== 'glucose' && healthlogFilter !== 'bp' && healthlogFilter !== 'heartrate' && healthlogFilter !== 'weight' && healthlogFilter !== 'temp' && healthlogFilter !== 'asthma' && healthlogFilter !== 'migraine' && healthlogFilter !== 'anemia' && (
+        {activeTab === 'healthlogs' && healthlogFilter === 'mood' && <StressMoodRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'vaccination' && <VaccineRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'ecg' && <ECGRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'msk' && <MSKRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter === 'menstrual' && <MenstrualRecordsTab navigation={navigation} />}
+        {activeTab === 'healthlogs' && healthlogFilter !== 'glucose' && healthlogFilter !== 'bp' && healthlogFilter !== 'heartrate' && healthlogFilter !== 'weight' && healthlogFilter !== 'temp' && healthlogFilter !== 'asthma' && healthlogFilter !== 'migraine' && healthlogFilter !== 'anemia' && healthlogFilter !== 'mood' && healthlogFilter !== 'vaccination' && healthlogFilter !== 'ecg' && healthlogFilter !== 'msk' && healthlogFilter !== 'menstrual' && (
           <View style={{alignItems: 'center', paddingVertical: vs(40)}}>
             <AppText variant="body" color={Colors.textTertiary}>
               {HEALTHLOG_FILTERS.find(f => f.key === healthlogFilter)?.label} records coming soon

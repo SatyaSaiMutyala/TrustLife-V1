@@ -207,42 +207,20 @@ const ECGLogScreen = ({navigation}) => {
 
       {/* ── BOTTOM BAR ── */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.7}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.white}
-            style={{textAlign: 'center'}}>
-            Save ECG · NSR · HR 72 · QTc 418ms · Normal
+        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
+          <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(6)}}>
+            Save ECG - NSR - HR 72 - QTc 418ms
           </AppText>
         </TouchableOpacity>
         <View style={styles.secondaryButtonRow}>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="share-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Share with cardiologist
-            </AppText>
+          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'ecg'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7}>
-            <Icon
-              family="Ionicons"
-              name="document-text-outline"
-              size={ms(16)}
-              color={Colors.primary}
-            />
-            <AppText
-              variant="body"
-              color={Colors.primary}
-              style={{marginLeft: s(6), fontWeight: '600'}}>
-              Export PDF
-            </AppText>
+          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'ecg', initialTab: 'ecgIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -385,14 +363,17 @@ const styles = StyleSheet.create({
     borderTopColor: '#d1d5db',
   },
   primaryButton: {
+    flexDirection: 'row',
     backgroundColor: Colors.primary,
-    paddingVertical: vs(11),
-    borderRadius: ms(12),
+    paddingVertical: vs(14),
+    borderRadius: ms(13),
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: s(8),
   },
   secondaryButtonRow: {
     flexDirection: 'row',
-    marginTop: vs(6),
+    marginTop: vs(8),
     gap: s(8),
   },
   secondaryButton: {

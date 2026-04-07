@@ -1,344 +1,200 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
 import Icon from '../../../components/shared/Icons';
 
-const SEVERITY_OPTIONS = ['Mild', 'Mod', 'Sev', 'None'];
-const PRESENT_OPTIONS = ['Present', 'None'];
+const BORDER = '#c8dfc0';
+const BG_LIGHT = '#f4f9f2';
 
 const LOCAL_REACTIONS = [
-  {id: 'pain', name: 'Pain / soreness', desc: 'Tenderness or pain at injection site', icon: 'pulse-outline', iconBg: Colors.amberBg, iconColor: Colors.amber, options: SEVERITY_OPTIONS, default: 'Mild'},
-  {id: 'redness', name: 'Redness', desc: 'Erythema around injection site', icon: 'ellipse-outline', iconBg: Colors.pinkBg, iconColor: Colors.red, options: SEVERITY_OPTIONS, default: 'None'},
-  {id: 'swelling', name: 'Swelling', desc: 'Localised swelling or induration', icon: 'water-outline', iconBg: Colors.blueBg, iconColor: Colors.blue, options: SEVERITY_OPTIONS, default: 'None'},
-  {id: 'abscess', name: 'Abscess', desc: 'Injection-site abscess formation', icon: 'flame-outline', iconBg: Colors.amberBg, iconColor: Colors.amber, options: PRESENT_OPTIONS, default: 'None'},
+  {id: 'pain', name: 'Pain / soreness at site', sub: 'Most common local reaction - expected, not reportable unless severe', icon: 'pulse-outline', iconBg: '#FFF7EE', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'Mild'},
+  {id: 'redness', name: 'Redness (erythema) at site', sub: 'Expected up to 48h - Report if >2.5cm or persisting beyond 72h', icon: 'ellipse-outline', iconBg: '#FEF0F6', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'None'},
+  {id: 'swelling', name: 'Swelling at site', sub: 'Expected up to 48-72h - Report if >2.5cm or extending to joint', icon: 'water-outline', iconBg: '#E8F4FD', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'None'},
+  {id: 'abscess', name: 'Abscess at injection site', sub: 'Requires medical review - suggests contamination or poor injection technique. Report to NVBDCP.', icon: 'flame-outline', iconBg: '#FFF7EE', opts: ['Present', 'None'], def: 'None'},
 ];
 
 const SYSTEMIC_REACTIONS = [
-  {id: 'fever', name: 'Fever', desc: 'Temperature >= 38 C within 48 hrs', icon: 'thermometer-outline', iconBg: Colors.amberBg, iconColor: Colors.amber, options: SEVERITY_OPTIONS, default: 'Mild'},
-  {id: 'irritability', name: 'Irritability / crying (infants)', desc: 'Persistent inconsolable crying > 3 hrs', icon: 'moon-outline', iconBg: Colors.blueBg, iconColor: Colors.blue, options: SEVERITY_OPTIONS, default: 'None'},
-  {id: 'nausea', name: 'Nausea / vomiting', desc: 'Gastrointestinal upset post-vaccination', icon: 'medical-outline', iconBg: Colors.amberBg, iconColor: Colors.amber, options: SEVERITY_OPTIONS, default: 'None'},
-  {id: 'convulsion', name: 'Febrile convulsion', desc: 'Seizure associated with fever post-vaccination', icon: 'flash-outline', iconBg: Colors.redBg, iconColor: Colors.red, options: PRESENT_OPTIONS, default: 'None'},
+  {id: 'fever', name: 'Fever', sub: 'Low-grade <=38.5C expected (1-3 days). Report if >40C or persisting >3 days', icon: 'thermometer-outline', iconBg: '#FFF7EE', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'Mild'},
+  {id: 'irritability', name: 'Irritability / crying (infants)', sub: 'Persistent inconsolable crying >3h - report as AEFI grade 2', icon: 'moon-outline', iconBg: '#f5f5f5', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'None'},
+  {id: 'nausea', name: 'Nausea / vomiting', sub: 'Mild nausea common with oral vaccines. Persistent vomiting: assess for hypersensitivity', icon: 'medical-outline', iconBg: '#FFF7EE', opts: ['Mild', 'Mod', 'Sev', 'None'], def: 'None'},
+  {id: 'convulsion', name: 'Febrile convulsion', sub: 'GRADE 3 - REPORT IMMEDIATELY to NVBDCP - Seek emergency care - Do not readminister without specialist clearance', icon: 'flash-outline', iconBg: '#FCEBEB', opts: ['Present', 'None'], def: 'None'},
 ];
 
 const SERIOUS_REACTIONS = [
-  {id: 'anaphylaxis', name: 'Anaphylaxis', desc: 'Acute allergic reaction within minutes', icon: 'alert-circle-outline', iconBg: Colors.redBg, iconColor: Colors.redText, options: PRESENT_OPTIONS, default: 'None'},
-  {id: 'encephalitis', name: 'Encephalitis', desc: 'Brain inflammation post-vaccination', icon: 'body-outline', iconBg: Colors.redBg, iconColor: Colors.redText, options: PRESENT_OPTIONS, default: 'None'},
-  {id: 'lymphadenitis', name: 'Lymphadenitis (BCG-specific)', desc: 'Suppurative lymph node inflammation', icon: 'fitness-outline', iconBg: Colors.redBg, iconColor: Colors.redText, options: PRESENT_OPTIONS, default: 'None'},
+  {id: 'anaphylaxis', name: 'Anaphylaxis', sub: 'Within minutes: urticaria + hypotension + bronchospasm - EMERGENCY - Adrenaline 0.01mg/kg IM immediately - Call 108', icon: 'alert-circle-outline', iconBg: '#FEF0F0', opts: ['Present', 'None'], def: 'None'},
+  {id: 'encephalitis', name: 'Encephalitis / encephalopathy', sub: 'GRADE 4 - Altered consciousness, seizures within 7 days - Report to NVBDCP + seek emergency care', icon: 'body-outline', iconBg: '#FEF0F0', opts: ['Present', 'None'], def: 'None'},
+  {id: 'lymphadenitis', name: 'Lymphadenitis (BCG-specific)', sub: 'Enlarged lymph nodes in axilla ipsilateral to BCG site - AEFI specific to BCG. Report if suppurative.', icon: 'fitness-outline', iconBg: '#FEF0F0', opts: ['Present', 'None'], def: 'None'},
 ];
 
-const TIMING_OPTIONS = [
-  'Within 15 min',
-  '15 min \u2013 2 hours',
-  'Same day (2\u201324h)',
-  'Day 1\u20133',
-  'Day 4\u20137',
-  'Day 8\u201314',
-  '>14 days',
-];
+const TIMING_OPTIONS = ['Within 15 min', '15 min - 2 hours', 'Same day (2-24h)', 'Day 1-3', 'Day 4-7', 'Day 8-14', '>14 days'];
+const RESOLUTION_OPTIONS = ['Resolved on its own', 'Treated with paracetamol', 'Doctor visit needed', 'Emergency treatment', 'Hospitalised', 'Ongoing'];
 
-const RESOLUTION_OPTIONS = [
-  'Resolved on its own',
-  'Treated with paracetamol',
-  'Doctor visit needed',
-  'Emergency treatment',
-  'Hospitalised',
-  'Ongoing',
-];
+const VACCINE_OPTIONS = ['Tdap booster (Aarav) - today', 'Influenza 2025 (Aarav) - Oct 2025', 'Varicella-2 (Aarav) - Mar 2022', 'COVID Booster (Priya) - Jan 2024', 'Other / specify'];
 
-const SeverityButton = ({label, active, onPress, isSerious}) => {
-  const activeBg = isSerious ? Colors.redBg : Colors.tealBg;
-  const activeColor = isSerious ? Colors.redText : Colors.tealText;
-  return (
-    <TouchableOpacity
-      activeOpacity={0.7}
-      onPress={onPress}
-      style={[
-        styles.sevBtn,
-        active && {backgroundColor: activeBg, borderColor: activeColor},
-      ]}>
-      <AppText
-        variant="small"
-        color={active ? activeColor : Colors.textTertiary}
-        style={active ? {fontWeight: '600'} : undefined}>
-        {label}
-      </AppText>
-    </TouchableOpacity>
-  );
-};
-
-const ReactionRow = ({item, severity, onSelect, isSerious}) => (
-  <View style={styles.reactionRow}>
-    <View style={styles.reactionLeft}>
-      <View style={[styles.reactionIcon, {backgroundColor: item.iconBg}]}>
-        <Icon family="Ionicons" name={item.icon} size={18} color={item.iconColor} />
-      </View>
-      <View style={{flex: 1}}>
-        <AppText variant="bodyBold">{item.name}</AppText>
-        <AppText variant="small" color={Colors.textSecondary}>{item.desc}</AppText>
-      </View>
-    </View>
-    <View style={styles.sevRow}>
-      {item.options.map(opt => (
-        <SeverityButton
-          key={opt}
-          label={opt}
-          active={severity === opt}
-          onPress={() => onSelect(item.id, opt)}
-          isSerious={isSerious}
-        />
-      ))}
-    </View>
+const Section = ({title, sub}) => (
+  <View style={{flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(8)}}>
+    <AppText variant="subtext" color="#888" style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, marginRight: s(4)}}>{title}</AppText>
+    {sub && <AppText variant="subtext" color="#aaa" style={{fontWeight: '400', marginRight: s(4)}}>{sub}</AppText>}
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: BORDER}} />
   </View>
 );
 
-const Chip = ({label, active, onPress, activeBg, activeColor}) => (
+const SevBtn = ({label, active, onPress, isSerious}) => (
   <TouchableOpacity
-    activeOpacity={0.7}
-    onPress={onPress}
-    style={[
-      styles.chip,
-      active && {backgroundColor: activeBg || Colors.tealBg, borderColor: activeColor || Colors.tealText},
-    ]}>
-    <AppText
-      variant="small"
-      color={active ? (activeColor || Colors.tealText) : Colors.textSecondary}
-      style={active ? {fontWeight: '600'} : undefined}>
-      {label}
-    </AppText>
+    activeOpacity={0.7} onPress={onPress}
+    style={[st.sevBtn, active && (isSerious ? st.sevBtnSev : st.sevBtnOn)]}>
+    <AppText variant="subtext" color={active ? Colors.white : '#888'} style={{fontWeight: active ? '700' : '600'}}>{label}</AppText>
   </TouchableOpacity>
 );
 
-const SectionHeader = ({label, bgColor, textColor}) => (
-  <View style={[styles.sectionHeader, {backgroundColor: bgColor || Colors.tealBg}]}>
-    <AppText variant="bodyBold" color={textColor || Colors.tealText}>{label}</AppText>
+const ReactionRow = ({item, severity, onSelect, isSerious, isLast}) => (
+  <View style={[st.aefiRow, !isLast && {borderBottomWidth: 0.5, borderBottomColor: '#e8f3e4'}]}>
+    <View style={[st.aefiIcon, {backgroundColor: item.iconBg}]}>
+      <Icon family="Ionicons" name={item.icon} size={ms(14)} color={isSerious ? Colors.redDark : Colors.textSecondary} />
+    </View>
+    <View style={{flex: 1}}>
+      <AppText variant="bodyBold" color={Colors.textPrimary}>{item.name}</AppText>
+      <AppText variant="subtext" color="#888" style={{marginTop: vs(1), lineHeight: ms(13)}}>{item.sub}</AppText>
+    </View>
+    <View style={{flexDirection: 'row', gap: s(4)}}>
+      {item.opts.map(opt => (
+        <SevBtn key={opt} label={opt} active={severity === opt} onPress={() => onSelect(item.id, opt)} isSerious={isSerious} />
+      ))}
+    </View>
   </View>
 );
 
 const VaccAefiView = () => {
   const [severities, setSeverities] = useState(() => {
     const init = {};
-    [...LOCAL_REACTIONS, ...SYSTEMIC_REACTIONS, ...SERIOUS_REACTIONS].forEach(r => {
-      init[r.id] = r.default;
-    });
+    [...LOCAL_REACTIONS, ...SYSTEMIC_REACTIONS, ...SERIOUS_REACTIONS].forEach(r => { init[r.id] = r.def; });
     return init;
   });
-  const [timing, setTiming] = useState('Same day (2\u201324h)');
+  const [timing, setTiming] = useState('Same day (2-24h)');
   const [resolution, setResolution] = useState('Resolved on its own');
+  const [selVacc, setSelVacc] = useState(0);
+  const [showVaccDrop, setShowVaccDrop] = useState(false);
 
-  const handleSelect = (id, val) => {
-    setSeverities(prev => ({...prev, [id]: val}));
-  };
+  const handleSelect = (id, val) => setSeverities(prev => ({...prev, [id]: val}));
 
   return (
-    <View style={styles.container}>
+    <View style={{flex: 1}}>
+
+      <Section title="AEFI log" sub="- Adverse Events Following Immunization" />
 
       {/* Info card */}
-      <View style={[styles.card, {backgroundColor: Colors.blueBg, borderColor: Colors.blue}]}>
-        <View style={styles.infoHeader}>
-          <Icon family="Ionicons" name="information-circle-outline" size={20} color={Colors.blueText} />
-          <AppText variant="bodyBold" color={Colors.blueText} style={{marginLeft: s(6)}}>What is AEFI?</AppText>
-        </View>
-        <AppText variant="small" color={Colors.blueText} style={{marginTop: vs(4), lineHeight: ms(18)}}>
-          Any untoward medical occurrence following vaccination that does not necessarily have a causal relationship with the vaccine. The WHO grades AEFI severity from Grade 1 (mild, local only) through Grade 4 (life-threatening). India's NVBDCP requires reporting of all serious and severe AEFIs within 24 hours through the district immunisation officer.
+      <View style={[st.insightCard, {backgroundColor: Colors.blueBg}]}>
+        <Icon family="Ionicons" name="information-circle-outline" size={ms(16)} color={Colors.blueText} />
+        <AppText variant="caption" color={Colors.blueText} style={{flex: 1, lineHeight: ms(17)}}>
+          <AppText style={{fontWeight: '700'}}>What is AEFI?</AppText> Any untoward medical occurrence following vaccination, whether or not causally related to the vaccine. WHO grades: Grade 1 (mild - no treatment), Grade 2 (moderate - outpatient treatment), Grade 3 (severe - hospitalisation), Grade 4 (life-threatening). Serious AEFI must be reported to India's NVBDCP / CDSCO within 24-48 hours.
         </AppText>
       </View>
 
       {/* Vaccine selector */}
-      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginTop: vs(16), marginBottom: vs(8)}}>
-        Log reactions for last vaccine
-      </AppText>
-      <AppText variant="caption" color={Colors.textSecondary} style={{marginBottom: vs(6)}}>
-        After which vaccine?
-      </AppText>
-      <View style={[styles.card, styles.selectorCard]}>
-        <Icon family="Ionicons" name="chevron-down-outline" size={16} color={Colors.textSecondary} />
-        <AppText variant="body" style={{marginLeft: s(8), flex: 1}}>
-          Tdap booster (Aarav) — today
-        </AppText>
-        <View style={styles.selectedBadge}>
-          <AppText variant="small" color={Colors.tealText} style={{fontWeight: '600'}}>Selected</AppText>
+      <Section title="Log reactions for last vaccine" />
+      <View style={st.card}>
+        {/* Header */}
+        <View style={st.cardHdr}>
+          <AppText variant="bodyBold" color={Colors.textPrimary}>After which vaccine?</AppText>
+        </View>
+        {/* Dropdown */}
+        <View style={{paddingHorizontal: s(13), paddingVertical: vs(10), borderBottomWidth: 0.5, borderBottomColor: '#e8f3e4'}}>
+          <TouchableOpacity style={st.selectBox} onPress={() => setShowVaccDrop(!showVaccDrop)} activeOpacity={0.7}>
+            <AppText variant="caption" color={Colors.textPrimary} style={{flex: 1}}>{VACCINE_OPTIONS[selVacc]}</AppText>
+            <Icon family="Ionicons" name={showVaccDrop ? 'chevron-up' : 'chevron-down'} size={ms(16)} color={Colors.textTertiary} />
+          </TouchableOpacity>
+          {showVaccDrop && (
+            <View style={{marginTop: vs(4)}}>
+              {VACCINE_OPTIONS.map((v, i) => (
+                <TouchableOpacity key={i} style={[st.dropItem, selVacc === i && {backgroundColor: Colors.tealBg}]} onPress={() => { setSelVacc(i); setShowVaccDrop(false); }} activeOpacity={0.7}>
+                  <AppText variant="caption" color={selVacc === i ? Colors.primary : Colors.textPrimary}>{v}</AppText>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Local reactions header */}
+        <View style={[st.sectionBanner, {backgroundColor: BG_LIGHT}]}>
+          <AppText variant="subtext" color={Colors.primary} style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4}}>Local reactions (at injection site) - Rate severity</AppText>
+        </View>
+        {LOCAL_REACTIONS.map((item, i) => (
+          <ReactionRow key={item.id} item={item} severity={severities[item.id]} onSelect={handleSelect} isLast={i === LOCAL_REACTIONS.length - 1} />
+        ))}
+
+        {/* Systemic reactions header */}
+        <View style={[st.sectionBanner, {backgroundColor: BG_LIGHT, borderTopWidth: 0.5, borderTopColor: '#e8f3e4'}]}>
+          <AppText variant="subtext" color={Colors.primary} style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4}}>Systemic reactions - Rate severity</AppText>
+        </View>
+        {SYSTEMIC_REACTIONS.map((item, i) => (
+          <ReactionRow key={item.id} item={item} severity={severities[item.id]} onSelect={handleSelect} isLast={i === SYSTEMIC_REACTIONS.length - 1} />
+        ))}
+
+        {/* Serious AEFI header */}
+        <View style={[st.sectionBanner, {backgroundColor: Colors.redBg, borderTopWidth: 0.5, borderTopColor: '#e8f3e4'}]}>
+          <AppText variant="subtext" color={Colors.redDark} style={{fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4}}>Serious AEFI - Report immediately to NVBDCP + seek emergency care</AppText>
+        </View>
+        {SERIOUS_REACTIONS.map((item, i) => (
+          <ReactionRow key={item.id} item={item} severity={severities[item.id]} onSelect={handleSelect} isSerious isLast={i === SERIOUS_REACTIONS.length - 1} />
+        ))}
+      </View>
+
+      {/* Timing */}
+      <View style={{marginTop: vs(12)}}>
+        <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700', marginBottom: vs(5)}}>When did reactions start?</AppText>
+        <View style={st.chipWrap}>
+          {TIMING_OPTIONS.map(opt => (
+            <TouchableOpacity key={opt} style={[st.chip, timing === opt && st.chipOn]} onPress={() => setTiming(opt)} activeOpacity={0.7}>
+              <AppText variant="caption" color={timing === opt ? Colors.white : Colors.textSecondary} style={{fontWeight: timing === opt ? '700' : '500'}}>{opt}</AppText>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
-      {/* Local reactions */}
-      <SectionHeader label="Local reactions (at injection site) \u2014 Rate severity" bgColor={Colors.tealBg} textColor={Colors.tealText} />
-      <View style={styles.card}>
-        {LOCAL_REACTIONS.map((item, idx) => (
-          <React.Fragment key={item.id}>
-            {idx > 0 && <View style={styles.divider} />}
-            <ReactionRow
-              item={item}
-              severity={severities[item.id]}
-              onSelect={handleSelect}
-            />
-          </React.Fragment>
-        ))}
-      </View>
-
-      {/* Systemic reactions */}
-      <SectionHeader label="Systemic reactions \u2014 Rate severity" />
-      <View style={styles.card}>
-        {SYSTEMIC_REACTIONS.map((item, idx) => (
-          <React.Fragment key={item.id}>
-            {idx > 0 && <View style={styles.divider} />}
-            <ReactionRow
-              item={item}
-              severity={severities[item.id]}
-              onSelect={handleSelect}
-            />
-          </React.Fragment>
-        ))}
-      </View>
-
-      {/* Serious AEFI */}
-      <SectionHeader label="Serious AEFI \u2014 Report immediately" bgColor={Colors.redBg} textColor={Colors.redText} />
-      <View style={styles.card}>
-        {SERIOUS_REACTIONS.map((item, idx) => (
-          <React.Fragment key={item.id}>
-            {idx > 0 && <View style={styles.divider} />}
-            <ReactionRow
-              item={item}
-              severity={severities[item.id]}
-              onSelect={handleSelect}
-              isSerious
-            />
-          </React.Fragment>
-        ))}
-      </View>
-
-      {/* Timing chips */}
-      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginTop: vs(16), marginBottom: vs(8)}}>
-        When did reactions start?
-      </AppText>
-      <View style={styles.chipWrap}>
-        {TIMING_OPTIONS.map(opt => (
-          <Chip key={opt} label={opt} active={timing === opt} onPress={() => setTiming(opt)} />
-        ))}
-      </View>
-
-      {/* Resolution chips */}
-      <AppText variant="sectionTitle" color={Colors.textPrimary} style={{marginTop: vs(16), marginBottom: vs(8)}}>
-        Resolution
-      </AppText>
-      <View style={styles.chipWrap}>
-        {RESOLUTION_OPTIONS.map(opt => (
-          <Chip key={opt} label={opt} active={resolution === opt} onPress={() => setResolution(opt)} />
-        ))}
+      {/* Resolution */}
+      <View style={{marginTop: vs(12)}}>
+        <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700', marginBottom: vs(5)}}>Resolution</AppText>
+        <View style={st.chipWrap}>
+          {RESOLUTION_OPTIONS.map(opt => (
+            <TouchableOpacity key={opt} style={[st.chip, resolution === opt && st.chipOn]} onPress={() => setResolution(opt)} activeOpacity={0.7}>
+              <AppText variant="caption" color={resolution === opt ? Colors.white : Colors.textSecondary} style={{fontWeight: resolution === opt ? '700' : '500'}}>{opt}</AppText>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       {/* Report button */}
-      <TouchableOpacity activeOpacity={0.7} style={styles.reportBtn}>
-        <Icon family="Ionicons" name="warning-outline" size={18} color={Colors.white} />
-        <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(8)}}>
-          Report Serious AEFI to NVBDCP
-        </AppText>
+      <TouchableOpacity activeOpacity={0.7} style={st.reportBtn}>
+        <Icon family="Ionicons" name="warning-outline" size={ms(18)} color={Colors.white} />
+        <AppText variant="bodyBold" color={Colors.white}>Report Serious AEFI to NVBDCP</AppText>
       </TouchableOpacity>
 
       {/* Helpline */}
-      <View style={styles.helpline}>
-        <Icon family="Ionicons" name="call-outline" size={16} color={Colors.textSecondary} />
-        <AppText variant="small" color={Colors.textSecondary} style={{marginLeft: s(6), flex: 1}}>
-          National AEFI Reporting Hotline: 1800-11-6666 (toll-free, 24/7). Report any serious adverse event within 24 hours of onset.
-        </AppText>
-      </View>
-
+      <AppText variant="small" color="#888" style={{textAlign: 'center', marginBottom: vs(10), lineHeight: ms(16)}}>
+        National AEFI Reporting Hotline: 1800-11-6666 - Online: nhsrc.nic.in - State Immunization Officer, Telangana: 040-23450022
+      </AppText>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {flex: 1},
-  card: {
-    backgroundColor: Colors.white,
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(14),
-    padding: ms(14),
-    marginBottom: vs(10),
-  },
-  infoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  selectorCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  selectedBadge: {
-    backgroundColor: Colors.tealBg,
-    borderRadius: ms(8),
-    paddingHorizontal: s(8),
-    paddingVertical: vs(2),
-  },
-  sectionHeader: {
-    borderRadius: ms(10),
-    paddingHorizontal: s(12),
-    paddingVertical: vs(8),
-    marginTop: vs(14),
-    marginBottom: vs(8),
-  },
-  reactionRow: {
-    paddingVertical: vs(10),
-  },
-  reactionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: vs(8),
-  },
-  reactionIcon: {
-    width: ms(34),
-    height: ms(34),
-    borderRadius: ms(10),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: s(10),
-  },
-  sevRow: {
-    flexDirection: 'row',
-    gap: s(6),
-    paddingLeft: ms(44),
-  },
-  sevBtn: {
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(8),
-    paddingHorizontal: s(10),
-    paddingVertical: vs(5),
-    alignItems: 'center',
-  },
-  divider: {
-    height: 0.5,
-    backgroundColor: '#e5e7eb',
-  },
-  chipWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: s(8),
-  },
-  chip: {
-    borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    borderRadius: ms(20),
-    paddingHorizontal: s(12),
-    paddingVertical: vs(6),
-  },
-  reportBtn: {
-    backgroundColor: Colors.red,
-    borderRadius: ms(14),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: vs(14),
-    marginTop: vs(20),
-  },
-  helpline: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: vs(12),
-    paddingHorizontal: s(4),
-  },
+const st = StyleSheet.create({
+  card: {backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: BORDER, overflow: 'hidden', marginBottom: vs(10)},
+  cardHdr: {paddingHorizontal: s(13), paddingVertical: vs(10), borderBottomWidth: 0.5, borderBottomColor: '#e8f3e4'},
+  selectBox: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: Colors.white, borderWidth: 0.5, borderColor: BORDER, borderRadius: ms(10), paddingHorizontal: s(12), paddingVertical: vs(10)},
+  dropItem: {paddingHorizontal: s(12), paddingVertical: vs(9), borderBottomWidth: 0.5, borderBottomColor: '#e8f3e4'},
+  sectionBanner: {paddingHorizontal: s(13), paddingVertical: vs(8), borderBottomWidth: 0.5, borderBottomColor: '#e8f3e4'},
+  aefiRow: {flexDirection: 'row', alignItems: 'flex-start', gap: s(8), paddingHorizontal: s(13), paddingVertical: vs(9)},
+  aefiIcon: {width: ms(28), height: ms(28), borderRadius: ms(8), alignItems: 'center', justifyContent: 'center'},
+  sevBtn: {width: ms(28), height: ms(28), borderRadius: ms(8), borderWidth: 0.5, borderColor: BORDER, backgroundColor: BG_LIGHT, alignItems: 'center', justifyContent: 'center'},
+  sevBtnOn: {backgroundColor: Colors.primary, borderColor: Colors.primary},
+  sevBtnSev: {backgroundColor: Colors.red, borderColor: Colors.red},
+  chipWrap: {flexDirection: 'row', flexWrap: 'wrap', gap: ms(6)},
+  chip: {paddingHorizontal: s(12), paddingVertical: vs(7), borderRadius: ms(22), borderWidth: 0.5, borderColor: BORDER, backgroundColor: Colors.white},
+  chipOn: {backgroundColor: Colors.primary, borderColor: Colors.primary},
+  reportBtn: {backgroundColor: Colors.red, borderRadius: ms(13), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(13), marginTop: vs(20), marginBottom: vs(10), gap: s(8)},
+  insightCard: {borderRadius: ms(11), padding: ms(10), flexDirection: 'row', gap: s(8), marginBottom: vs(10)},
 });
 
 export default VaccAefiView;

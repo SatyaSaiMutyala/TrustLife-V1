@@ -1,6 +1,7 @@
 import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
+import Svg, {Path, Circle as SvgCircle} from 'react-native-svg';
 import Colors from '../../../constants/colors';
 import AppText from '../../shared/AppText';
 import {
@@ -14,15 +15,35 @@ import {
 /* ── constants ──────────────────────────────────────── */
 
 const RING_SIZE = ms(260);
+const CX = RING_SIZE / 2;
+const CY = RING_SIZE / 2;
 const OUTER_R = RING_SIZE / 2;
-const INNER_R = OUTER_R * 0.42;
-const RING_THICKNESS = OUTER_R - INNER_R;
+const INNER_R = OUTER_R * 0.52;
 const N = 28;
 const SEG_ANGLE = 360 / N;
-const GAP_DEG = 1.2;
-// Segment bar dimensions: width = radial span, height = arc tangent span
-const SEG_W = RING_THICKNESS + ms(4);
-const SEG_H = ms(22);
+const GAP_DEG = 1.5;
+
+// Helper: polar to cartesian
+const polarToXY = (cx, cy, r, angleDeg) => {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return {x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad)};
+};
+
+// Build SVG arc path for a donut segment
+const arcPath = (startDeg, endDeg, outerR, innerR) => {
+  const s1 = polarToXY(CX, CY, outerR, startDeg);
+  const e1 = polarToXY(CX, CY, outerR, endDeg);
+  const s2 = polarToXY(CX, CY, innerR, endDeg);
+  const e2 = polarToXY(CX, CY, innerR, startDeg);
+  const large = endDeg - startDeg > 180 ? 1 : 0;
+  return [
+    `M ${s1.x} ${s1.y}`,
+    `A ${outerR} ${outerR} 0 ${large} 1 ${e1.x} ${e1.y}`,
+    `L ${s2.x} ${s2.y}`,
+    `A ${innerR} ${innerR} 0 ${large} 0 ${e2.x} ${e2.y}`,
+    'Z',
+  ].join(' ');
+};
 
 const PHASE_COLOR = {
   period: '#E24B4A',
@@ -73,7 +94,10 @@ const phaseDesc = (phase, day) => {
 const insightBg = (t) => t === 'purple' ? Colors.purpleBg : t === 'amber' ? Colors.amberBg : t === 'red' ? Colors.redBg : Colors.tealBg;
 const insightTc = (t) => t === 'purple' ? Colors.purpleText : t === 'amber' ? Colors.amberText : t === 'red' ? Colors.redText : Colors.tealText;
 
-/* ── Segment Ring ───────────────────────────────────── */
+/* ── Segment Ring (SVG arcs) ────────────────────────── */
+
+const WRAP_SIZE = RING_SIZE + ms(32);
+const OFFSET = ms(16); // offset ringArea inside wrap
 
 const CycleRing = ({currentDay}) => {
   const segments = useMemo(() => {
@@ -82,26 +106,23 @@ const CycleRing = ({currentDay}) => {
       const phase = phaseForDay(day);
       const color = PHASE_COLOR[phase];
       const isFuture = day > currentDay;
-      const isToday = day === currentDay;
-      const startAngle = -90 + i * SEG_ANGLE + GAP_DEG / 2;
-      const sweepAngle = SEG_ANGLE - GAP_DEG;
-      return {day, phase, color, isFuture, isToday, startAngle, sweepAngle};
+      const startDeg = i * SEG_ANGLE + GAP_DEG / 2;
+      const endDeg = (i + 1) * SEG_ANGLE - GAP_DEG / 2;
+      const d = arcPath(startDeg, endDeg, OUTER_R - 2, INNER_R + 2);
+      return {day, phase, color, isFuture, d};
     });
   }, [currentDay]);
 
   const todayPhase = phaseForDay(currentDay);
   const todayColor = PHASE_COLOR[todayPhase];
 
-  // Build day labels placed around the ring
+  // Day number label positions (inside the ring band)
   const dayLabels = useMemo(() => {
     const labels = [];
     for (let d = 1; d <= N; d += 4) {
-      const angle = -90 + (d - 0.5) * SEG_ANGLE;
-      const rad = (angle * Math.PI) / 180;
-      const labelR = OUTER_R * 0.72;
-      const x = RING_SIZE / 2 + labelR * Math.cos(rad);
-      const y = RING_SIZE / 2 + labelR * Math.sin(rad);
-      labels.push({day: d, x, y});
+      const midDeg = (d - 1) * SEG_ANGLE + SEG_ANGLE / 2;
+      const pt = polarToXY(CX, CY, (OUTER_R + INNER_R) / 2, midDeg);
+      labels.push({day: d, x: pt.x, y: pt.y});
     }
     return labels;
   }, []);
@@ -109,67 +130,48 @@ const CycleRing = ({currentDay}) => {
   // Phase labels around outside
   const outerLabels = useMemo(() => {
     return PHASE_LABELS.map((p) => {
-      const angle = -90 + (p.day - 0.5) * SEG_ANGLE;
-      const rad = (angle * Math.PI) / 180;
-      const r = OUTER_R + ms(14);
-      const x = RING_SIZE / 2 + r * Math.cos(rad);
-      const y = RING_SIZE / 2 + r * Math.sin(rad);
-      return {...p, x, y};
+      const midDeg = (p.day - 1) * SEG_ANGLE + SEG_ANGLE / 2;
+      const pt = polarToXY(CX, CY, OUTER_R + ms(14), midDeg);
+      return {...p, x: pt.x, y: pt.y};
     });
   }, []);
 
-  // Ovulation dot position
-  const ovAngle = -90 + (14 - 0.5) * SEG_ANGLE;
-  const ovRad = (ovAngle * Math.PI) / 180;
-  const ovR = OUTER_R - RING_THICKNESS / 2;
-  const ovX = RING_SIZE / 2 + ovR * Math.cos(ovRad) - ms(7);
-  const ovY = RING_SIZE / 2 + ovR * Math.sin(ovRad) - ms(7);
+  // Ovulation dot
+  const ovDeg = (14 - 1) * SEG_ANGLE + SEG_ANGLE / 2;
+  const ovPt = polarToXY(CX, CY, (OUTER_R + INNER_R) / 2, ovDeg);
 
-  // Today indicator arc position
-  const todayAngle = -90 + (currentDay - 0.5) * SEG_ANGLE;
-  const todayRad = (todayAngle * Math.PI) / 180;
-  const todayMarkR = OUTER_R + ms(3);
-  const todayX = RING_SIZE / 2 + todayMarkR * Math.cos(todayRad) - ms(3);
-  const todayY = RING_SIZE / 2 + todayMarkR * Math.sin(todayRad) - ms(12);
+  // Today marker
+  const todayDeg = (currentDay - 1) * SEG_ANGLE + SEG_ANGLE / 2;
+  const todayPt1 = polarToXY(CX, CY, OUTER_R + ms(2), todayDeg);
+  const todayPt2 = polarToXY(CX, CY, OUTER_R - ms(18), todayDeg);
 
   return (
-    <View style={[segStyles.wrap, {width: RING_SIZE + ms(32), height: RING_SIZE + ms(32)}]}>
+    <View style={[segStyles.wrap, {width: WRAP_SIZE, height: WRAP_SIZE}]}>
       <View style={[segStyles.ringArea, {width: RING_SIZE, height: RING_SIZE}]}>
-
-        {/* Segments */}
-        {segments.map((seg) => {
-          const midAngle = seg.startAngle + seg.sweepAngle / 2;
-          const midRad = (midAngle * Math.PI) / 180;
-          const segR = OUTER_R - RING_THICKNESS / 2;
-          const cx = RING_SIZE / 2 + segR * Math.cos(midRad);
-          const cy = RING_SIZE / 2 + segR * Math.sin(midRad);
-
-          return (
-            <View
+        <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${RING_SIZE} ${RING_SIZE}`}>
+          {/* Arc segments */}
+          {segments.map((seg) => (
+            <Path
               key={seg.day}
-              style={{
-                position: 'absolute',
-                left: cx - SEG_W / 2,
-                top: cy - SEG_H / 2,
-                width: SEG_W,
-                height: SEG_H,
-                borderRadius: ms(4),
-                backgroundColor: seg.color,
-                opacity: seg.isFuture ? 0.22 : 0.9,
-                transform: [{rotate: `${midAngle}deg`}],
-              }}
+              d={seg.d}
+              fill={seg.color}
+              opacity={seg.isFuture ? 0.22 : 0.9}
             />
-          );
-        })}
+          ))}
 
-        {/* Inner circle (hole) */}
-        <View style={[segStyles.innerCircle, {
-          width: INNER_R * 2,
-          height: INNER_R * 2,
-          borderRadius: INNER_R,
-        }]} />
+          {/* Ovulation dot */}
+          <SvgCircle cx={ovPt.x} cy={ovPt.y} r={ms(7)} fill="#00c853" stroke={Colors.white} strokeWidth={2} />
 
-        {/* Day number labels */}
+          {/* Today marker line */}
+          <Path
+            d={`M ${todayPt1.x} ${todayPt1.y} L ${todayPt2.x} ${todayPt2.y}`}
+            stroke={Colors.white}
+            strokeWidth={ms(4)}
+            strokeLinecap="round"
+          />
+        </Svg>
+
+        {/* Day number labels (RN Views on top of SVG) */}
         {dayLabels.map((l) => (
           <View key={l.day} style={{position: 'absolute', left: l.x - ms(8), top: l.y - ms(6)}}>
             <AppText variant="small" color="rgba(255,255,255,0.55)" style={{fontSize: ms(9), fontWeight: '600'}}>
@@ -177,22 +179,6 @@ const CycleRing = ({currentDay}) => {
             </AppText>
           </View>
         ))}
-
-        {/* Ovulation dot */}
-        <View style={{
-          position: 'absolute', left: ovX, top: ovY,
-          width: ms(14), height: ms(14), borderRadius: ms(7),
-          backgroundColor: '#00c853',
-          borderWidth: 2, borderColor: Colors.white,
-        }} />
-
-        {/* Today marker (white arc indicator) */}
-        <View style={{
-          position: 'absolute', left: todayX, top: todayY,
-          width: ms(6), height: ms(24), borderRadius: ms(3),
-          backgroundColor: Colors.white,
-          transform: [{rotate: `${todayAngle}deg`}],
-        }} />
 
         {/* Center text */}
         <View style={segStyles.centerText}>
@@ -212,8 +198,8 @@ const CycleRing = ({currentDay}) => {
       {outerLabels.map((l) => (
         <View key={l.label} style={{
           position: 'absolute',
-          left: l.x - ms(16) + ms(16),
-          top: l.y - ms(6) + ms(16),
+          left: l.x + OFFSET - ms(16),
+          top: l.y + OFFSET - ms(6),
         }}>
           <AppText variant="small" color="rgba(255,255,255,0.4)" style={{fontSize: ms(8), fontWeight: '600'}}>
             {l.label}
@@ -226,14 +212,7 @@ const CycleRing = ({currentDay}) => {
 
 const segStyles = StyleSheet.create({
   wrap: {alignSelf: 'center'},
-  ringArea: {position: 'absolute', left: ms(16), top: ms(16)},
-  innerCircle: {
-    position: 'absolute',
-    alignSelf: 'center',
-    top: OUTER_R - INNER_R,
-    left: OUTER_R - INNER_R,
-    backgroundColor: Colors.primary,
-  },
+  ringArea: {position: 'absolute', left: OFFSET, top: OFFSET},
   centerText: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
@@ -257,9 +236,9 @@ const LegendRow = ({items}) => (
 
 /* ── Hormone Chart ──────────────────────────────────── */
 
-const CHART_H = vs(120);
+const CHART_H = vs(150);
 const CHART_PAD_T = vs(10);
-const CHART_PAD_B = vs(20);
+const CHART_PAD_B = vs(32);
 const CHART_INNER_H = CHART_H - CHART_PAD_T - CHART_PAD_B;
 
 // Normalized hormone curves (0-1, 28 points)

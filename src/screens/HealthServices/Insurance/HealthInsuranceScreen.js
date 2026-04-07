@@ -145,6 +145,21 @@ const HealthInsuranceScreen = () => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         renderItem={renderPlanCard}
+        ListHeaderComponent={
+          <TouchableOpacity
+            style={{backgroundColor: Colors.white, borderRadius: ms(14), borderWidth: 0.5, borderColor: '#dde8e2', padding: ms(14), marginBottom: vs(14), flexDirection: 'row', alignItems: 'center', gap: s(12)}}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('InsuranceClaims')}>
+            <View style={{width: ms(44), height: ms(44), borderRadius: ms(12), backgroundColor: Colors.tealBg, alignItems: 'center', justifyContent: 'center'}}>
+              <Icon family="Ionicons" name="document-text-outline" size={ms(22)} color={Colors.primary} />
+            </View>
+            <View style={{flex: 1}}>
+              <AppText variant="bodyBold" color={Colors.textPrimary}>Claims Centre</AppText>
+              <AppText variant="small" color={Colors.textSecondary} style={{marginTop: vs(2)}}>File a claim, track status, view history</AppText>
+            </View>
+            <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.textTertiary} />
+          </TouchableOpacity>
+        }
       />
     </View>
   );

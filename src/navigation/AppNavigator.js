@@ -93,6 +93,11 @@ import BPLogScreen from '../screens/Tracking/SymptomLogs/BPLogScreen';
 import HeartRateLogScreen from '../screens/Tracking/SymptomLogs/HeartRateLogScreen';
 import MoodLogScreen from '../screens/Tracking/SymptomLogs/MoodLogScreen';
 import DailyLogScreen from '../screens/Tracking/DailyLogScreen';
+import InsuranceClaimsScreen from '../screens/Insurance/InsuranceClaimsScreen';
+import TrackClaimsScreen from '../screens/Insurance/TrackClaimsScreen';
+import ClaimDetailScreen from '../screens/Insurance/ClaimDetailScreen';
+import FileClaimScreen from '../screens/Insurance/FileClaimScreen';
+import RecordPickerScreen from '../screens/Insurance/RecordPickerScreen';
 import AnemiaLogScreen from '../screens/Tracking/SymptomLogs/AnemiaLogScreen';
 import MenstrualLogScreen from '../screens/Tracking/SymptomLogs/MenstrualLogScreen';
 import SymptomsLogScreen from '../screens/Tracking/SymptomLogs/SymptomsLogScreen';
@@ -478,6 +483,31 @@ const AppNavigator = () => {
         name="DailyLog"
         component={DailyLogScreen}
         options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="InsuranceClaims"
+        component={InsuranceClaimsScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="TrackClaims"
+        component={TrackClaimsScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="ClaimDetail"
+        component={ClaimDetailScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FileClaim"
+        component={FileClaimScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="RecordPicker"
+        component={RecordPickerScreen}
+        options={{animation: 'slide_from_bottom'}}
       />
       <Stack.Screen
         name="FitnessTracker"

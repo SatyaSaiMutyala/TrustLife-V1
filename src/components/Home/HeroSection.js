@@ -6,9 +6,11 @@ import Svg, {Circle} from 'react-native-svg';
 import Emoji from '../shared/Emoji';
 import AppText from '../shared/AppText';
 
-const RING = ms(68);
-const RING_R = ms(28);
-const RING_SW = ms(6);
+const RING_SIZE = ms(68);
+const VB = 68;
+const VB_R = 28;
+const VB_SW = 6;
+const CIRCUMFERENCE = 2 * Math.PI * VB_R; // ~175.93
 
 const HeroSection = ({navigation}) => {
   return (
@@ -39,9 +41,9 @@ const HeroSection = ({navigation}) => {
 
       <View style={styles.scoreRow}>
         <View style={styles.scoreRing}>
-          <Svg width={RING} height={RING} viewBox="0 0 68 68">
-            <Circle cx={34} cy={34} r={RING_R} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={RING_SW} />
-            <Circle cx={34} cy={34} r={RING_R} fill="none" stroke={Colors.lightGreen} strokeWidth={RING_SW} strokeDasharray="176" strokeDashoffset="39" strokeLinecap="round" rotation={-90} origin="34,34" />
+          <Svg width={RING_SIZE} height={RING_SIZE} viewBox={`0 0 ${VB} ${VB}`}>
+            <Circle cx={VB / 2} cy={VB / 2} r={VB_R} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={VB_SW} />
+            <Circle cx={VB / 2} cy={VB / 2} r={VB_R} fill="none" stroke={Colors.lightGreen} strokeWidth={VB_SW} strokeDasharray={`${CIRCUMFERENCE}`} strokeDashoffset={`${CIRCUMFERENCE * 0.22}`} strokeLinecap="round" rotation={-90} origin={`${VB / 2},${VB / 2}`} />
           </Svg>
           <Text style={styles.scoreNum}>78</Text>
         </View>
@@ -138,8 +140,8 @@ const styles = StyleSheet.create({
     marginBottom: vs(13),
   },
   scoreRing: {
-    width: RING,
-    height: RING,
+    width: RING_SIZE,
+    height: RING_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },

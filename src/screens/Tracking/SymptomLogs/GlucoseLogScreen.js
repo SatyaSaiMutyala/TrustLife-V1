@@ -508,60 +508,26 @@ const GlucoseLogScreen = ({navigation}) => {
           </View>
         </View>
 
-        {/* ── SAVE BUTTON ── */}
-        <TouchableOpacity style={st.logBtn} activeOpacity={0.8}>
-          <AppText variant="body" color={Colors.white} style={{fontWeight: '700', fontSize: ms(15)}}>
-            Save reading
-          </AppText>
-        </TouchableOpacity>
-
-        {/* ── PAST READINGS SECTION LABEL ── */}
-        <View style={st.secLabel}>
-          <AppText
-            variant="small"
-            color={Colors.textSecondary}
-            style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.6, marginRight: s(8)}}>
-            Past readings
-          </AppText>
-          <View style={st.secLabelLine} />
-        </View>
-
-        {/* ── RECORDS LINK CARD ── */}
-        <TouchableOpacity
-          style={st.linkCard}
-          activeOpacity={0.8}
-          onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'glucose'})}>
-          <View style={st.lcIconWrap}>
-            <AppText style={{fontSize: ms(22)}}>🩸</AppText>
-          </View>
-          <View style={{flex: 1, minWidth: 0}}>
-            <AppText
-              variant="subtext"
-              color={Colors.textSecondary}
-              style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginBottom: vs(2)}}>
-              Blood glucose records
-            </AppText>
-            <AppText variant="bodyBold" color={Colors.textPrimary} style={{marginBottom: vs(3)}}>
-              46 readings · March 2026
-            </AppText>
-            <View style={{flexDirection: 'row', gap: s(5), flexWrap: 'wrap'}}>
-              <View style={[st.lcChip, {backgroundColor: Colors.tealBg}]}>
-                <AppText variant="small" color={Colors.tealText} style={{fontWeight: '600'}}>
-                  Avg FBG 125 mg/dL
-                </AppText>
-              </View>
-              <View style={[st.lcChip, {backgroundColor: Colors.amberBg}]}>
-                <AppText variant="small" color={Colors.amberDark} style={{fontWeight: '600'}}>
-                  TIR 68%
-                </AppText>
-              </View>
-            </View>
-          </View>
-          <AppText style={{fontSize: ms(20), color: Colors.primary, fontWeight: '300'}}>›</AppText>
-        </TouchableOpacity>
-
-        <View style={{height: vs(30)}} />
+        <View style={{height: vs(100)}} />
       </ScrollView>
+
+      {/* ── BOTTOM ACTION BAR ── */}
+      <View style={st.bottomBar}>
+        <TouchableOpacity style={st.savePrimary} activeOpacity={0.8}>
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
+          <AppText variant="body" color={Colors.white} style={{fontWeight: '700', fontSize: ms(15)}}>Save reading</AppText>
+        </TouchableOpacity>
+        <View style={st.saveSecRow}>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'glucose'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'glucose', initialTab: 'glucoseIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -775,54 +741,44 @@ const st = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // Log button
-  logBtn: {
-    width: '100%',
-    paddingVertical: vs(15),
-    borderRadius: ms(14),
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    marginTop: vs(4),
-    marginBottom: vs(12),
-  },
-
-  // Section label
-  secLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: vs(4),
-    marginBottom: vs(10),
-  },
-  secLabelLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: '#dde8e2',
-  },
-
-  // Link card
-  linkCard: {
+  // Bottom bar
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: Colors.white,
-    borderRadius: ms(14),
-    borderWidth: 0.5,
-    borderColor: '#dde8e2',
-    padding: ms(13),
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: s(12),
-    marginBottom: vs(10),
+    borderTopWidth: 0.5,
+    borderTopColor: '#dde8e2',
+    paddingHorizontal: s(13),
+    paddingTop: vs(10),
+    paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12),
   },
-  lcIconWrap: {
-    width: ms(44),
-    height: ms(44),
-    borderRadius: ms(12),
-    backgroundColor: '#fce4ec',
+  savePrimary: {
+    backgroundColor: Colors.primary,
+    borderRadius: ms(14),
+    paddingVertical: vs(14),
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: s(8),
   },
-  lcChip: {
-    paddingHorizontal: s(8),
-    paddingVertical: vs(3),
-    borderRadius: ms(7),
+  saveSecRow: {
+    flexDirection: 'row',
+    gap: s(8),
+    marginTop: vs(8),
+  },
+  saveSecBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: s(6),
+    backgroundColor: Colors.background,
+    borderRadius: ms(11),
+    paddingVertical: vs(10),
+    borderWidth: 0.5,
+    borderColor: '#dde8e2',
   },
   ayuBtn: {
     flexDirection: 'row',

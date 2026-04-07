@@ -4,6 +4,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  ScrollView,
+  Platform,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
@@ -11,19 +13,20 @@ import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native
 
 import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
+import Icon from '../../../components/shared/Icons';
 
 import WheelTab from '../../../components/Fitness/Cycle/WheelTab';
 import CalendarTab from '../../../components/Fitness/Cycle/CalendarTab';
 import LogTab from '../../../components/Fitness/Cycle/DailyLogTab';
-import HistoryTab from '../../../components/Fitness/Cycle/HistoryTab';
+import PCOSTab from '../../../components/Fitness/Cycle/PCOSTab';
 
 /* ─── Tab configuration ─────────────────────────────── */
 
 const TABS = [
-  {key: 'wheel', label: 'Cycle wheel'},
-  {key: 'calendar', label: 'Calendar'},
-  {key: 'log', label: 'Log today'},
-  {key: 'history', label: 'History'},
+  {key: 'wheel', label: 'Cycle', icon: 'ellipse-outline'},
+  {key: 'calendar', label: 'Calendar', icon: 'calendar-outline'},
+  {key: 'log', label: 'Log', icon: 'create-outline'},
+  {key: 'pcos', label: 'PCOS', icon: 'flask-outline'},
 ];
 
 /* ─── Component ─────────────────────────────────────── */
@@ -31,11 +34,8 @@ const TABS = [
 const CycleScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-
-  // ── State ──────────────────────────────────────────
   const [activeTab, setActiveTab] = useState('wheel');
 
-  // ── Tab content ────────────────────────────────────
   const renderTabContent = () => {
     switch (activeTab) {
       case 'wheel':
@@ -44,38 +44,12 @@ const CycleScreen = () => {
         return <CalendarTab />;
       case 'log':
         return <LogTab />;
-      case 'history':
-        return <HistoryTab />;
+      case 'pcos':
+        return <PCOSTab />;
       default:
         return null;
     }
   };
-
-  // ── Bottom bar ─────────────────────────────────────
-  const renderBottomBar = () => (
-    <View style={[styles.bottomBar, {paddingBottom: Math.max(insets.bottom, vs(12))}]}>
-      <TouchableOpacity
-        style={styles.actionBtn}
-        activeOpacity={0.8}>
-        <AppText variant="bodyBold" style={styles.actionBtnText}>
-          Save Day 24 log · Late luteal
-        </AppText>
-      </TouchableOpacity>
-
-      <View style={styles.secondaryRow}>
-        <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7}>
-          <AppText variant="small" style={styles.secondaryBtnText}>
-            Share with doctor
-          </AppText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7}>
-          <AppText variant="small" style={styles.secondaryBtnText}>
-            Set reminder
-          </AppText>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -84,31 +58,26 @@ const CycleScreen = () => {
       {/* ── HEADER ─────────────────────────────────────── */}
       <View style={[styles.header, {paddingTop: insets.top}]}>
         <View style={styles.topBar}>
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation.goBack()}>
-            <AppText variant="body" style={styles.backText}>
-              {'\u2039'} Tracking
-            </AppText>
-          </TouchableOpacity>
-
-          <View style={styles.pillBtn}>
-            <AppText variant="small" style={styles.pillBtnText}>
-              Save
-            </AppText>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+              <Icon family="Ionicons" name="chevron-back" size={ms(22)} color={Colors.white} />
+            </TouchableOpacity>
+            <AppText variant="body" color="rgba(255,255,255,0.8)" style={{marginLeft: s(10)}}>Tracking</AppText>
           </View>
+          <TouchableOpacity style={styles.savePill} activeOpacity={0.7}>
+            <AppText variant="small" color={Colors.primary} style={{fontWeight: '700'}}>Save</AppText>
+          </TouchableOpacity>
         </View>
-
-        <AppText variant="screenName" style={styles.headerTitle}>
+        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
           Cycle & hormonal health
         </AppText>
-        <AppText variant="caption" style={styles.headerSubtitle}>
-          Priya · Avg 28d · Day 24 · Late luteal · Tracking since Jan 2024
+        <AppText variant="caption" color="rgba(255,255,255,0.5)" style={{marginTop: vs(2), paddingBottom: vs(4)}}>
+          Priya {'\u00b7'} Avg 28d {'\u00b7'} Day 24 {'\u00b7'} Late luteal {'\u00b7'} Tracking since Jan 2024
         </AppText>
       </View>
 
       {/* ── TAB BAR ────────────────────────────────────── */}
-      <View style={styles.tabBar}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBarWrap} contentContainerStyle={styles.tabBarContent}>
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
@@ -119,149 +88,60 @@ const CycleScreen = () => {
               onPress={() => setActiveTab(tab.key)}>
               <AppText
                 variant="small"
-                style={[
-                  styles.tabLabel,
-                  isActive && styles.tabLabelActive,
-                ]}>
+                color={isActive ? Colors.primary : Colors.textTertiary}
+                style={{fontWeight: isActive ? '700' : '500'}}>
                 {tab.label}
               </AppText>
             </TouchableOpacity>
           );
         })}
-      </View>
+      </ScrollView>
 
       {/* ── TAB CONTENT ────────────────────────────────── */}
       <View style={styles.content}>{renderTabContent()}</View>
 
-      {/* ── BOTTOM BAR (only on Log tab) ────────────────── */}
-      {activeTab === 'log' && renderBottomBar()}
+      {/* ── BOTTOM BAR ────────────────────────────────── */}
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
+          <Icon family="Ionicons" name="save-outline" size={ms(20)} color={Colors.white} />
+          <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(6)}}>
+            Save Day 24 log {'\u00b7'} Late luteal
+          </AppText>
+        </TouchableOpacity>
+        <View style={styles.secondaryButtonRow}>
+          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'menstrual'})}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'cycle', initialTab: 'cycleIntel'})}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
+            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
 
 /* ── STYLES ──────────────────────────────────────────── */
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
+  container: {flex: 1, backgroundColor: Colors.background},
 
-  /* Header */
-  header: {
-    backgroundColor: Colors.primary,
-    paddingBottom: vs(16),
-    paddingHorizontal: s(16),
-  },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: vs(12),
-  },
-  backBtn: {
-    paddingVertical: vs(4),
-    paddingRight: s(12),
-  },
-  backText: {
-    color: Colors.white,
-    fontSize: ms(15),
-  },
-  pillBtn: {
-    paddingHorizontal: s(14),
-    paddingVertical: vs(6),
-    borderRadius: ms(20),
-    backgroundColor: 'rgba(93,202,165,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(93,202,165,0.3)',
-  },
-  pillBtnText: {
-    color: Colors.lightGreen,
-    fontSize: ms(12),
-    fontWeight: '600',
-  },
-  headerTitle: {
-    color: Colors.white,
-    fontSize: ms(24),
-    fontWeight: '700',
-    marginBottom: vs(4),
-  },
-  headerSubtitle: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: ms(12),
-  },
+  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingBottom: vs(8)},
+  topBar: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: vs(8)},
+  savePill: {backgroundColor: Colors.white, paddingHorizontal: s(14), paddingVertical: vs(5), borderRadius: ms(20)},
 
-  /* Tab bar */
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: Colors.white,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 0.5,
-    borderColor: Colors.borderLight,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: vs(10),
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabActive: {
-    borderBottomColor: Colors.primary,
-  },
-  tabLabel: {
-    fontSize: ms(11),
-    color: Colors.textTertiary,
-    fontWeight: '500',
-  },
-  tabLabelActive: {
-    color: Colors.primary,
-    fontWeight: '700',
-  },
+  tabBarWrap: {backgroundColor: Colors.white, borderBottomWidth: 0.5, borderBottomColor: Colors.borderLight, flexGrow: 0},
+  tabBarContent: {paddingHorizontal: s(4)},
+  tab: {paddingHorizontal: s(10), paddingVertical: vs(10), borderBottomWidth: 2.5, borderBottomColor: 'transparent'},
+  tabActive: {borderBottomColor: Colors.primary},
 
-  /* Content */
-  content: {
-    flex: 1,
-  },
+  content: {flex: 1},
 
-  /* Bottom bar */
-  bottomBar: {
-    backgroundColor: Colors.white,
-    borderTopWidth: 0.5,
-    borderTopColor: Colors.borderLight,
-    paddingHorizontal: s(16),
-    paddingTop: vs(12),
-  },
-  actionBtn: {
-    backgroundColor: Colors.primary,
-    borderRadius: ms(13),
-    paddingVertical: vs(14),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionBtnText: {
-    color: Colors.white,
-    fontSize: ms(15),
-  },
-  secondaryRow: {
-    flexDirection: 'row',
-    marginTop: vs(10),
-    gap: s(10),
-  },
-  secondaryBtn: {
-    flex: 1,
-    backgroundColor: Colors.background,
-    borderWidth: 0.5,
-    borderColor: Colors.borderLight,
-    borderRadius: ms(13),
-    paddingVertical: vs(12),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryBtnText: {
-    color: Colors.textPrimary,
-    fontSize: ms(12),
-    fontWeight: '600',
-  },
+  bottomBar: {backgroundColor: Colors.white, paddingHorizontal: s(13), paddingTop: vs(8), paddingBottom: Platform.OS === 'ios' ? vs(24) : vs(10), borderTopWidth: 0.5, borderTopColor: '#d1d5db'},
+  primaryButton: {flexDirection: 'row', backgroundColor: Colors.primary, paddingVertical: vs(14), borderRadius: ms(13), alignItems: 'center', justifyContent: 'center', gap: s(8)},
+  secondaryButtonRow: {flexDirection: 'row', marginTop: vs(8), gap: s(8)},
+  secondaryButton: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(7), borderRadius: ms(10), borderWidth: 0.5, borderColor: '#d1d5db', backgroundColor: Colors.white},
 });
 
 export default CycleScreen;

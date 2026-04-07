@@ -26,6 +26,11 @@ import {TempOverviewPanel, TempTrendsPanel, TempConditionsPanel} from './TempAyu
 import {AsthmaOverviewPanel, AsthmaTriggersPanel, AsthmaConditionsPanel, AsthmaPatternsPanel} from './AsthmaAyuIntelScreen';
 import {MigraineOverviewPanel, MigraineTriggersPanel, MigraineConditionsPanel, MigrainePatternsPanel} from './MigraineAyuIntelScreen';
 import {AnemiaOverviewPanel, AnemiaIronB12Panel, AnemiaConditionsPanel, AnemiaDietPanel} from './AnemiaAyuIntelScreen';
+import {OverviewPanel as SMOverview, PatternsPanel as SMPatterns, CorrelationsPanel as SMCorrelations, BodyMindPanel as SMBodyMind, CarePlanPanel as SMCarePlan} from './StressMoodAyuIntelScreen';
+import {VaccOverviewPanel, VaccGapsPanel, VaccConditionsPanel, VaccFamilyPanel} from './VaccineAyuIntelScreen';
+import {ECGOverviewPanel, ECGConditionsPanel, ECGCorrelationsPanel, ECGCarePlanPanel} from './ECGAyuIntelScreen';
+import {MSKOverviewPanel, MSKConditionsPanel, MSKCorrelationsPanel, MSKCarePlanPanel} from './MSKAyuIntelScreen';
+import {CycleOverviewPanel, CycleConditionsPanel, CycleCorrelationsPanel, CycleHormonesPanel, CycleFertilityPanel} from './CycleAyuIntelScreen';
 
 const {width: SCREEN_W} = Dimensions.get('window');
 
@@ -649,6 +654,95 @@ const SYMPTOMS_DATA = {
       hist: [
         {dt: 'Oct 25', v: 29, st: 'n'}, {dt: 'Nov 25', v: 33, st: 'n'}, {dt: 'Dec 25', v: 27, st: 'l'},
         {dt: 'Jan 26', v: 35, st: 'h'}, {dt: 'Feb 26', v: 30, st: 'n'}, {dt: 'Mar 26', v: 31, st: 'n'},
+      ],
+      histLabel: 'Cycle length trend (days)',
+    },
+  },
+
+  cycle: {
+    name: 'Cycle & Hormonal Health',
+    cat: 'Women\'s Health',
+    col: '#EC4899',
+    hdr: [
+      {lbl: 'Cycle day', val: '24', unit: 'Late luteal', col: '#7C3AED'},
+      {lbl: 'PCOS risk', val: 'Mod', unit: '4/9 markers', col: '#D97706'},
+      {lbl: 'Cycle reg.', val: '28d', unit: '\u00b12d variance', col: '#16A34A'},
+      {lbl: 'Next period', val: 'Apr 3', unit: '10 days', col: '#EC4899'},
+    ],
+    ayu: {
+      urgency: 'medium',
+      narrative: 'Day 24 of 28. Late luteal phase. Progesterone declining. This is your highest-risk window for migraine (oestrogen withdrawal), blood glucose instability, and PMS symptoms. Regular 28-day cycles with confirmed ovulation across 9 cycles is a strong baseline.',
+      corrs: [
+        {lbl: 'T2DM - Cycle', val: 'Luteal phase progesterone reduces insulin receptor sensitivity by 20-30%. Blood glucose rises 0.5-1.2 mmol/L in the second half of your cycle.'},
+        {lbl: 'Migraine - Cycle', val: '7 of 9 cycles showed migraine logged in Days 25-28. Catamenial migraine - hormonal subtype caused by oestrogen withdrawal.'},
+        {lbl: 'Sleep - Cycle', val: 'Nights under 5.5h in luteal phase correlated with severe PMS next day. +84% correlation.'},
+        {lbl: 'Iron - Cycle', val: 'Ferritin 8 ng/mL. Each period pushes iron stores further into deficiency. Self-reinforcing loop.'},
+      ],
+    },
+    insight: {
+      desc: 'Cycle regularity excellent - 28-day average with \u00b12-day variance across 9 tracked cycles. Regular ovulation confirmed. Late luteal phase (Day 24) - progesterone declining, PMS window active. Period expected Apr 3.',
+      symp: [
+        'PMS symptoms: mood dips, bloating, breast tenderness',
+        'Migraine risk peaks days 25-28 (oestrogen withdrawal)',
+        'Blood glucose rises 0.3-0.8 mmol/L in luteal phase',
+        'Fatigue and food cravings common in late luteal',
+        'Iron depletion from monthly menstrual losses',
+      ],
+      causes: [
+        'Progesterone decline driving PMS and mood changes',
+        'Oestrogen withdrawal triggering catamenial migraine',
+        'Insulin resistance worsened by progesterone in luteal phase',
+        'Monthly iron loss compounding anaemia',
+        'Stress-cortisol interaction amplifying PMS',
+      ],
+    },
+    organs: [
+      {n: 'Reproductive', c: '#EC4899', stage: 'Regular Cycling', sev: 20, impact: 'Cycle regularity excellent. 28-day average. Regular ovulation confirmed across 9 cycles. Metformin may be contributing to regularity.'},
+      {n: 'Brain', c: '#7C3AED', stage: 'Catamenial Migraine', sev: 55, impact: '7 of 9 cycles with Days 25-28 migraine. Oestrogen withdrawal trigger. Frovatriptan mini-prophylaxis may help.'},
+    ],
+    cluster: {
+      risk: '40%',
+      name: 'Hormonal-Metabolic Cluster',
+      desc: 'Cycle hormones interact bidirectionally with T2DM, migraine, mood, and iron status.',
+      diseases: [
+        {n: 'PCOS Risk', p: 44, type: 'watch'},
+        {n: 'Catamenial Migraine', p: 78, type: 'active'},
+        {n: 'Iron Deficiency', p: 65, type: 'active'},
+        {n: 'PMDD Pattern', p: 40, type: 'emerging'},
+      ],
+      timeline: [
+        {time: 'Now', event: 'Day 24, late luteal. PMS window. Migraine risk highest.', col: '#7C3AED'},
+        {time: 'Apr 3', event: 'Period expected. Iron-rich foods recommended.', col: '#EC4899'},
+        {time: 'Apr 4', event: 'Dr. Kavitha visit. Request LH/FSH, testosterone, iron panel.', col: '#F59E0B'},
+        {time: '3 months', event: 'With cycle-aware management: reduced PMS, stable glucose.', col: '#16A34A'},
+      ],
+    },
+    actions: [
+      {title: 'Cycle-Aware Glucose Management', desc: 'Test more frequently in Days 20-28 and adjust carbohydrate targets by phase.', pri: 'high', ico: 'analytics-outline'},
+      {title: 'Migraine Mini-Prophylaxis', desc: 'Frovatriptan 2.5mg BD from Day 23-27 reduces catamenial attacks by 52%.', pri: 'high', ico: 'medical-outline'},
+      {title: 'Begin Magnesium Glycinate', desc: '300mg daily from Day 24. Reduces PMS severity by 40% and migraine by 41%.', pri: 'high', ico: 'leaf-outline'},
+      {title: 'Iron Panel at Next Visit', desc: 'Ferritin 8 ng/mL + increasing period duration = urgent iron assessment.', pri: 'high', ico: 'flask-outline'},
+    ],
+    care: {
+      treat: [
+        'Magnesium glycinate 300mg daily (Days 20-2 of next cycle)',
+        'Frovatriptan mini-prophylaxis (discuss with neurologist)',
+        'Cycle-aware carbohydrate adjustment in luteal phase',
+        'Iron repletion to target ferritin 50-70 ng/mL',
+        'PCOS screening: LH/FSH ratio, testosterone, pelvic ultrasound',
+      ],
+      prev: 'Cycle-synced lifestyle management: exercise in follicular phase, reduced sodium in luteal phase, iron-rich foods around period, sleep prioritisation in Days 20-28.',
+    },
+    prog: {
+      primary: {lbl: 'Cycle Length', val: 28, lo: 25, hi: 35, unit: 'days', col: '#EC4899'},
+      panels: [
+        {lbl: 'Regularity', cls: 'tl', score: '\u00b12 days', bar: 85, badge: 'Excellent', badge_col: '#16A34A', lbl_col: '#0F766E', score_col: '#0F766E', detail: 'Cycle variability \u00b12 days across 9 cycles. Highly regular.'},
+        {lbl: 'PCOS risk', cls: 'pu', score: '4/9', bar: 44, badge: 'Moderate', badge_col: '#D97706', lbl_col: '#7C3AED', score_col: '#7C3AED', detail: '4 of 9 PCOS indicators present. Regular cycles argue against overt PCOS.'},
+        {lbl: 'Iron status', cls: 'bl', score: '8 ng/mL', bar: 16, badge: 'Low', badge_col: '#DC2626', lbl_col: '#1D4ED8', score_col: '#1D4ED8', detail: 'Ferritin 8 ng/mL. Each period depletes further. Target 50-70 ng/mL.'},
+      ],
+      hist: [
+        {dt: 'Oct 25', v: 28, st: 'n'}, {dt: 'Nov 25', v: 28, st: 'n'}, {dt: 'Dec 25', v: 29, st: 'n'},
+        {dt: 'Jan 26', v: 27, st: 'l'}, {dt: 'Feb 26', v: 28, st: 'n'}, {dt: 'Mar 26', v: 28, st: 'n'},
       ],
       histLabel: 'Cycle length trend (days)',
     },
@@ -1378,6 +1472,155 @@ const AnemiaIntelTab = () => {
   );
 };
 
+const StressMoodIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'patterns', label: 'Patterns'},
+    {key: 'correlations', label: 'Correlations'},
+    {key: 'bodyMind', label: 'Body\u2013Mind'},
+    {key: 'care', label: 'Care plan'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <SMOverview />}
+      {subTab === 'patterns' && <SMPatterns />}
+      {subTab === 'correlations' && <SMCorrelations />}
+      {subTab === 'bodyMind' && <SMBodyMind />}
+      {subTab === 'care' && <SMCarePlan />}
+    </View>
+  );
+};
+
+const ECGIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'correlations', label: 'Correlations'},
+    {key: 'care', label: 'Care plan'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <ECGOverviewPanel />}
+      {subTab === 'conditions' && <ECGConditionsPanel />}
+      {subTab === 'correlations' && <ECGCorrelationsPanel />}
+      {subTab === 'care' && <ECGCarePlanPanel />}
+    </View>
+  );
+};
+
+const MSKIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'correlations', label: 'Correlations'},
+    {key: 'care', label: 'Care plan'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <MSKOverviewPanel />}
+      {subTab === 'conditions' && <MSKConditionsPanel />}
+      {subTab === 'correlations' && <MSKCorrelationsPanel />}
+      {subTab === 'care' && <MSKCarePlanPanel />}
+    </View>
+  );
+};
+
+const CycleIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'correlations', label: 'Correlations'},
+    {key: 'hormones', label: 'Hormones'},
+    {key: 'fertility', label: 'Fertility'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <CycleOverviewPanel />}
+      {subTab === 'conditions' && <CycleConditionsPanel />}
+      {subTab === 'correlations' && <CycleCorrelationsPanel />}
+      {subTab === 'hormones' && <CycleHormonesPanel />}
+      {subTab === 'fertility' && <CycleFertilityPanel />}
+    </View>
+  );
+};
+
+const VaccineIntelTab = () => {
+  const [subTab, setSubTab] = useState('overview');
+  const SUB_TABS = [
+    {key: 'overview', label: 'Overview'},
+    {key: 'gaps', label: 'Protection gaps'},
+    {key: 'conditions', label: 'Conditions'},
+    {key: 'family', label: 'Family'},
+  ];
+  return (
+    <View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: vs(12)}} contentContainerStyle={{gap: s(6)}}>
+        {SUB_TABS.map(t => (
+          <TouchableOpacity
+            key={t.key}
+            style={{paddingHorizontal: s(12), paddingVertical: vs(6), borderRadius: ms(10), backgroundColor: subTab === t.key ? Colors.primary : Colors.white, borderWidth: 0.5, borderColor: subTab === t.key ? Colors.primary : Colors.borderLight}}
+            onPress={() => setSubTab(t.key)}
+            activeOpacity={0.7}>
+            <AppText variant="small" color={subTab === t.key ? Colors.white : Colors.textSecondary} style={{fontWeight: '600'}}>{t.label}</AppText>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+      {subTab === 'overview' && <VaccOverviewPanel />}
+      {subTab === 'gaps' && <VaccGapsPanel />}
+      {subTab === 'conditions' && <VaccConditionsPanel />}
+      {subTab === 'family' && <VaccFamilyPanel />}
+    </View>
+  );
+};
+
 const BASE_TABS = [
   {key: 'ayuIntel', label: '\uD83E\uDDE0 Ayu Intel'},
   {key: 'progression', label: '\uD83D\uDCC8 Progression'},
@@ -1395,6 +1638,13 @@ const INTEL_TABS = {
   asthma: {key: 'asthmaIntel', label: 'Asthma Intel'},
   migraine: {key: 'migraineIntel', label: 'Migraine Intel'},
   anemia: {key: 'anemiaIntel', label: 'Anaemia Intel'},
+  stressMood: {key: 'stressMoodIntel', label: 'Stress & Mood Intel'},
+  vaccine: {key: 'vaccineIntel', label: 'Vaccine Intel'},
+  vaccination: {key: 'vaccineIntel', label: 'Vaccine Intel'},
+  ecg: {key: 'ecgIntel', label: 'ECG Intel'},
+  msk: {key: 'mskIntel', label: 'MSK Intel'},
+  cycle: {key: 'cycleIntel', label: 'Cycle Intel'},
+  menstrual: {key: 'cycleIntel', label: 'Cycle Intel'},
 };
 
 // ──────────────────────────────────────────────
@@ -1931,6 +2181,16 @@ const SymptomsDetailScreen = () => {
         return <MigraineIntelTab />;
       case 'anemiaIntel':
         return <AnemiaIntelTab />;
+      case 'stressMoodIntel':
+        return <StressMoodIntelTab />;
+      case 'vaccineIntel':
+        return <VaccineIntelTab />;
+      case 'ecgIntel':
+        return <ECGIntelTab />;
+      case 'mskIntel':
+        return <MSKIntelTab />;
+      case 'cycleIntel':
+        return <CycleIntelTab />;
       default:
         return <AyuIntelTab ls={ls} />;
     }

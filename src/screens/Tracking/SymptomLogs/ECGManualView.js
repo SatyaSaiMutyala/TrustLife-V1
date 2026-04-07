@@ -183,7 +183,7 @@ const ECGManualView = () => {
   // ─── 2. Key Measurements ────────────────────────────────────────────
   const renderKeyMeasurements = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">KEY MEASUREMENTS</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>KEY MEASUREMENTS</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Tap to enter {'\u00b7'} Auto-calculates QTc (Bazett)</AppText>
       <View style={styles.card}>
         <View style={styles.measureGrid}>
@@ -206,7 +206,7 @@ const ECGManualView = () => {
   // ─── 3. Interval Visual Bars ────────────────────────────────────────
   const renderIntervalBars = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">INTERVAL RANGES</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>INTERVAL RANGES</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Your values vs normal zones</AppText>
       <View style={styles.card}>
         {INTERVAL_BARS.map((bar, idx) => {
@@ -244,7 +244,7 @@ const ECGManualView = () => {
   // ─── 4. Rhythm Classification ───────────────────────────────────────
   const renderRhythmClassification = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">RHYTHM CLASSIFICATION</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>RHYTHM CLASSIFICATION</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Select what best describes this ECG</AppText>
       <View style={styles.rhythmGrid}>
         {RHYTHMS.map((r, i) => {
@@ -270,7 +270,7 @@ const ECGManualView = () => {
   // ─── 5. ST Segment & Waveform Changes ───────────────────────────────
   const renderSTChanges = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">ST SEGMENT & WAVEFORM CHANGES</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>ST SEGMENT & WAVEFORM CHANGES</AppText>
       <View style={styles.stGrid}>
         {ST_OPTIONS.map((opt, i) => {
           const isActive = activeST === opt.name;
@@ -293,7 +293,7 @@ const ECGManualView = () => {
   // ─── 6. QTc Calculator ──────────────────────────────────────────────
   const renderQTcCalculator = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">QTC CALCULATOR</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>QTC CALCULATOR</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Bazett formula {'\u00b7'} QTc = QT {'\u00f7'} {'\u221a'}RR {'\u00b7'} Critical for T2DM patients</AppText>
       <View style={styles.card}>
         {/* Input displays */}
@@ -335,7 +335,7 @@ const ECGManualView = () => {
   // ─── 7. 12-Lead View ────────────────────────────────────────────────
   const renderTwelveLeadView = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">12-LEAD VIEW</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>12-LEAD VIEW</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Tap lead to enter findings</AppText>
       <View style={styles.card}>
         <View style={styles.leadGrid}>
@@ -360,7 +360,7 @@ const ECGManualView = () => {
   // ─── 8. Symptoms ────────────────────────────────────────────────────
   const renderSymptoms = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">SYMPTOMS AT TIME OF RECORDING</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>SYMPTOMS AT TIME OF RECORDING</AppText>
       <View style={styles.chipRow}>
         {SYMPTOMS.map((sym, i) => {
           const isActive = activeSymptoms.includes(sym);
@@ -408,7 +408,7 @@ const ECGManualView = () => {
   // ─── 10. LVH Voltage Criteria ──────────────────────────────────────
   const renderLVHCriteria = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">LVH VOLTAGE CRITERIA</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>LVH VOLTAGE CRITERIA</AppText>
       <AppText variant="caption" style={styles.sectionSub}>HTN screening {'\u00b7'} Sokolow-Lyon</AppText>
       <View style={styles.card}>
         <AppText variant="body" style={{color: '#6b7280', marginBottom: vs(10), fontSize: ms(11)}}>
@@ -451,7 +451,7 @@ const ECGManualView = () => {
   // ─── 11. Comparison ─────────────────────────────────────────────────
   const renderComparison = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">COMPARISON WITH LAST ECG</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>COMPARISON WITH LAST ECG</AppText>
       <AppText variant="caption" style={styles.sectionSub}>Jan 14, 2026 {'\u00b7'} KIMS Cardiology</AppText>
       <View style={styles.card}>
         {COMPARISON_ROWS.map((row, i) => (
@@ -484,7 +484,7 @@ const ECGManualView = () => {
   // ─── 13. ECG History ────────────────────────────────────────────────
   const renderECGHistory = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">ECG HISTORY</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>ECG HISTORY</AppText>
       <View style={styles.card}>
         {/* Header */}
         <View style={[styles.historyRow, {borderBottomWidth: 1, borderBottomColor: '#e5e7eb', paddingBottom: vs(6)}]}>
@@ -517,7 +517,7 @@ const ECGManualView = () => {
   // ─── 14. Notes ──────────────────────────────────────────────────────
   const renderNotes = () => (
     <View style={styles.section}>
-      <AppText variant="sectionTitle">NOTES</AppText>
+      <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>NOTES</AppText>
       <View style={styles.card}>
         <TextInput
           style={styles.notesInput}
