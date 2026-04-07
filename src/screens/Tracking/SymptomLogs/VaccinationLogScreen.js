@@ -377,24 +377,14 @@ const VaccinationLogScreen = ({navigation}) => {
 
       {/* ── Header (fixed) ── */}
       <View style={styles.header}>
-        <View style={styles.headerTopRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{flexDirection: 'row', alignItems: 'center', gap: s(6)}}>
-            <Icon family="Ionicons" name="chevron-back" size={ms(18)} color="rgba(255,255,255,0.55)" />
-            <AppText variant="small" color="rgba(255,255,255,0.55)">Health Vault</AppText>
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.duePill}>
-              <Icon family="Ionicons" name="warning-outline" size={ms(12)} color={Colors.white} />
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '700'}}>2 due</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.logPill} onPress={() => setActiveView('Log')}>
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>+ Log vaccine</AppText>
-            </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={styles.headerTitle}>Vaccination record</AppText>
+            <AppText variant="caption" style={styles.headerSub}>Family - National Immunization Schedule</AppText>
           </View>
-        </View>
-        <View style={{paddingHorizontal: s(16), paddingTop: vs(8)}}>
-          <AppText variant="screenName" color={Colors.white} style={{fontSize: ms(20)}}>Vaccination record</AppText>
-          <AppText variant="small" color="rgba(255,255,255,0.5)" style={{marginTop: vs(2)}}>Family - National Immunization Schedule + Lifetime tracker</AppText>
         </View>
       </View>
 
@@ -487,14 +477,14 @@ const VaccinationLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={styles.secondaryRow}>
           <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'vaccination'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>
               Records
             </AppText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'vaccine', initialTab: 'vaccineIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>
               Ayu Intel
             </AppText>
           </TouchableOpacity>
@@ -520,7 +510,31 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.primary,
     paddingTop: vs(10),
-    paddingBottom: vs(8),
+    paddingBottom: vs(10),
+    paddingHorizontal: s(16),
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: vs(2),
+  },
+  backBtn: {
+    width: ms(30),
+    height: ms(30),
+    borderRadius: ms(15),
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: ms(2),
+  },
+  headerTitle: {
+    color: Colors.white,
+    fontSize: ms(18),
+    fontWeight: '700',
+  },
+  headerSub: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: ms(11),
   },
   scrollableHeader: {
     backgroundColor: Colors.primary,
@@ -789,9 +803,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: vs(10),
     borderRadius: ms(11),
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.accent,
     borderWidth: 0.5,
-    borderColor: '#c8dfc0',
+    borderColor: Colors.accent,
   },
 });
 

@@ -111,41 +111,15 @@ const ECGLogScreen = ({navigation}) => {
 
       {/* ── Compact Header (fixed) ── */}
       <View style={[styles.header, {paddingTop: insets.top}]}>
-        <View style={styles.topRow}>
-          <View style={styles.topRowLeft}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon
-                family="Ionicons"
-                name="chevron-back"
-                size={ms(22)}
-                color={Colors.white}
-              />
-            </TouchableOpacity>
-            <AppText
-              variant="body"
-              color="rgba(255,255,255,0.8)"
-              style={{marginLeft: s(10)}}>
-              Tracking
-            </AppText>
-          </View>
-          <View style={styles.topRowRight}>
-            <View style={styles.restingPill}>
-              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>
-                Resting
-              </AppText>
-            </View>
-            <TouchableOpacity style={styles.savePill} activeOpacity={0.7}>
-              <AppText variant="small" color={Colors.primary} style={{fontWeight: '700'}}>
-                Save
-              </AppText>
-            </TouchableOpacity>
+        <View style={styles.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={styles.headerTitle}>ECG log</AppText>
+            <AppText variant="caption" style={styles.headerSub}>Resting reading - 28 Mar</AppText>
           </View>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
-          ECG log
-        </AppText>
       </View>
 
       {/* ── Scrollable Body ── */}
@@ -215,12 +189,12 @@ const ECGLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={styles.secondaryButtonRow}>
           <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'ecg'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'ecg', initialTab: 'ecgIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -241,8 +215,9 @@ const styles = StyleSheet.create({
   // Header (compact)
   header: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: s(13),
-    paddingBottom: vs(8),
+    paddingTop: vs(10),
+    paddingBottom: vs(10),
+    paddingHorizontal: s(16),
   },
   scrollableHeader: {
     backgroundColor: Colors.primary,
@@ -252,31 +227,28 @@ const styles = StyleSheet.create({
     paddingBottom: vs(12),
     marginBottom: vs(10),
   },
-  topRow: {
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    marginBottom: vs(2),
   },
-  topRowLeft: {
-    flexDirection: 'row',
+  backBtn: {
+    width: ms(30),
+    height: ms(30),
+    borderRadius: ms(15),
+    backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: ms(2),
   },
-  topRowRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: s(8),
+  headerTitle: {
+    color: Colors.white,
+    fontSize: ms(18),
+    fontWeight: '700',
   },
-  restingPill: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    paddingHorizontal: s(12),
-    paddingVertical: vs(4),
-    borderRadius: ms(20),
-  },
-  savePill: {
-    backgroundColor: Colors.white,
-    paddingHorizontal: s(14),
-    paddingVertical: vs(5),
-    borderRadius: ms(20),
+  headerSub: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: ms(11),
   },
 
   // Reading type chips
@@ -384,8 +356,8 @@ const styles = StyleSheet.create({
     paddingVertical: vs(7),
     borderRadius: ms(10),
     borderWidth: 0.5,
-    borderColor: '#d1d5db',
-    backgroundColor: Colors.white,
+    borderColor: Colors.accent,
+    backgroundColor: Colors.accent,
   },
 });
 

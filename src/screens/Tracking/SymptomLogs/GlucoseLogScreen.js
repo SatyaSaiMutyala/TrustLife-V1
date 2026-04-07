@@ -226,18 +226,6 @@ const GlucoseLogScreen = ({navigation}) => {
         {/* ── CONNECTED DEVICES SECTION ── */}
         <GlucoseDeviceSync unit={unit} />
 
-        {/* ── AYU INTEL BUTTON ── */}
-        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'glucose', initialTab: 'glucoseIntel'})}>
-          <View style={st.ayuIconWrap}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} />
-          </View>
-          <View style={{flex: 1}}>
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Blood Glucose</AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>Patterns - Risk flags - Recommendations</AppText>
-          </View>
-          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
-        </TouchableOpacity>
-
         {/* ── "or enter manually" DIVIDER ── */}
         <View style={st.dividerRow}>
           <View style={st.dividerLine} />
@@ -519,12 +507,12 @@ const GlucoseLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.saveSecRow}>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'glucose'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'glucose', initialTab: 'glucoseIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -774,11 +762,11 @@ const st = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: s(6),
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.accent,
     borderRadius: ms(11),
     paddingVertical: vs(10),
     borderWidth: 0.5,
-    borderColor: '#dde8e2',
+    borderColor: Colors.accent,
   },
   ayuBtn: {
     flexDirection: 'row',

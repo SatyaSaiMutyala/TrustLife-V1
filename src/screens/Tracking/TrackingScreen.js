@@ -9,6 +9,7 @@ import TrackerGrid from '../../components/Tracking/TrackerGrid';
 import PriorityReadings from '../../components/Tracking/PriorityReadings';
 import SymptomLogs from '../../components/Tracking/SymptomLogs';
 import LogTimeline from '../../components/Tracking/LogTimeline';
+import MotherChildCard from '../../components/Tracking/MotherChildCard';
 import InsuranceCard from '../../components/Tracking/InsuranceCard';
 
 const TrackingScreen = () => (
@@ -36,6 +37,7 @@ const TrackingScreen = () => (
       <TrackerGrid />
       <PriorityReadings />
       <SymptomLogs />
+      <MotherChildCard />
       <InsuranceCard />
       {/* <LogTimeline /> */}
       <View style={{height: vs(20)}} />

@@ -107,16 +107,6 @@ const HeartRateLogScreen = ({navigation}) => {
       <ScrollView style={st.scroll} contentContainerStyle={st.body} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <HRDeviceSync />
 
-        {/* Ayu Intel */}
-        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'heartRate', initialTab: 'hrIntel'})}>
-          <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} /></View>
-          <View style={{flex: 1}}>
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Heart Rate</AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>HRV analysis - Sleep quality - Recovery patterns</AppText>
-          </View>
-          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
-        </TouchableOpacity>
-
         <View style={st.dividerRow}>
           <View style={st.dividerLine} />
           <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>or enter manually</AppText>
@@ -249,12 +239,12 @@ const HeartRateLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.saveSecRow}>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'heartrate'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'heartRate', initialTab: 'hrIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -295,7 +285,7 @@ const st = StyleSheet.create({
   bottomBar: {position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(10), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
   savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(14), paddingVertical: vs(14), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(8)},
   saveSecRow: {flexDirection: 'row', gap: s(8), marginTop: vs(8)},
-  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(6), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(10), borderWidth: 0.5, borderColor: '#dde8e2'},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(6), backgroundColor: Colors.accent, borderRadius: ms(11), paddingVertical: vs(10), borderWidth: 0.5, borderColor: Colors.accent},
   ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
   ayuIconWrap: {width: ms(36), height: ms(36), borderRadius: ms(10), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
 });

@@ -84,6 +84,23 @@ import LabOrderPlacedScreen from '../screens/HealthServices/Lab/LabOrderPlacedSc
 import VaccinationLogScreen from '../screens/Tracking/SymptomLogs/VaccinationLogScreen';
 import ECGLogScreen from '../screens/Tracking/SymptomLogs/ECGLogScreen';
 import MSKLogScreen from '../screens/Tracking/SymptomLogs/MSKLogScreen';
+import NeonatalLogScreen from '../screens/Tracking/SymptomLogs/BabyHealth/NeonatalLogScreen';
+import GrowthMonitorScreen from '../screens/Tracking/SymptomLogs/BabyHealth/GrowthMonitorScreen';
+import FeedingTrackerScreen from '../screens/Tracking/SymptomLogs/BabyHealth/FeedingTrackerScreen';
+import SleepTrackerScreen from '../screens/Tracking/SymptomLogs/BabyHealth/SleepTrackerScreen';
+import NeonatalRecordScreen from '../screens/Tracking/SymptomLogs/BabyHealth/NeonatalRecordScreen';
+import NappyOutputScreen from '../screens/Tracking/SymptomLogs/BabyHealth/NappyOutputScreen';
+import PaediatricLogScreen from '../screens/Tracking/SymptomLogs/ChildHealth/PaediatricLogScreen';
+import DevelopmentalMilestonesScreen from '../screens/Tracking/SymptomLogs/ChildHealth/DevelopmentalMilestonesScreen';
+import AllergenIntroScreen from '../screens/Tracking/SymptomLogs/ChildHealth/AllergenIntroScreen';
+import SymptomCheckerScreen from '../screens/Tracking/SymptomLogs/ChildHealth/SymptomCheckerScreen';
+import DentalTrackerScreen from '../screens/Tracking/SymptomLogs/ChildHealth/DentalTrackerScreen';
+import MedicinesTrackerScreen from '../screens/Tracking/SymptomLogs/ChildHealth/MedicinesTrackerScreen';
+import PregnancyLogScreen from '../screens/Tracking/SymptomLogs/PregnancyHealth/PregnancyLogScreen';
+import JourneyScreen from '../screens/Tracking/SymptomLogs/PregnancyHealth/JourneyScreen';
+import AntenatalScreen from '../screens/Tracking/SymptomLogs/PregnancyHealth/AntenatalScreen';
+import WellbeingScreen from '../screens/Tracking/SymptomLogs/PregnancyHealth/WellbeingScreen';
+import BirthPlanScreen from '../screens/Tracking/SymptomLogs/PregnancyHealth/BirthPlanScreen';
 import TempLogScreen from '../screens/Tracking/SymptomLogs/TempLogScreen';
 import MigraineLogScreen from '../screens/Tracking/SymptomLogs/MigraineLogScreen';
 import AsthmaLogScreen from '../screens/Tracking/SymptomLogs/AsthmaLogScreen';
@@ -422,6 +439,91 @@ const AppNavigator = () => {
       <Stack.Screen
         name="MSKLog"
         component={MSKLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="NeonatalLog"
+        component={NeonatalLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="GrowthMonitor"
+        component={GrowthMonitorScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="FeedingTracker"
+        component={FeedingTrackerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="BabySleepTracker"
+        component={SleepTrackerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="NeonatalRecord"
+        component={NeonatalRecordScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="NappyOutput"
+        component={NappyOutputScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="PaediatricLog"
+        component={PaediatricLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="DevelopmentalMilestones"
+        component={DevelopmentalMilestonesScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="AllergenIntro"
+        component={AllergenIntroScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="SymptomChecker"
+        component={SymptomCheckerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="DentalTracker"
+        component={DentalTrackerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="MedicinesTracker"
+        component={MedicinesTrackerScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="PregnancyLog"
+        component={PregnancyLogScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Journey"
+        component={JourneyScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Antenatal"
+        component={AntenatalScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="Wellbeing"
+        component={WellbeingScreen}
+        options={{animation: 'slide_from_right'}}
+      />
+      <Stack.Screen
+        name="BirthPlan"
+        component={BirthPlanScreen}
         options={{animation: 'slide_from_right'}}
       />
       <Stack.Screen

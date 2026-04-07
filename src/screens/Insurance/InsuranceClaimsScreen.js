@@ -125,4 +125,82 @@ const st = StyleSheet.create({
   memberRow: {flexDirection: 'row', alignItems: 'center', padding: ms(11)},
 });
 
+export const InsuranceClaimsBody = ({navigation}) => {
+  return (
+    <View>
+      {/* Insurance card */}
+      <View style={[st.insCard, {backgroundColor: Colors.primary, marginBottom: vs(4)}]}>
+        <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10), marginBottom: vs(12)}}>
+          <View style={{width: ms(36), height: ms(36), borderRadius: ms(10), backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center'}}>
+            <Icon family="Ionicons" name="star" size={ms(18)} color={Colors.amber} />
+          </View>
+          <View style={{flex: 1}}>
+            <AppText style={{fontSize: ms(13), fontWeight: '700', color: Colors.white}}>{POLICY.insurer}</AppText>
+            <AppText style={{fontSize: ms(9), color: 'rgba(255,255,255,0.5)', marginTop: vs(1)}}>{POLICY.plan}</AppText>
+          </View>
+          <View style={{backgroundColor: 'rgba(29,158,117,0.3)', paddingHorizontal: s(9), paddingVertical: vs(4), borderRadius: ms(8)}}>
+            <AppText style={{fontSize: ms(9), fontWeight: '700', color: Colors.paleGreen}}>Active</AppText>
+          </View>
+        </View>
+        <View style={st.insGrid}>
+          <View style={st.insCell}><AppText style={st.insCellLabel}>Sum insured</AppText><AppText style={st.insCellValue}>{'\u20B9'}10L</AppText></View>
+          <View style={st.insCell}><AppText style={st.insCellLabel}>Balance</AppText><AppText style={[st.insCellValue, {color: Colors.paleGreen}]}>{'\u20B9'}9.1L</AppText></View>
+          <View style={st.insCell}><AppText style={st.insCellLabel}>Valid till</AppText><AppText style={st.insCellValue}>Mar 27</AppText></View>
+        </View>
+      </View>
+
+      <View>
+        <View style={st.secLabel}><AppText style={st.secText}>What do you want to do?</AppText><View style={st.secLine} /></View>
+
+        <TouchableOpacity style={st.actionBtn} activeOpacity={0.7} onPress={() => navigation && navigation.navigate('FileClaim')}>
+          <View style={[st.actionIcon, {backgroundColor: Colors.primary}]}>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(24)} color={Colors.white} />
+          </View>
+          <View style={{flex: 1}}>
+            <AppText style={{fontSize: ms(14), fontWeight: '700', color: Colors.textPrimary, marginBottom: vs(3)}}>File a new claim</AppText>
+            <AppText style={{fontSize: ms(11), color: Colors.textSecondary, lineHeight: ms(16)}}>Submit a reimbursement, cashless, OPD, or day-care claim for medical expenses</AppText>
+          </View>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.textTertiary} />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={st.actionBtn} activeOpacity={0.7} onPress={() => navigation && navigation.navigate('TrackClaims')}>
+          <View style={[st.actionIcon, {backgroundColor: Colors.blue}]}>
+            <Icon family="Ionicons" name="search-outline" size={ms(24)} color={Colors.white} />
+          </View>
+          <View style={{flex: 1}}>
+            <AppText style={{fontSize: ms(14), fontWeight: '700', color: Colors.textPrimary, marginBottom: vs(3)}}>Track existing claims</AppText>
+            <AppText style={{fontSize: ms(11), color: Colors.textSecondary, lineHeight: ms(16)}}>View status, documents required, and reimbursement progress for past claims</AppText>
+          </View>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.textTertiary} />
+        </TouchableOpacity>
+
+        <View style={st.secLabel}><AppText style={st.secText}>2026 at a glance</AppText><View style={st.secLine} /></View>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap', gap: s(8)}}>
+          {YEAR_SUMMARY.map((item, i) => (
+            <View key={i} style={st.summaryCard}>
+              <AppText style={{fontSize: ms(9), color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: vs(4)}}>{item.label}</AppText>
+              <AppText style={{fontSize: ms(20), fontWeight: '800', color: item.valueColor || Colors.primary}}>{item.value}</AppText>
+              <AppText style={{fontSize: ms(9), color: Colors.textTertiary, marginTop: vs(2)}}>{item.sub}</AppText>
+            </View>
+          ))}
+        </View>
+
+        <View style={st.secLabel}><AppText style={st.secText}>Covered members</AppText><View style={st.secLine} /></View>
+        <View style={st.membersCard}>
+          {POLICY.members.map((m, i) => (
+            <View key={i} style={[st.memberRow, i < POLICY.members.length - 1 && {borderBottomWidth: 0.5, borderBottomColor: '#f0f0f0'}]}>
+              <Icon family="Ionicons" name="person-outline" size={ms(18)} color={Colors.textSecondary} />
+              <View style={{flex: 1, marginLeft: s(10)}}>
+                <AppText style={{fontSize: ms(12), fontWeight: '700', color: Colors.textPrimary}}>{m.name}</AppText>
+                <AppText variant="small" color={Colors.textSecondary}>{m.relation} {'\u00B7'} {m.age}</AppText>
+              </View>
+              <AppText variant="small" color={Colors.tealDark} style={{fontWeight: '600'}}>{m.balance}</AppText>
+            </View>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+};
+
 export default InsuranceClaimsScreen;

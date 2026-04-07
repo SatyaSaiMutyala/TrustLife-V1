@@ -208,12 +208,12 @@ const TempLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.saveSecRow}>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'temp'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'temperature', initialTab: 'tempIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -251,7 +251,7 @@ const st = StyleSheet.create({
   bottomBar: {backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
   savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(13), paddingVertical: vs(15), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(10), marginBottom: vs(8)},
   saveSecRow: {flexDirection: 'row', gap: s(8)},
-  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(5), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(11), borderWidth: 0.5, borderColor: '#dde8e2'},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(5), backgroundColor: Colors.accent, borderRadius: ms(11), paddingVertical: vs(11), borderWidth: 0.5, borderColor: Colors.accent},
 });
 
 export default TempLogScreen;

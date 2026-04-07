@@ -501,7 +501,7 @@ const LifestyleFoodTab = () => {
 
 const sty = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
-  content: {paddingHorizontal: s(15), paddingBottom: vs(32)},
+  content: {paddingBottom: vs(32)},
 
   /* Toggle */
   toggleWrap: {marginBottom: vs(12)},

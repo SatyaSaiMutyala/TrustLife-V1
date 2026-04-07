@@ -140,15 +140,16 @@ const MoodLogScreen = ({navigation}) => {
 
       {/* HEADER */}
       <View style={[st.header, {paddingTop: insets.top + vs(6)}]}>
-        <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: vs(14)}}>
+        <View style={st.topBar}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={st.backBtn}>
             <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
-          <AppText variant="subtext" color="rgba(255,255,255,0.35)" style={{textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '700', marginLeft: s(10)}}>Stress & Mood {'\u00B7'} Log</AppText>
-          <View style={{flex: 1}} />
-          <AppText variant="small" color="rgba(255,255,255,0.4)" style={{fontWeight: '600'}}>Thu, 28 Mar</AppText>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={st.headerTitle}>Stress & Mood</AppText>
+            <AppText variant="caption" style={st.headerSub}>Thu, 28 Mar - Daily check-in</AppText>
+          </View>
         </View>
-        <AppText variant="header" color={Colors.white} style={{fontSize: ms(20), marginBottom: vs(2)}}>How are you</AppText>
+        <AppText variant="header" color={Colors.white} style={{fontSize: ms(20), marginTop: vs(10), marginBottom: vs(2)}}>How are you</AppText>
         <AppText variant="header" color={Colors.paleGreen} style={{fontSize: ms(20), fontStyle: 'italic', marginBottom: vs(4)}}>feeling today?</AppText>
         <AppText variant="small" color="rgba(255,255,255,0.45)" style={{marginBottom: vs(16)}}>This is a safe space. Everything you share stays private.</AppText>
 
@@ -361,12 +362,12 @@ const MoodLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.saveSecRow}>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'mood'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'stressMood', initialTab: 'stressMoodIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -377,7 +378,10 @@ const MoodLogScreen = ({navigation}) => {
 const st = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
   header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingBottom: vs(14)},
+  topBar: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(2)},
   backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
   moodTrack: {height: ms(8), borderRadius: ms(4), backgroundColor: 'rgba(255,255,255,0.15)', position: 'relative', overflow: 'visible'},
   moodFill: {height: '100%', borderRadius: ms(4), backgroundColor: Colors.accent},
   moodThumb: {position: 'absolute', top: -ms(8), width: ms(24), height: ms(24), borderRadius: ms(12), backgroundColor: Colors.white, borderWidth: 3, borderColor: Colors.accent, marginLeft: -ms(12), elevation: 4, shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.3, shadowRadius: 5},
@@ -404,7 +408,7 @@ const st = StyleSheet.create({
   bottomBar: {position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(10), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
   savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(14), paddingVertical: vs(14), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(8)},
   saveSecRow: {flexDirection: 'row', gap: s(8), marginTop: vs(8)},
-  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(6), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(10), borderWidth: 0.5, borderColor: '#dde8e2'},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(6), backgroundColor: Colors.accent, borderRadius: ms(11), paddingVertical: vs(10), borderWidth: 0.5, borderColor: Colors.accent},
 });
 
 export default MoodLogScreen;

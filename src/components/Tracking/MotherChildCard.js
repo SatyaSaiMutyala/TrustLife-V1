@@ -4,29 +4,28 @@ import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../shared/AppText';
+import Icon from '../shared/Icons';
 import SectionTitle from '../shared/SectionTitle';
 
 const items = [
-  {image: require('../../assets/img/c-healthinsurance.png'), bg: Colors.tealBg, name: 'Health Insurance', last: 'Claims & track'},
-  {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
-  {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
+  {image: null, bg: '', name: 'Neonatal Log', last: '', soon: false, icon: 'happy-outline', route: 'NeonatalLog'},
+  {image: null, bg: '', name: 'Paediatric Log', last: '', soon: false, icon: 'people-outline', route: 'PaediatricLog'},
+  {image: null, bg: '', name: 'Pregnancy Log', last: '', soon: false, icon: 'flower-outline', route: 'PregnancyLog'},
   {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
 ];
 
-const InsuranceCard = () => {
+const MotherChildCard = () => {
   const {width} = useWindowDimensions();
   const navigation = useNavigation();
   const btnW = (width - s(12) * 2 - s(7) * 3) / 4;
 
   const handlePress = (item) => {
-    if (item.name === 'Health Insurance') {
-      navigation.navigate('InsuranceClaims');
-    }
+    if (item.route) navigation.navigate(item.route);
   };
 
   return (
     <View>
-      <SectionTitle title="Life & Health Insurance" />
+      <SectionTitle title="Mother & Child" />
       <View style={styles.grid}>
         {items.map((l, i) => (
           <TouchableOpacity
@@ -37,6 +36,7 @@ const InsuranceCard = () => {
             disabled={!!l.soon}>
             <View style={styles.ico}>
               {l.image && <Image source={l.image} style={styles.img} resizeMode="contain" />}
+              {!l.image && l.icon && <Icon family="Ionicons" name={l.icon} size={ms(20)} color={Colors.primary} />}
             </View>
             <AppText variant="caption" color={l.soon ? Colors.textTertiary : Colors.textSecondary} style={styles.name} numberOfLines={2}>{l.name}</AppText>
           </TouchableOpacity>
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   name: {textAlign: 'center', lineHeight: ms(13)},
 });
 
-export default InsuranceCard;
+export default MotherChildCard;

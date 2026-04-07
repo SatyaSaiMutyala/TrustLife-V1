@@ -190,16 +190,6 @@ const WeightLogScreen = ({navigation}) => {
 
         {mode === 'manual' && (
           <View>
-            {/* Ayu Intel */}
-            <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'weight', initialTab: 'weightIntel'})}>
-              <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} /></View>
-              <View style={{flex: 1}}>
-                <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Weight & BMI</AppText>
-                <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>Condition impact - Target timeline - Patterns</AppText>
-              </View>
-              <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
-            </TouchableOpacity>
-
             {/* Manual entry */}
             <WeightManualEntry weightVal={weightVal} setWeightVal={setWeightVal} heightVal={heightVal} setHeightVal={setHeightVal} waistVal={waistVal} setWaistVal={setWaistVal} unit={unit} />
 
@@ -285,12 +275,12 @@ const WeightLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.saveSecRow}>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'weight'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.saveSecBtn} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'weight', initialTab: 'weightIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -363,7 +353,7 @@ const st = StyleSheet.create({
   bottomBar: {backgroundColor: Colors.white, borderTopWidth: 0.5, borderTopColor: '#dde8e2', paddingHorizontal: s(13), paddingTop: vs(12), paddingBottom: Platform.OS === 'ios' ? vs(28) : vs(12)},
   savePrimary: {backgroundColor: Colors.primary, borderRadius: ms(13), paddingVertical: vs(15), flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(10), marginBottom: vs(8)},
   saveSecRow: {flexDirection: 'row', gap: s(8)},
-  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(5), backgroundColor: Colors.background, borderRadius: ms(11), paddingVertical: vs(11), borderWidth: 0.5, borderColor: '#dde8e2'},
+  saveSecBtn: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: s(5), backgroundColor: Colors.accent, borderRadius: ms(11), paddingVertical: vs(11), borderWidth: 0.5, borderColor: Colors.accent},
 });
 
 export default WeightLogScreen;

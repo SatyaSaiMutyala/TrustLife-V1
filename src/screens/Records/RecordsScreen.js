@@ -7,7 +7,8 @@ import Fonts from '../../constants/fonts';
 import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
 import VisitSummaryTab from '../../components/Records/VisitSummaryTab';
-import IndividualRecordsTab from '../../components/Records/IndividualRecordsTab';
+import IndividualRecordsTab, {LifestyleSubTabs, LIFESTYLE_TAB_LIST} from '../../components/Records/IndividualRecordsTab';
+import {InsuranceClaimsBody} from '../Insurance/InsuranceClaimsScreen';
 import ServiceRecordsTab from '../../components/Records/ServiceRecordsTab';
 import RecordsFinalTab from '../../components/Records/RecordsFinalTab';
 import GlucoseRecordsTab from '../../components/Records/GlucoseRecordsTab';
@@ -35,15 +36,15 @@ const SERVICE_FILTERS = [
   {key: 'physio', label: 'Physio', icon: 'fitness-outline', bg: 'rgba(255,255,255,0.1)'},
   {key: 'hosp', label: 'Hospital', icon: 'business-outline', bg: 'rgba(255,255,255,0.1)'},
   {key: 'well', label: 'Wellness', icon: 'leaf-outline', bg: 'rgba(255,255,255,0.1)'},
-  {key: 'ins', label: 'Insurance', icon: 'shield-checkmark-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'gadgets', label: 'Gadgets', icon: 'phone-portrait-outline', bg: 'rgba(255,255,255,0.1)'},
 ];
 
 const mainTabs = [
-  {key: 'summary', label: 'Visit summary'},
-  {key: 'individual', label: 'Individual records'},
-  {key: 'services', label: 'Service records'},
-  {key: 'final', label: 'My records'},
-  {key: 'healthlogs', label: 'Log screens'},
+  {key: 'summary', label: 'Visit summary', icon: 'document-text-outline'},
+  {key: 'lifestyle', label: 'Life style', icon: 'leaf-outline'},
+  {key: 'healthlogs', label: 'Health Records', icon: 'pulse-outline'},
+  {key: 'insurance', label: 'Insurance', icon: 'shield-checkmark-outline'},
+  {key: 'services', label: 'Bills', icon: 'receipt-outline'},
 ];
 
 const HEALTHLOG_FILTERS = [
@@ -85,6 +86,7 @@ const RecordsScreen = ({route}) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [healthlogFilter, setHealthlogFilter] = useState(initialLogFilter);
+  const [lifestyleSubTab, setLifestyleSubTab] = useState('summary');
   const addRef = useRef(null);
 
   return (
@@ -102,15 +104,30 @@ const RecordsScreen = ({route}) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.tabRow}>
-          {mainTabs.map(tab => (
-            <TouchableOpacity
-              key={tab.key}
-              style={styles.tab}
-              onPress={() => setActiveTab(tab.key)}
-              activeOpacity={0.7}>
-              <View style={styles.tabInner}>
-                <AppText variant="caption" color={activeTab === tab.key ? Colors.white : 'rgba(255,255,255,0.55)'} style={{fontWeight: '500'}}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tabRow}>
+          {mainTabs.map(tab => {
+            const active = activeTab === tab.key;
+            return (
+              <TouchableOpacity
+                key={tab.key}
+                style={[styles.tab, active && styles.tabActive]}
+                onPress={() => setActiveTab(tab.key)}
+                activeOpacity={0.8}>
+                <View style={[styles.tabIconWrap, active && styles.tabIconWrapActive]}>
+                  <Icon
+                    family="Ionicons"
+                    name={tab.icon}
+                    size={14}
+                    color={active ? Colors.white : 'rgba(255,255,255,0.85)'}
+                  />
+                </View>
+                <AppText
+                  variant="caption"
+                  color={active ? Colors.primary : 'rgba(255,255,255,0.8)'}
+                  style={{fontWeight: active ? '700' : '500'}}>
                   {tab.label}
                 </AppText>
                 {tab.badge && (
@@ -118,11 +135,78 @@ const RecordsScreen = ({route}) => {
                     <AppText variant="small" color={Colors.white} style={{fontWeight: '500'}}>{tab.badge}</AppText>
                   </View>
                 )}
-              </View>
-              {activeTab === tab.key && <View style={styles.tabIndicator} />}
-            </TouchableOpacity>
-          ))}
-        </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {activeTab === 'summary' && (
+          <View style={styles.infoBar}>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="calendar-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Apr 2026</AppText>
+            </View>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="people-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>All members</AppText>
+            </View>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="funnel-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Filter</AppText>
+            </View>
+          </View>
+        )}
+
+        {activeTab === 'insurance' && (
+          <View style={styles.infoBar}>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="shield-checkmark-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Active</AppText>
+            </View>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="cash-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>{'\u20B9'}9.1L left</AppText>
+            </View>
+            <View style={styles.infoChip}>
+              <Icon family="Ionicons" name="time-outline" size={13} color={Colors.white} />
+              <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Till Mar 27</AppText>
+            </View>
+          </View>
+        )}
+
+        {activeTab === 'lifestyle' && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.ribbonScroll}>
+            {LIFESTYLE_TAB_LIST.map(f => {
+              const active = lifestyleSubTab === f.key;
+              return (
+                <TouchableOpacity
+                  key={f.key}
+                  style={styles.ribbonItem}
+                  onPress={() => setLifestyleSubTab(f.key)}
+                  activeOpacity={0.7}>
+                  <View style={[styles.ribbonIcon, {backgroundColor: active ? Colors.white : 'rgba(255,255,255,0.1)'}]}>
+                    <Icon
+                      family="Ionicons"
+                      name={f.icon}
+                      size={16}
+                      color={active ? Colors.primary : 'rgba(255,255,255,0.85)'}
+                    />
+                  </View>
+                  <AppText
+                    variant="small"
+                    color={active ? Colors.white : 'rgba(255,255,255,0.6)'}
+                    style={[styles.ribbonLabel, active && {fontWeight: '700'}]}
+                    numberOfLines={1}>
+                    {f.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        )}
 
         {activeTab === 'individual' && (
           <ScrollView
@@ -238,8 +322,11 @@ const RecordsScreen = ({route}) => {
         contentContainerStyle={styles.bodyContent}
         showsVerticalScrollIndicator={false}>
         {activeTab === 'summary' && <VisitSummaryTab />}
+        {activeTab === 'lifestyle' && <LifestyleSubTabs activeSubTab={lifestyleSubTab} onSubTabChange={setLifestyleSubTab} />}
+        {activeTab === 'insurance' && <InsuranceClaimsBody navigation={navigation} />}
         {activeTab === 'individual' && <IndividualRecordsTab activeFilter={activeFilter} />}
-        {activeTab === 'services' && <ServiceRecordsTab navigation={navigation} onAddRef={addRef} activeFilter={serviceFilter} />}
+        {activeTab === 'services' && serviceFilter !== 'gadgets' && <ServiceRecordsTab navigation={navigation} onAddRef={addRef} activeFilter={serviceFilter} />}
+        {activeTab === 'services' && serviceFilter === 'gadgets' && <RecordsFinalTab navigation={navigation} lockToTab="gadgets" />}
         {activeTab === 'final' && <RecordsFinalTab navigation={navigation} />}
         {activeTab === 'healthlogs' && healthlogFilter === 'glucose' && <GlucoseRecordsTab navigation={navigation} />}
         {activeTab === 'healthlogs' && healthlogFilter === 'bp' && <BPRecordsTab navigation={navigation} />}
@@ -279,17 +366,20 @@ const RecordsScreen = ({route}) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
-  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingTop: vs(14)},
-  topRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: vs(14)},
+  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingTop: vs(10)},
+  topRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: vs(6)},
   title: {marginTop: vs(1)},
   uploadBtn: {backgroundColor: 'rgba(255,255,255,0.15)', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.2)', borderRadius: ms(20), paddingVertical: vs(6), paddingHorizontal: s(12)},
-  tabRow: {flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.15)'},
-  tab: {flex: 1, alignItems: 'center', paddingVertical: vs(10), position: 'relative'},
-  tabInner: {flexDirection: 'row', alignItems: 'center', gap: s(4)},
+  tabRow: {flexDirection: 'row', alignItems: 'center', gap: s(8), paddingVertical: vs(4), paddingRight: s(12)},
+  tab: {flexDirection: 'row', alignItems: 'center', gap: s(7), paddingVertical: vs(7), paddingHorizontal: s(12), paddingRight: s(14), borderRadius: ms(22), backgroundColor: 'rgba(255,255,255,0.10)', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.22)'},
+  tabActive: {backgroundColor: Colors.white, borderColor: Colors.white, shadowColor: '#000', shadowOffset: {width: 0, height: 3}, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4},
+  tabIconWrap: {width: ms(22), height: ms(22), borderRadius: ms(11), backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center'},
+  tabIconWrapActive: {backgroundColor: Colors.primary},
   tabBadge: {backgroundColor: '#D85A30', borderRadius: ms(20), paddingVertical: vs(1), paddingHorizontal: s(5)},
-  tabIndicator: {position: 'absolute', bottom: 0, left: '20%', right: '20%', height: vs(2), backgroundColor: Colors.lightGreen, borderRadius: ms(1)},
 
-  ribbonScroll: {paddingHorizontal: s(10), paddingTop: vs(12), paddingBottom: vs(10), gap: s(14)},
+  ribbonScroll: {paddingHorizontal: s(10), paddingTop: vs(6), paddingBottom: vs(6), gap: s(14)},
+  infoBar: {flexDirection: 'row', alignItems: 'center', gap: s(8), height: ms(32) + vs(4) + ms(11) + vs(12), paddingHorizontal: s(2)},
+  infoChip: {flexDirection: 'row', alignItems: 'center', gap: s(5), backgroundColor: 'rgba(255,255,255,0.12)', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.22)', borderRadius: ms(18), paddingVertical: vs(6), paddingHorizontal: s(10)},
   ribbonItem: {alignItems: 'center', width: ms(56)},
   ribbonIcon: {width: ms(32), height: ms(32), borderRadius: ms(9), alignItems: 'center', justifyContent: 'center'},
   ribbonLabel: {marginTop: vs(4), textAlign: 'center', fontSize: ms(9)},

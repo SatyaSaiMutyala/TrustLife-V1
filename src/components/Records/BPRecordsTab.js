@@ -144,20 +144,6 @@ const BPRecordsTab = ({navigation}) => {
         })}
       </ScrollView>
 
-      {/* Ayu Intel button */}
-      <View style={{paddingHorizontal: s(6), marginBottom: vs(12)}}>
-        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'bp', initialTab: 'bpIntel'})}>
-          <View style={st.ayuIconWrap}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} />
-          </View>
-          <View style={{flex: 1}}>
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Blood Pressure</AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>Patterns - Activity impact - Recommendations</AppText>
-          </View>
-          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
-        </TouchableOpacity>
-      </View>
-
       {/* Reading groups */}
       <View style={{paddingHorizontal: s(6)}}>
         {filtered.map((group, gi) => (

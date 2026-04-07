@@ -58,22 +58,16 @@ const CycleScreen = () => {
       {/* ── HEADER ─────────────────────────────────────── */}
       <View style={[styles.header, {paddingTop: insets.top}]}>
         <View style={styles.topBar}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={ms(22)} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)" style={{marginLeft: s(10)}}>Tracking</AppText>
-          </View>
-          <TouchableOpacity style={styles.savePill} activeOpacity={0.7}>
-            <AppText variant="small" color={Colors.primary} style={{fontWeight: '700'}}>Save</AppText>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={styles.headerTitle}>Cycle & hormonal health</AppText>
+            <AppText variant="caption" style={styles.headerSub}>
+              Priya - Avg 28d - Day 24 - Late luteal
+            </AppText>
+          </View>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
-          Cycle & hormonal health
-        </AppText>
-        <AppText variant="caption" color="rgba(255,255,255,0.5)" style={{marginTop: vs(2), paddingBottom: vs(4)}}>
-          Priya {'\u00b7'} Avg 28d {'\u00b7'} Day 24 {'\u00b7'} Late luteal {'\u00b7'} Tracking since Jan 2024
-        </AppText>
       </View>
 
       {/* ── TAB BAR ────────────────────────────────────── */}
@@ -110,12 +104,12 @@ const CycleScreen = () => {
         </TouchableOpacity>
         <View style={styles.secondaryButtonRow}>
           <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'menstrual'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'cycle', initialTab: 'cycleIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -127,9 +121,11 @@ const CycleScreen = () => {
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
 
-  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingBottom: vs(8)},
-  topBar: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: vs(8)},
-  savePill: {backgroundColor: Colors.white, paddingHorizontal: s(14), paddingVertical: vs(5), borderRadius: ms(20)},
+  header: {backgroundColor: Colors.primary, paddingTop: vs(10), paddingBottom: vs(10), paddingHorizontal: s(16)},
+  topBar: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(2)},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
 
   tabBarWrap: {backgroundColor: Colors.white, borderBottomWidth: 0.5, borderBottomColor: Colors.borderLight, flexGrow: 0},
   tabBarContent: {paddingHorizontal: s(4)},
@@ -141,7 +137,7 @@ const styles = StyleSheet.create({
   bottomBar: {backgroundColor: Colors.white, paddingHorizontal: s(13), paddingTop: vs(8), paddingBottom: Platform.OS === 'ios' ? vs(24) : vs(10), borderTopWidth: 0.5, borderTopColor: '#d1d5db'},
   primaryButton: {flexDirection: 'row', backgroundColor: Colors.primary, paddingVertical: vs(14), borderRadius: ms(13), alignItems: 'center', justifyContent: 'center', gap: s(8)},
   secondaryButtonRow: {flexDirection: 'row', marginTop: vs(8), gap: s(8)},
-  secondaryButton: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(7), borderRadius: ms(10), borderWidth: 0.5, borderColor: '#d1d5db', backgroundColor: Colors.white},
+  secondaryButton: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(7), borderRadius: ms(10), borderWidth: 0.5, borderColor: Colors.accent, backgroundColor: Colors.accent},
 });
 
 export default CycleScreen;

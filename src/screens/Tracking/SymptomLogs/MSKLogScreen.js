@@ -249,18 +249,17 @@ const MSKLogScreen = ({navigation}) => {
     <View style={st.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      {/* ── Fixed Header (back arrow only) ── */}
+      {/* ── Fixed Header ── */}
       <View style={[st.header, {paddingTop: insets.top}]}>
-        <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={ms(22)} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)" style={{marginLeft: s(10)}}>Tracking</AppText>
+        <View style={st.topBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={st.backBtn}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={st.headerTitle}>Musculoskeletal log</AppText>
+            <AppText variant="caption" style={st.headerSub}>28 Mar - Day 1</AppText>
           </View>
-          <AppText variant="caption" color="rgba(255,255,255,0.4)" style={{fontWeight: '600'}}>28 Mar - Day 1</AppText>
         </View>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>Musculoskeletal log</AppText>
       </View>
 
       {/* ── Scrollable Body ── */}
@@ -416,12 +415,12 @@ const MSKLogScreen = ({navigation}) => {
         </TouchableOpacity>
         <View style={st.secondaryButtonRow}>
           <TouchableOpacity style={st.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('Records', {tab: 'healthlogs', logFilter: 'msk'})}>
-            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
+            <Icon family="Ionicons" name="document-text-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Records</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={st.secondaryButton} activeOpacity={0.7} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'msk', initialTab: 'mskIntel'})}>
-            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.textSecondary} />
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
+            <Icon family="Ionicons" name="bulb-outline" size={ms(14)} color={Colors.white} />
+            <AppText variant="caption" color={Colors.white} style={{marginLeft: s(5), fontWeight: '600'}}>Ayu Intel</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -437,8 +436,11 @@ const st = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
 
   // Header (fixed)
-  header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingBottom: vs(8)},
-  topRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: vs(8)},
+  header: {backgroundColor: Colors.primary, paddingTop: vs(10), paddingBottom: vs(10), paddingHorizontal: s(16)},
+  topBar: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(2)},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
 
   // Scrollable header (green bg)
   scrollableHeader: {backgroundColor: Colors.primary, marginHorizontal: s(-13), paddingHorizontal: s(13), paddingTop: vs(4), paddingBottom: vs(14), marginBottom: vs(10)},
@@ -492,7 +494,7 @@ const st = StyleSheet.create({
   bottomBar: {backgroundColor: Colors.white, paddingHorizontal: s(13), paddingTop: vs(8), paddingBottom: Platform.OS === 'ios' ? vs(24) : vs(10), borderTopWidth: 0.5, borderTopColor: '#d1d5db'},
   primaryButton: {flexDirection: 'row', backgroundColor: Colors.primary, paddingVertical: vs(13), borderRadius: ms(12), alignItems: 'center', justifyContent: 'center', gap: s(8)},
   secondaryButtonRow: {flexDirection: 'row', marginTop: vs(8), gap: s(8)},
-  secondaryButton: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(7), borderRadius: ms(10), borderWidth: 0.5, borderColor: '#d1d5db', backgroundColor: Colors.white},
+  secondaryButton: {flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: vs(7), borderRadius: ms(10), borderWidth: 0.5, borderColor: Colors.accent, backgroundColor: Colors.accent},
 });
 
 export default MSKLogScreen;

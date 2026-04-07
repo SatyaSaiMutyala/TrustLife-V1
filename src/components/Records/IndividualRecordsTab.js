@@ -436,8 +436,13 @@ const LIFESTYLE_TABS = [
   {key: 'activity', label: 'Activity', icon: 'walk-outline'},
 ];
 
-const LifestyleSubTabs = () => {
-  const [activeSubTab, setActiveSubTab] = useState('summary');
+export const LIFESTYLE_TAB_LIST = LIFESTYLE_TABS;
+
+export const LifestyleSubTabs = ({activeSubTab: controlledTab, onSubTabChange} = {}) => {
+  const [internalSubTab, setInternalSubTab] = useState('summary');
+  const isControlled = controlledTab !== undefined;
+  const activeSubTab = isControlled ? controlledTab : internalSubTab;
+  const setActiveSubTab = isControlled ? (onSubTabChange || (() => {})) : setInternalSubTab;
 
   const renderTab = () => {
     switch (activeSubTab) {
@@ -452,34 +457,36 @@ const LifestyleSubTabs = () => {
 
   return (
     <View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={sty.lifestyleTabScroll}>
-        {LIFESTYLE_TABS.map(tab => {
-          const active = activeSubTab === tab.key;
-          return (
-            <TouchableOpacity
-              key={tab.key}
-              style={[sty.lifestyleTab, active && sty.lifestyleTabActive]}
-              onPress={() => setActiveSubTab(tab.key)}
-              activeOpacity={0.7}>
-              <Icon
-                family="Ionicons"
-                name={tab.icon}
-                size={14}
-                color={active ? Colors.white : Colors.textSecondary}
-              />
-              <AppText
-                variant="small"
-                color={active ? Colors.white : Colors.textSecondary}
-                style={active ? {fontWeight: '600'} : undefined}>
-                {tab.label}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      {!isControlled && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={sty.lifestyleTabScroll}>
+          {LIFESTYLE_TABS.map(tab => {
+            const active = activeSubTab === tab.key;
+            return (
+              <TouchableOpacity
+                key={tab.key}
+                style={[sty.lifestyleTab, active && sty.lifestyleTabActive]}
+                onPress={() => setActiveSubTab(tab.key)}
+                activeOpacity={0.7}>
+                <Icon
+                  family="Ionicons"
+                  name={tab.icon}
+                  size={14}
+                  color={active ? Colors.white : Colors.textSecondary}
+                />
+                <AppText
+                  variant="small"
+                  color={active ? Colors.white : Colors.textSecondary}
+                  style={active ? {fontWeight: '600'} : undefined}>
+                  {tab.label}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      )}
       {renderTab()}
     </View>
   );

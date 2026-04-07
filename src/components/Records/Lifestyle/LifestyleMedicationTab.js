@@ -193,12 +193,12 @@ const LifestyleMedicationTab = () => {
 
   const renderDateNav = () => (
     <View style={styles.dateNav}>
-      <TouchableOpacity activeOpacity={0.7}>
-        <Icon family="Ionicons" name="chevron-back" size={ms(18)} color={Colors.textSecondary} />
+      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
+        <Icon family="Ionicons" name="chevron-back" size={ms(16)} color={Colors.textSecondary} />
       </TouchableOpacity>
-      <AppText variant="bodyBold">Tue, 24 Mar 2026</AppText>
-      <TouchableOpacity activeOpacity={0.7}>
-        <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color={Colors.textSecondary} />
+      <AppText variant="bodyBold" color={Colors.textPrimary}>Tue, 24 Mar 2026</AppText>
+      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
+        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color={Colors.textSecondary} />
       </TouchableOpacity>
     </View>
   );
@@ -214,9 +214,9 @@ const LifestyleMedicationTab = () => {
             {d.day}
           </AppText>
           <AppText
-            variant="caption"
+            variant="bodyBold"
             color={d.active ? Colors.white : Colors.textPrimary}
-            style={{fontWeight: d.active ? '700' : '500', marginTop: vs(2)}}>
+            style={{marginTop: vs(2)}}>
             {d.date}
           </AppText>
         </TouchableOpacity>
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
   toggleBtn: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: vs(6),
+    paddingVertical: vs(7),
     borderRadius: ms(8),
   },
   toggleBtnActive: {
@@ -448,24 +448,26 @@ const styles = StyleSheet.create({
   dateNav: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: s(12),
     marginBottom: vs(8),
-    paddingHorizontal: s(4),
   },
+  arrowBtn: {padding: ms(4)},
   calendarStrip: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: vs(12),
+    marginBottom: vs(14),
   },
   calDay: {
     alignItems: 'center',
-    paddingVertical: vs(6),
-    paddingHorizontal: s(8),
-    borderRadius: ms(10),
+    paddingVertical: vs(8),
+    paddingHorizontal: s(12),
+    borderRadius: ms(12),
+    backgroundColor: Colors.white,
+    borderWidth: 0.5,
+    borderColor: '#dde8e2',
   },
-  calDayActive: {
-    backgroundColor: Colors.primary,
-  },
+  calDayActive: {backgroundColor: Colors.primary, borderColor: Colors.primary},
   statsRow: {
     flexDirection: 'row',
     gap: s(6),

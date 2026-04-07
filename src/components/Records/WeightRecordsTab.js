@@ -420,18 +420,6 @@ const WeightRecordsTab = ({navigation}) => {
         })}
       </ScrollView>
 
-      {/* Ayu Intel */}
-      <View style={{paddingHorizontal: s(6), marginBottom: vs(12)}}>
-        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'weight', initialTab: 'weightIntel'})}>
-          <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(18)} color={Colors.white} /></View>
-          <View style={{flex: 1}}>
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Weight & BMI</AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(1)}}>Condition impact - Target timeline - Patterns</AppText>
-          </View>
-          <Icon family="Ionicons" name="chevron-forward" size={ms(18)} color="rgba(255,255,255,0.6)" />
-        </TouchableOpacity>
-      </View>
-
       {/* Tab content */}
       {activeFilter === 'weight' && <WeightPanel navigation={navigation} />}
       {activeFilter === 'bmi' && <BMIPanel />}

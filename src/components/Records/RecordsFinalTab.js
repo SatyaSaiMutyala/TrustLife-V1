@@ -84,8 +84,8 @@ const warrantyColor = days => {
 /* ═══════════════════════════════════════════════ */
 /*  RecordsFinalTab                                */
 /* ═══════════════════════════════════════════════ */
-const RecordsFinalTab = ({navigation}) => {
-  const [activeMainTab, setActiveMainTab] = useState('medical');
+const RecordsFinalTab = ({navigation, lockToTab}) => {
+  const [activeMainTab, setActiveMainTab] = useState(lockToTab || 'medical');
   const [activeSubTab, setActiveSubTab] = useState('all');
   const [search, setSearch] = useState('');
   const [showDetail, setShowDetail] = useState(false);
@@ -1262,10 +1262,10 @@ const RecordsFinalTab = ({navigation}) => {
   return (
     <View style={sty.container}>
       {/* 1. Stats strip */}
-      {renderStats()}
+      {!lockToTab && renderStats()}
 
       {/* 2. Main tabs */}
-      {renderMainTabs()}
+      {!lockToTab && renderMainTabs()}
 
       {/* 3. Sub-tab ribbon */}
       {renderRibbon()}
