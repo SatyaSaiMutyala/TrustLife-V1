@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
-import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions} from 'react-native';
+import Svg, {Circle as SvgCircle} from 'react-native-svg';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
 import AppText from '../../shared/AppText';
@@ -7,8 +8,6 @@ import {MEDICATIONS, BIOMARKER_IMPACT} from '../../../constants/medicationData';
 
 /* ─── Constants ─────────────────────────────────────── */
 
-const RING_SIZE = ms(130);
-const DOT_COUNT = 20;
 
 const HEATMAP_COLS = 7;
 const HEATMAP_ROWS = 5;
@@ -83,31 +82,41 @@ const computeTotalMissed = (meds) => {
 /* ─── Sub-components ────────────────────────────────── */
 
 const DotRing = ({percentage, color}) => {
+  const {width: screenWidth} = useWindowDimensions();
+  const ringSize = Math.min(Math.max(screenWidth * 0.24, ms(80)), ms(110));
+  const ringThickness = Math.max(ringSize * 0.085, 5);
+  const radius = (ringSize - ringThickness) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - (percentage || 0) / 100);
   return (
-    <View style={styles.ringContainer}>
-      {Array.from({length: DOT_COUNT}).map((_, i) => {
-        const filled = i < Math.round((percentage / 100) * DOT_COUNT);
-        const angle = (i / DOT_COUNT) * 360 - 90;
-        const r = RING_SIZE / 2 - ms(5);
-        const cx = RING_SIZE / 2 + r * Math.cos((angle * Math.PI) / 180) - ms(4);
-        const cy = RING_SIZE / 2 + r * Math.sin((angle * Math.PI) / 180) - ms(4);
-        return (
-          <View
-            key={i}
-            style={{
-              position: 'absolute',
-              left: cx,
-              top: cy,
-              width: ms(8),
-              height: ms(8),
-              borderRadius: ms(4),
-              backgroundColor: filled ? (color || Colors.accent) : Colors.borderLight,
-            }}
-          />
-        );
-      })}
+    <View style={[styles.ringContainer, {width: ringSize, height: ringSize}]}>
+      <Svg
+        width={ringSize}
+        height={ringSize}
+        style={{position: 'absolute', top: 0, left: 0}}>
+        <SvgCircle
+          cx={ringSize / 2}
+          cy={ringSize / 2}
+          r={radius}
+          stroke={Colors.borderLight}
+          strokeWidth={ringThickness}
+          fill="none"
+        />
+        <SvgCircle
+          cx={ringSize / 2}
+          cy={ringSize / 2}
+          r={radius}
+          stroke={color || Colors.accent}
+          strokeWidth={ringThickness}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={offset}
+          transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
+        />
+      </Svg>
       <View style={styles.ringCenter}>
-        <AppText variant="header" color={color} style={{fontSize: ms(28), lineHeight: ms(32)}}>
+        <AppText variant="header" color={color} style={{fontSize: ms(19), lineHeight: ms(22)}}>
           {percentage}
         </AppText>
         <AppText variant="small" color={Colors.textTertiary}>% avg</AppText>
@@ -433,8 +442,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ringOuter: {
-    width: RING_SIZE,
-    height: RING_SIZE,
     marginRight: s(16),
   },
   overviewStats: {
@@ -457,8 +464,6 @@ const styles = StyleSheet.create({
 
   /* Ring */
   ringContainer: {
-    width: RING_SIZE,
-    height: RING_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
   },

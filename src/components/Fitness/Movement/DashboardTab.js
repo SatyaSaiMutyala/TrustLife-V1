@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
+import Svg, {Circle as SvgCircle} from 'react-native-svg';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 
 import Colors from '../../../constants/colors';
@@ -79,10 +80,12 @@ const formatHour = (h) => {
 
 /* ─── Sub-components ────────────────────────────────── */
 
-/** Circular progress ring using View border approach */
+/** Circular SVG progress ring */
 const ProgressRing = ({size, thickness, progress, color, bgColor, children, style}) => {
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
-  const rotation = (clampedProgress / 100) * 360;
+  const radius = (size - thickness) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeOffset = circumference * (1 - clampedProgress / 100);
 
   return (
     <View
@@ -90,56 +93,39 @@ const ProgressRing = ({size, thickness, progress, color, bgColor, children, styl
         {
           width: size,
           height: size,
-          borderRadius: size / 2,
-          backgroundColor: bgColor || Colors.borderLight,
           alignItems: 'center',
           justifyContent: 'center',
         },
         style,
       ]}>
-      {/* Background ring */}
-      <View
-        style={{
-          position: 'absolute',
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          borderWidth: thickness,
-          borderColor: bgColor || 'rgba(0,0,0,0.06)',
-        }}
-      />
-
-      {/* Progress arc - left half */}
-      {clampedProgress > 0 && (
-        <View
-          style={{
-            position: 'absolute',
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            borderWidth: thickness,
-            borderColor: 'transparent',
-            borderTopColor: color,
-            borderRightColor: rotation > 90 ? color : 'transparent',
-            borderBottomColor: rotation > 180 ? color : 'transparent',
-            borderLeftColor: rotation > 270 ? color : 'transparent',
-            transform: [{rotateZ: '-90deg'}],
-          }}
+      <Svg
+        width={size}
+        height={size}
+        style={{position: 'absolute', top: 0, left: 0}}>
+        {/* Background track */}
+        <SvgCircle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={bgColor || 'rgba(0,0,0,0.06)'}
+          strokeWidth={thickness}
+          fill="none"
         />
-      )}
-
-      {/* Inner fill to create ring effect */}
-      <View
-        style={{
-          width: size - thickness * 2,
-          height: size - thickness * 2,
-          borderRadius: (size - thickness * 2) / 2,
-          backgroundColor: Colors.white,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        {children}
-      </View>
+        {/* Progress arc */}
+        <SvgCircle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth={thickness}
+          fill="none"
+          strokeLinecap="round"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={strokeOffset}
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </Svg>
+      {children}
     </View>
   );
 };

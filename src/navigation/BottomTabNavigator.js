@@ -31,32 +31,39 @@ const tabs = [
 ];
 
 const CustomTabBar = ({state, navigation}) => (
-  <View style={styles.tabBar}>
-    {state.routes.map((route, index) => {
-      const isFocused = state.index === index;
-      const tab = tabs[index];
-      return (
-        <TouchableOpacity
-          key={route.key}
-          onPress={() => {
-            const event = navigation.emit({type: 'tabPress', target: route.key, canPreventDefault: true});
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
-            }
-          }}
-          style={styles.tabItem}
-          activeOpacity={0.7}>
-          <View style={[styles.tabIconWrap, isFocused && styles.tabIconWrapActive]}>
+  <View style={styles.tabBarWrap}>
+    <View style={styles.tabBar}>
+      {state.routes.map((route, index) => {
+        const isFocused = state.index === index;
+        const tab = tabs[index];
+        return (
+          <TouchableOpacity
+            key={route.key}
+            onPress={() => {
+              const event = navigation.emit({type: 'tabPress', target: route.key, canPreventDefault: true});
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            }}
+            style={styles.tabItem}
+            activeOpacity={0.7}>
+            {isFocused && <View style={styles.topIndicator} />}
             <Image
               source={tabImages[tab.name]}
-              style={styles.tabIcon}
+              style={[styles.tabIcon, !isFocused && styles.tabIconInactive]}
               resizeMode="contain"
             />
-            <Text style={[styles.tabLabelInner, {color: isFocused ? Colors.primary : Colors.textTertiary, fontWeight: isFocused ? '600' : '400'}]}>{tab.label}</Text>
-          </View>
-        </TouchableOpacity>
-      );
-    })}
+            <Text
+              style={[
+                styles.tabLabel,
+                {color: isFocused ? Colors.primary : Colors.textTertiary, fontWeight: isFocused ? '700' : '500'},
+              ]}>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   </View>
 );
 
@@ -69,20 +76,35 @@ const BottomTabNavigator = () => (
 );
 
 const styles = StyleSheet.create({
-  tabBar: {
-    flexDirection: 'row',
+  tabBarWrap: {
     backgroundColor: Colors.white,
     borderTopWidth: 0.5,
     borderTopColor: Colors.borderLight,
-    paddingTop: vs(9),
-    paddingBottom: vs(15),
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: -2},
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    paddingTop: vs(6),
+    paddingBottom: vs(8),
+    paddingHorizontal: ms(4),
     justifyContent: 'space-around',
   },
-  tabItem: {flex: 1, alignItems: 'center'},
-  tabIconWrap: {width: ms(56), height: ms(48), borderRadius: ms(14), alignItems: 'center', justifyContent: 'center', gap: vs(2), overflow: 'hidden'},
-  tabIconWrapActive: {backgroundColor: 'rgba(10, 92, 71, 0.18)'},
-  tabIcon: {width: ms(28), height: ms(28)},
-  tabLabelInner: {fontSize: ms(10), fontFamily: Fonts.regular},
+  tabItem: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: vs(4), position: 'relative'},
+  topIndicator: {
+    position: 'absolute',
+    top: 0,
+    width: ms(28),
+    height: vs(3),
+    borderRadius: ms(2),
+    backgroundColor: Colors.primary,
+  },
+  tabIcon: {width: ms(22), height: ms(22), marginBottom: vs(2)},
+  tabIconInactive: {opacity: 0.55},
+  tabLabel: {fontSize: ms(9), fontFamily: Fonts.regular},
 });
 
 export default BottomTabNavigator;

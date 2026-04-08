@@ -19,12 +19,9 @@ import Icon from '../shared/Icons';
 import {
   STATS_SUMMARY,
   SERVICE_TABS,
-  PENDING_CLAIM,
   SERVICE_INVOICES,
   ADD_OPTIONS,
   VISIT_META,
-  POLICY_INFO,
-  INELIGIBLE_CATS,
 } from '../../constants/serviceRecordsData';
 
 /* ─── Category meta (emoji + section title) ─── */
@@ -56,21 +53,6 @@ const CAT_ICON_BG = {
   ins: '#F3F4F6',
 };
 
-/* ─── Claim timeline steps (static demo) ─── */
-const CLAIM_STEPS = [
-  {label: 'Invoice uploaded', date: '12 Mar 2026', done: true},
-  {label: 'Claim submitted to insurer', date: '18 Mar 2026', done: true},
-  {label: 'Under review', date: 'In progress', done: false},
-  {label: 'Approved / Settled', date: '', done: false},
-];
-
-const SETTLED_STEPS = [
-  {label: 'Invoice uploaded', date: '', done: true},
-  {label: 'Claim submitted', date: '', done: true},
-  {label: 'Approved', date: '', done: true},
-  {label: 'Settled & reimbursed', date: '', done: true},
-];
-
 /* ────────────────────────────────────────────── */
 /*  ServiceRecordsTab                             */
 /* ────────────────────────────────────────────── */
@@ -81,18 +63,13 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
   const [showAdd, setShowAdd] = useState(false);
   const [showVisit, setShowVisit] = useState(false);
   const [selectedVisitId, setSelectedVisitId] = useState(null);
-  const [showClaim, setShowClaim] = useState(false);
-  const [claimInv, setClaimInv] = useState(null);
-  const [claimStep, setClaimStep] = useState(1);
-  const [sigName, setSigName] = useState('');
-  const [showClaimDone, setShowClaimDone] = useState(false);
-  const [claimResult, setClaimResult] = useState(null);
 
   // Expose setShowAdd to parent via ref
   if (onAddRef) onAddRef.current = () => setShowAdd(true);
 
   /* ─── Filtering logic ─── */
   const filtered = SERVICE_INVOICES.filter(inv => {
+    if (inv.cat === 'ins') return false;
     const matchCat = activeFilter === 'all' || inv.cat === activeFilter;
     if (!matchCat) return false;
     if (!search.trim()) return true;
@@ -125,14 +102,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
     setShowVisit(true);
   };
 
-  /* ─── Claim Form ─── */
-  const openClaimForm = (inv) => {
-    setClaimInv(inv);
-    setClaimStep(1);
-    setSigName('');
-    setShowClaim(true);
-  };
-
   /* ─── Format currency ─── */
   const fmt = n => '₹' + Number(n).toLocaleString('en-IN');
 
@@ -147,12 +116,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
           <AppText style={sty.statValue}>{fmt(STATS_SUMMARY.totalSpent)}</AppText>
           <AppText style={sty.statLabel}>Total spent</AppText>
           <AppText style={sty.statSub}>{STATS_SUMMARY.totalInvoices} invoices</AppText>
-        </View>
-        <View style={sty.statDivider} />
-        <View style={sty.statCol}>
-          <AppText style={sty.statValue}>{fmt(STATS_SUMMARY.claimsAmount)}</AppText>
-          <AppText style={sty.statLabel}>Insurance claims</AppText>
-          <AppText style={sty.statSub}>{STATS_SUMMARY.claimsFiled} filed</AppText>
         </View>
         <View style={sty.statDivider} />
         <View style={sty.statCol}>
@@ -178,30 +141,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
           </TouchableOpacity>
         )}
       </View>
-
-      {/* ── 4. Pending Claim Banner ── */}
-      {(activeFilter === 'all' || activeFilter === 'lab') && (
-        <View style={sty.claimBanner}>
-          <View style={sty.claimBannerRow}>
-            <Icon family="Ionicons" name="shield-checkmark-outline" size={18} color={Colors.tealText} />
-            <View style={{flex: 1, marginLeft: s(10)}}>
-              <AppText variant="bodyBold" color={Colors.tealText}>
-                {PENDING_CLAIM.title} {'\u00B7'} {fmt(PENDING_CLAIM.amount)} pending
-              </AppText>
-              <AppText variant="caption" color={Colors.tealText} style={{marginTop: vs(3), opacity: 0.85}}>
-                {PENDING_CLAIM.desc}
-              </AppText>
-              <TouchableOpacity
-                style={{marginTop: vs(4)}}
-                onPress={() => Alert.alert('Track claim', 'Claim tracking coming soon')}>
-                <AppText variant="small" color={Colors.tealDark} style={{fontWeight: '700'}}>
-                  Track claim {'\u203A'}
-                </AppText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      )}
 
       {/* ── 5. Invoice Cards ── */}
       {filtered.length === 0 ? (
@@ -277,54 +216,11 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                     </View>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       <TouchableOpacity
-                        style={{marginRight: s(12)}}
                         onPress={() => Alert.alert('Download', `${inv.ref}.pdf`)}>
                         <AppText style={sty.footerAction}>{'\u2193'} PDF</AppText>
                       </TouchableOpacity>
-                      {inv.claimStatus !== 'settled' && inv.claimStatus !== 'filed' && (
-                        <TouchableOpacity
-                          onPress={() => Alert.alert('Claim', 'File claim for ' + inv.name)}>
-                          <AppText style={sty.footerAction}>{'\uD83D\uDEE1\uFE0F'} Claim</AppText>
-                        </TouchableOpacity>
-                      )}
                     </View>
                   </View>
-                  {/* Claim status strip */}
-                  {inv.claimStatus === 'filed' && (
-                    <View style={sty.claimStrip}>
-                      <AppText style={{fontSize: ms(16)}}>🛡️</AppText>
-                      <View style={{flex: 1}}>
-                        <AppText variant="small" color={Colors.blueText} style={{fontWeight: '700'}}>Claim filed — pending approval</AppText>
-                      </View>
-                      <View style={[sty.claimPill, {backgroundColor: Colors.blueBg}]}>
-                        <AppText variant="small" color={Colors.blueText} style={{fontWeight: '700'}}>In review</AppText>
-                      </View>
-                    </View>
-                  )}
-                  {inv.claimStatus === 'settled' && (
-                    <View style={sty.claimStrip}>
-                      <AppText style={{fontSize: ms(16)}}>🛡️</AppText>
-                      <View style={{flex: 1}}>
-                        <AppText variant="small" color={Colors.accent} style={{fontWeight: '700'}}>Claim settled</AppText>
-                        {inv.claimNote && <AppText variant="small" color={Colors.textTertiary}>{inv.claimNote}</AppText>}
-                      </View>
-                      <View style={[sty.claimPill, {backgroundColor: Colors.tealBg}]}>
-                        <AppText variant="small" color={Colors.accent} style={{fontWeight: '700'}}>Settled</AppText>
-                      </View>
-                    </View>
-                  )}
-                  {inv.claimStatus === 'none' && !INELIGIBLE_CATS.includes(inv.cat) && (
-                    <TouchableOpacity style={sty.claimStrip} onPress={() => openClaimForm(inv)}>
-                      <AppText style={{fontSize: ms(16)}}>🛡️</AppText>
-                      <View style={{flex: 1}}>
-                        <AppText variant="small" color={Colors.accent} style={{fontWeight: '600'}}>File insurance claim</AppText>
-                        <AppText variant="small" color={Colors.textTertiary}>Covered under Star Health policy</AppText>
-                      </View>
-                      <View style={sty.claimBtn}>
-                        <AppText variant="small" color={Colors.white} style={{fontWeight: '700'}}>File claim</AppText>
-                      </View>
-                    </TouchableOpacity>
-                  )}
                 </TouchableOpacity>
               ))}
             </View>
@@ -466,79 +362,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                     </View>
                   </View>
 
-                  {/* Insurance claim section */}
-                  {selectedInvoice.claimStatus !== 'none' && (
-                    <View style={sty.detailCard}>
-                      <AppText variant="sectionTitle" style={{marginBottom: vs(10)}}>Insurance claim</AppText>
-                      <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: vs(8)}}>
-                        <View
-                          style={[
-                            sty.claimBadge,
-                            {
-                              backgroundColor:
-                                selectedInvoice.claimStatus === 'settled'
-                                  ? Colors.tealBg
-                                  : Colors.blueBg,
-                            },
-                          ]}>
-                          <AppText
-                            variant="small"
-                            color={
-                              selectedInvoice.claimStatus === 'settled'
-                                ? Colors.tealText
-                                : Colors.blueText
-                            }
-                            style={{fontWeight: '700'}}>
-                            {selectedInvoice.claimStatus === 'settled' ? 'Settled' : 'In progress'}
-                          </AppText>
-                        </View>
-                      </View>
-                      {selectedInvoice.claimNote && (
-                        <AppText variant="caption" color={Colors.textSecondary} style={{marginBottom: vs(8)}}>
-                          {selectedInvoice.claimNote}
-                        </AppText>
-                      )}
-                      <DetailRow icon="shield-checkmark-outline" label="Insurer" value={selectedInvoice.insurer} />
-                      <DetailRow icon="cash-outline" label="Claim amount" value={fmt(selectedInvoice.claimAmount)} />
-
-                      {/* Timeline */}
-                      <View style={{marginTop: vs(12)}}>
-                        {(selectedInvoice.claimStatus === 'settled' ? SETTLED_STEPS : CLAIM_STEPS).map((step, i, arr) => (
-                          <View key={i} style={sty.timelineStep}>
-                            <View style={sty.timelineLeft}>
-                              <View
-                                style={[
-                                  sty.timelineDot,
-                                  {backgroundColor: step.done ? Colors.accent : Colors.borderLight},
-                                ]}
-                              />
-                              {i < arr.length - 1 && (
-                                <View
-                                  style={[
-                                    sty.timelineLine,
-                                    {backgroundColor: step.done ? Colors.accent : Colors.borderLight},
-                                  ]}
-                                />
-                              )}
-                            </View>
-                            <View style={{flex: 1, paddingBottom: vs(12)}}>
-                              <AppText
-                                variant="caption"
-                                color={step.done ? Colors.textPrimary : Colors.textTertiary}>
-                                {step.label}
-                              </AppText>
-                              {step.date ? (
-                                <AppText variant="small" color={Colors.textTertiary}>
-                                  {step.date}
-                                </AppText>
-                              ) : null}
-                            </View>
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  )}
-
                   {/* Documents card */}
                   {selectedInvoice.docs && selectedInvoice.docs.length > 0 && (
                     <View style={sty.detailCard}>
@@ -567,20 +390,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                       <Icon family="Ionicons" name="download-outline" size={16} color={Colors.white} />
                       <AppText variant="small" color={Colors.white} style={{fontWeight: '600', marginLeft: s(6)}}>
                         Download PDF
-                      </AppText>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={sty.actionBtnOutline}
-                      onPress={() => {
-                        if (selectedInvoice.claimStatus === 'none') {
-                          Alert.alert('File claim', 'Claim filing coming soon');
-                        } else {
-                          Alert.alert('Share', 'Share coming soon');
-                        }
-                      }}
-                      activeOpacity={0.7}>
-                      <AppText variant="small" color={Colors.primary} style={{fontWeight: '600'}}>
-                        {selectedInvoice.claimStatus === 'none' ? 'File claim' : 'Share'}
                       </AppText>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -711,14 +520,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                       </View>
                     </View>
 
-                    {visitInvoices.length > 1 && (
-                      <View style={sty.ayuCard}>
-                        <AppText variant="caption" color={Colors.tealText}>
-                          This visit has {visitInvoices.length} linked records. You can file a combined insurance claim for all records in this visit.
-                        </AppText>
-                      </View>
-                    )}
-
                     {/* Linked invoices */}
                     <AppText variant="sectionTitle" style={{marginBottom: vs(8)}}>Records in this visit</AppText>
                     {visitInvoices.map(inv => {
@@ -752,26 +553,12 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                     {/* Actions */}
                     <View style={sty.actionRow}>
                       <TouchableOpacity
-                        style={sty.actionBtnOutline}
+                        style={sty.actionBtnFilled}
                         onPress={() => {
                           Alert.alert('Copied', `Visit ID ${selectedVisitId} copied`);
                         }}
                         activeOpacity={0.7}>
-                        <AppText variant="small" color={Colors.primary} style={{fontWeight: '600'}}>Copy Visit ID</AppText>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={sty.actionBtnFilled}
-                        onPress={() => {
-                          setShowVisit(false);
-                          const firstClaimable = visitInvoices.find(i => i.claimStatus === 'none' && !INELIGIBLE_CATS.includes(i.cat));
-                          if (firstClaimable) {
-                            setTimeout(() => openClaimForm(firstClaimable), 350);
-                          } else {
-                            Alert.alert('No claimable records', 'All records in this visit are already claimed or ineligible.');
-                          }
-                        }}
-                        activeOpacity={0.7}>
-                        <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Combined claim</AppText>
+                        <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Copy Visit ID</AppText>
                       </TouchableOpacity>
                     </View>
 
@@ -780,336 +567,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                 </>
               );
             })()}
-          </View>
-        </View>
-      </Modal>
-
-      {/* ── 9. Claim Form Modal ── */}
-      <Modal
-        visible={showClaim}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowClaim(false)}>
-        <View style={sty.modalOverlay}>
-          <View style={sty.modalSheet}>
-            {claimInv && (
-              <>
-                <View style={sty.sheetHeader}>
-                  <View style={sty.dragHandle} />
-                  <AppText variant="small" style={{color: 'rgba(255,255,255,0.5)', marginTop: vs(8)}}>
-                    Step {claimStep} of 4
-                  </AppText>
-                  <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(4)}}>
-                    File insurance claim
-                  </AppText>
-                  <TouchableOpacity style={sty.sheetClose} onPress={() => setShowClaim(false)}>
-                    <Icon family="Ionicons" name="close" size={20} color={Colors.white} />
-                  </TouchableOpacity>
-                </View>
-                <ScrollView style={sty.sheetBody} showsVerticalScrollIndicator={false}>
-                  {/* Step indicator */}
-                  <View style={sty.stepRow}>
-                    {[1, 2, 3, 4].map((step, i) => (
-                      <React.Fragment key={step}>
-                        {i > 0 && (
-                          <View style={[sty.stepLine, claimStep > step - 1 && sty.stepLineDone]} />
-                        )}
-                        <View style={[sty.stepDot, claimStep === step && sty.stepDotOn, claimStep > step && sty.stepDotDone]}>
-                          {claimStep > step ? (
-                            <Icon family="Ionicons" name="checkmark" size={14} color={Colors.primary} />
-                          ) : (
-                            <AppText variant="small" color={claimStep === step ? Colors.white : Colors.textTertiary} style={{fontWeight: '700'}}>
-                              {step}
-                            </AppText>
-                          )}
-                        </View>
-                      </React.Fragment>
-                    ))}
-                  </View>
-
-                  {/* Step 1: Patient & Policy */}
-                  {claimStep === 1 && (
-                    <View>
-                      <AppText variant="sectionTitle" style={{marginBottom: vs(12)}}>Patient & policy details</AppText>
-                      <View style={sty.detailCard}>
-                        <AppText style={sty.formLabel}>Patient name</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{POLICY_INFO.patientName}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Date of birth</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{POLICY_INFO.dob}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Policy number</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{POLICY_INFO.policyNumber}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Insurer</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{POLICY_INFO.insurer}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Plan</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{POLICY_INFO.plan}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Member ID</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{POLICY_INFO.memberId}</AppText></View>
-                      </View>
-                      <View style={sty.ayuCard}>
-                        <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-                          <AppText style={{fontSize: ms(16), marginRight: s(8)}}>🌿</AppText>
-                          <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-                            These details are pre-filled from your policy. Verify before continuing.
-                          </AppText>
-                        </View>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Step 2: Service Details */}
-                  {claimStep === 2 && (
-                    <View>
-                      <AppText variant="sectionTitle" style={{marginBottom: vs(12)}}>Service details</AppText>
-                      <View style={sty.detailCard}>
-                        <AppText style={sty.formLabel}>Service type</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{claimInv.type}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Provider</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{claimInv.provider}</AppText></View>
-                        {claimInv.visitId && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Visit ID</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{claimInv.visitId}</AppText></View>
-                          </>
-                        )}
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Date of service</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{claimInv.date}</AppText></View>
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Invoice ref</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{claimInv.ref}</AppText></View>
-                        {claimInv.icdCode && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>ICD code</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{claimInv.icdCode}</AppText></View>
-                          </>
-                        )}
-                        {claimInv.diagnosis && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Diagnosis</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{claimInv.diagnosis}</AppText></View>
-                          </>
-                        )}
-                        {claimInv.doctor && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Doctor</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{claimInv.doctor}</AppText></View>
-                          </>
-                        )}
-                        {claimInv.prescriptionRef && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Prescription ref</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600', fontFamily: 'monospace'}}>{claimInv.prescriptionRef}</AppText></View>
-                          </>
-                        )}
-                        <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>Claim amount</AppText>
-                        <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '700'}}>{fmt(claimInv.amount)}</AppText></View>
-                        {claimInv.gst > 0 && (
-                          <>
-                            <AppText style={[sty.formLabel, {marginTop: vs(10)}]}>GST</AppText>
-                            <View style={sty.formInput}><AppText variant="caption" color={Colors.tealText} style={{fontWeight: '600'}}>{fmt(claimInv.gst)}</AppText></View>
-                          </>
-                        )}
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Step 3: Documents */}
-                  {claimStep === 3 && (
-                    <View>
-                      <AppText variant="sectionTitle" style={{marginBottom: vs(12)}}>Documents</AppText>
-                      <View style={sty.detailCard}>
-                        {/* Auto-attached docs */}
-                        {(claimInv.docs || []).map((doc, i) => (
-                          <View key={i} style={[sty.docRow, {justifyContent: 'space-between'}]}>
-                            <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-                              <Icon family="Ionicons" name="document-outline" size={16} color={Colors.accent} />
-                              <AppText variant="caption" color={Colors.textPrimary} style={{marginLeft: s(8), flex: 1}}>{doc}</AppText>
-                            </View>
-                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                              <Icon family="Ionicons" name="checkmark-circle" size={18} color={Colors.accent} />
-                              <AppText variant="small" color={Colors.accent} style={{marginLeft: s(4), fontWeight: '600'}}>Attached</AppText>
-                            </View>
-                          </View>
-                        ))}
-                        {/* Upload missing */}
-                        <TouchableOpacity
-                          style={[sty.docRow, {justifyContent: 'space-between'}]}
-                          onPress={() => Alert.alert('Upload', 'Document upload coming soon')}>
-                          <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
-                            <Icon family="Ionicons" name="cloud-upload-outline" size={16} color={Colors.primary} />
-                            <AppText variant="caption" color={Colors.primary} style={{marginLeft: s(8), fontWeight: '600'}}>Upload additional document</AppText>
-                          </View>
-                          <Icon family="Ionicons" name="add-circle-outline" size={18} color={Colors.primary} />
-                        </TouchableOpacity>
-                      </View>
-                      <View style={sty.ayuCard}>
-                        <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-                          <AppText style={{fontSize: ms(16), marginRight: s(8)}}>🌿</AppText>
-                          <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-                            Ayu has auto-attached all available documents for this invoice. Upload any additional supporting documents if needed.
-                          </AppText>
-                        </View>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Step 4: Sign & Submit */}
-                  {claimStep === 4 && (
-                    <View>
-                      <AppText variant="sectionTitle" style={{marginBottom: vs(12)}}>Sign & submit</AppText>
-                      <View style={sty.detailCard}>
-                        <AppText style={sty.formLabel}>Type your full name to sign</AppText>
-                        <TextInput
-                          style={sty.sigInput}
-                          placeholder="Full name as on policy"
-                          placeholderTextColor={Colors.textTertiary}
-                          value={sigName}
-                          onChangeText={setSigName}
-                        />
-                        {sigName.length > 0 && (
-                          <AppText style={sty.sigPreview}>{sigName}</AppText>
-                        )}
-                      </View>
-                      <View style={sty.actionRow}>
-                        <TouchableOpacity
-                          style={[sty.actionBtnFilled, {opacity: sigName.trim().length > 0 ? 1 : 0.5}]}
-                          disabled={sigName.trim().length === 0}
-                          onPress={() => {
-                            const ref = 'CLM-' + Date.now().toString(36).toUpperCase();
-                            setClaimResult({
-                              mode: 'digital',
-                              ref,
-                              inv: claimInv,
-                              name: sigName,
-                            });
-                            setShowClaim(false);
-                            setShowClaimDone(true);
-                          }}
-                          activeOpacity={0.7}>
-                          <Icon family="Ionicons" name="send-outline" size={16} color={Colors.white} />
-                          <AppText variant="small" color={Colors.white} style={{fontWeight: '600', marginLeft: s(6)}}>
-                            Submit digitally
-                          </AppText>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={sty.actionBtnOutline}
-                          onPress={() => {
-                            const ref = 'CLM-' + Date.now().toString(36).toUpperCase();
-                            setClaimResult({
-                              mode: 'download',
-                              ref,
-                              inv: claimInv,
-                              name: sigName || 'Unsigned',
-                            });
-                            setShowClaim(false);
-                            setShowClaimDone(true);
-                          }}
-                          activeOpacity={0.7}>
-                          <AppText variant="small" color={Colors.primary} style={{fontWeight: '600'}}>
-                            Download form
-                          </AppText>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  )}
-
-                  {/* Back / Continue */}
-                  <View style={[sty.actionRow, {marginTop: vs(16)}]}>
-                    {claimStep > 1 && (
-                      <TouchableOpacity
-                        style={sty.actionBtnOutline}
-                        onPress={() => setClaimStep(prev => prev - 1)}
-                        activeOpacity={0.7}>
-                        <AppText variant="small" color={Colors.primary} style={{fontWeight: '600'}}>Back</AppText>
-                      </TouchableOpacity>
-                    )}
-                    {claimStep < 4 && (
-                      <TouchableOpacity
-                        style={sty.actionBtnFilled}
-                        onPress={() => setClaimStep(prev => prev + 1)}
-                        activeOpacity={0.7}>
-                        <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Continue</AppText>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-
-                  <View style={{height: vs(30)}} />
-                </ScrollView>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
-
-      {/* ── 10. Claim Success Modal ── */}
-      <Modal
-        visible={showClaimDone}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowClaimDone(false)}>
-        <View style={sty.modalOverlay}>
-          <View style={sty.modalSheet}>
-            {claimResult && (
-              <>
-                <View style={[sty.sheetHeader, {alignItems: 'center', paddingBottom: vs(24)}]}>
-                  <View style={sty.dragHandle} />
-                  <View style={{
-                    width: ms(56), height: ms(56), borderRadius: ms(28),
-                    backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center',
-                    justifyContent: 'center', marginTop: vs(16),
-                  }}>
-                    <Icon family="Ionicons" name="checkmark-circle" size={36} color={Colors.white} />
-                  </View>
-                  <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(10)}}>
-                    {claimResult.mode === 'digital' ? 'Submitted to insurer' : 'Ready to download'}
-                  </AppText>
-                  <AppText variant="caption" style={{color: 'rgba(255,255,255,0.6)', marginTop: vs(4), fontFamily: 'monospace'}}>
-                    {claimResult.ref}
-                  </AppText>
-                  <TouchableOpacity style={sty.sheetClose} onPress={() => setShowClaimDone(false)}>
-                    <Icon family="Ionicons" name="close" size={20} color={Colors.white} />
-                  </TouchableOpacity>
-                </View>
-                <ScrollView style={sty.sheetBody} showsVerticalScrollIndicator={false}>
-                  <View style={sty.detailCard}>
-                    <AppText variant="sectionTitle" style={{marginBottom: vs(10)}}>Claim details</AppText>
-                    <DetailRow icon="document-text-outline" label="Claim for" value={claimResult.inv.name} />
-                    {claimResult.inv.visitId && (
-                      <DetailRow icon="git-network-outline" label="Visit ID" value={claimResult.inv.visitId} mono />
-                    )}
-                    <DetailRow icon="cash-outline" label="Amount" value={fmt(claimResult.inv.amount)} />
-                    <DetailRow icon="shield-checkmark-outline" label="Policy" value={POLICY_INFO.policyNumber} mono />
-                    <DetailRow icon="calendar-outline" label="Submitted" value={new Date().toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})} />
-                    <DetailRow icon="barcode-outline" label="Reference" value={claimResult.ref} mono />
-                    <DetailRow icon="cloud-outline" label="Mode" value={claimResult.mode === 'digital' ? 'Digital submission' : 'Manual download'} />
-                  </View>
-
-                  <View style={sty.ayuCard}>
-                    <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
-                      <AppText style={{fontSize: ms(16), marginRight: s(8)}}>🌿</AppText>
-                      <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-                        Ayu will track this claim and notify you of any status updates from the insurer. You can view claim progress anytime from the invoice detail screen.
-                      </AppText>
-                    </View>
-                  </View>
-
-                  <View style={sty.actionRow}>
-                    <TouchableOpacity
-                      style={sty.actionBtnOutline}
-                      onPress={() => Alert.alert('Track', 'Claim tracking coming soon')}
-                      activeOpacity={0.7}>
-                      <AppText variant="small" color={Colors.primary} style={{fontWeight: '600'}}>Track claim</AppText>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={sty.actionBtnFilled}
-                      onPress={() => setShowClaimDone(false)}
-                      activeOpacity={0.7}>
-                      <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Done</AppText>
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={{height: vs(30)}} />
-                </ScrollView>
-              </>
-            )}
           </View>
         </View>
       </Modal>

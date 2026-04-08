@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +7,8 @@ import {
   FlatList,
   Dimensions,
   ScrollView,
+  Animated,
+  Easing,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
@@ -18,30 +20,109 @@ import Icon from '../../components/shared/Icons';
 const {width: SCREEN_W, height: SCREEN_H} = Dimensions.get('window');
 
 // ──────────────────────────────────────────────
+// AnimatedItem - reusable entrance animator
+// Triggers a fade + slide animation when `active` becomes true.
+// `direction` controls slide axis: 'up' | 'down' | 'left' | 'right'
+// ──────────────────────────────────────────────
+
+const AnimatedItem = ({active, delay = 0, direction = 'up', distance = 24, children, style}) => {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const offset = useRef(new Animated.Value(distance)).current;
+
+  useEffect(() => {
+    if (active) {
+      opacity.setValue(0);
+      offset.setValue(distance);
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 520,
+          delay,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(offset, {
+          toValue: 0,
+          duration: 620,
+          delay,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      opacity.setValue(0);
+      offset.setValue(distance);
+    }
+  }, [active, delay, distance, opacity, offset]);
+
+  const transform =
+    direction === 'up' ? [{translateY: offset}]
+    : direction === 'down' ? [{translateY: Animated.multiply(offset, -1)}]
+    : direction === 'left' ? [{translateX: offset}]
+    : [{translateX: Animated.multiply(offset, -1)}];
+
+  return (
+    <Animated.View style={[style, {opacity, transform}]}>
+      {children}
+    </Animated.View>
+  );
+};
+
+// ──────────────────────────────────────────────
 // Page 1: Splash / Brand
 // ──────────────────────────────────────────────
 
-const SplashPage = ({onNext}) => (
+const DecorBlobs = () => (
+  <>
+    <View style={pg.blobTopRight} />
+    <View style={pg.blobBottomLeft} />
+  </>
+);
+
+const SplashPage = ({onNext, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
-    <View style={pg.center}>
-      <View style={pg.logoWrap}>
-        <AppText style={pg.logoSmall} color="rgba(255,255,255,0.38)">trust</AppText>
-        <AppText style={pg.logoBig} color={Colors.paleGreen}>life</AppText>
+    <DecorBlobs />
+    <View style={pg.splashGlowOuter}>
+      <View style={pg.splashGlowMid}>
+        <View style={pg.splashGlowInner} />
       </View>
+    </View>
 
-      <AppText style={pg.tagline} color="rgba(255,255,255,0.45)">
-        {'Your health.\nConnected. For life.'}
-      </AppText>
+    <View style={pg.center}>
+      <AnimatedItem active={active} delay={80} direction="down">
+        <View style={pg.heroBadge}>
+          <Icon family="Ionicons" name="leaf-outline" size={ms(22)} color={Colors.paleGreen} />
+        </View>
+      </AnimatedItem>
 
-      <TouchableOpacity style={pg.ctaBtn} onPress={onNext} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          Begin your record
+      <AnimatedItem active={active} delay={180} direction="up">
+        <View style={pg.logoWrap}>
+          <AppText style={pg.logoSmall} color="rgba(255,255,255,0.45)">trust</AppText>
+          <AppText style={pg.logoBig} color={Colors.paleGreen}>life</AppText>
+        </View>
+      </AnimatedItem>
+
+      <AnimatedItem active={active} delay={300} direction="up">
+        <AppText style={pg.tagline} color="rgba(63, 62, 62, 0.55)">
+          {'Your health.\nConnected. For life.'}
         </AppText>
-      </TouchableOpacity>
+      </AnimatedItem>
 
-      <AppText style={pg.subText} color="rgba(255,255,255,0.22)">
-        Already have a record? Sign in
-      </AppText>
+      <AnimatedItem active={active} delay={440} direction="up" distance={32}>
+        <TouchableOpacity style={pg.ctaBtn} onPress={onNext} activeOpacity={0.85}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.4, fontSize: ms(14)}}>
+            Begin your record
+          </AppText>
+          <Icon family="Ionicons" name="arrow-forward" size={ms(15)} color={Colors.white} style={{marginLeft: s(8)}} />
+        </TouchableOpacity>
+      </AnimatedItem>
+
+      <AnimatedItem active={active} delay={580} direction="up">
+        <AppText style={pg.subText} color="rgba(255,255,255,0.4)">
+          Already have a record?{' '}
+          <AppText style={[pg.subText, {color: Colors.paleGreen, fontWeight: '600'}]}>Sign in</AppText>
+        </AppText>
+      </AnimatedItem>
     </View>
   </View>
 );
@@ -57,67 +138,82 @@ const TIMELINE = [
   {age: 'Your next chapter', event: 'Still being written.', active: false},
 ];
 
-const LifeRecordPage = ({onNext}) => (
+const LifeRecordPage = ({onNext, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
+    <DecorBlobs />
     <ScrollView style={{flex: 1}} contentContainerStyle={pg.scrollContent} showsVerticalScrollIndicator={false}>
-      <AppText style={pg.eyebrow} color={Colors.paleGreen}>
-        YOUR LIFE RECORD
-      </AppText>
+      <AnimatedItem active={active} delay={60} direction="left">
+        <AppText style={pg.eyebrow} color={Colors.paleGreen}>YOUR LIFE RECORD</AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.headline} color={Colors.white}>
-        {'Every test.\nEvery year.\nOne story.'}
-      </AppText>
+      <AnimatedItem active={active} delay={140} direction="up">
+        <AppText style={pg.headline} color={Colors.white}>
+          {'Every test.\nEvery year.\nOne story.'}
+        </AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.body} color="rgba(255,255,255,0.5)">
-        Most health apps show you last week. TrustLife shows you your whole life - a single, secure, growing record that travels with you forever.
-      </AppText>
+      <AnimatedItem active={active} delay={240} direction="up">
+        <AppText style={pg.body} color="rgba(255,255,255,0.5)">
+          Most health apps show you last week. TrustLife shows you your whole life - a single, secure, growing record that travels with you forever.
+        </AppText>
+      </AnimatedItem>
 
       <View style={pg.statRow}>
-        <View style={pg.statPill}>
-          <AppText style={pg.statNum} color={Colors.accent}>--</AppText>
-          <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Years of records</AppText>
-        </View>
-        <View style={pg.statPill}>
-          <AppText style={pg.statNum} color={Colors.accent}>1</AppText>
-          <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Place for everything</AppText>
-        </View>
-        <View style={pg.statPill}>
-          <AppText style={pg.statNum} color={Colors.accent}>0</AppText>
-          <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Records lost</AppText>
-        </View>
+        <AnimatedItem active={active} delay={320} direction="up" style={{flex: 1}}>
+          <View style={pg.statPill}>
+            <AppText style={pg.statNum} color={Colors.accent}>--</AppText>
+            <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Years of records</AppText>
+          </View>
+        </AnimatedItem>
+        <AnimatedItem active={active} delay={400} direction="up" style={{flex: 1}}>
+          <View style={pg.statPill}>
+            <AppText style={pg.statNum} color={Colors.accent}>1</AppText>
+            <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Place for everything</AppText>
+          </View>
+        </AnimatedItem>
+        <AnimatedItem active={active} delay={480} direction="up" style={{flex: 1}}>
+          <View style={pg.statPill}>
+            <AppText style={pg.statNum} color={Colors.accent}>0</AppText>
+            <AppText style={pg.statLabel} color="rgba(255,255,255,0.35)">Records lost</AppText>
+          </View>
+        </AnimatedItem>
       </View>
 
-      <AppText style={pg.tlLabel} color="rgba(255,255,255,0.25)">
-        YOUR RECORD, OVER A LIFETIME
-      </AppText>
+      <AnimatedItem active={active} delay={560} direction="left">
+        <AppText style={pg.tlLabel} color="rgba(255,255,255,0.25)">YOUR RECORD, OVER A LIFETIME</AppText>
+      </AnimatedItem>
 
       {TIMELINE.map((item, i) => (
-        <View key={i} style={pg.tlItem}>
-          <View style={pg.tlLineCol}>
-            <View style={[pg.tlDot, !item.active && pg.tlDotDim]} />
-            {i < TIMELINE.length - 1 && <View style={pg.tlConnector} />}
+        <AnimatedItem key={i} active={active} delay={620 + i * 90} direction="left">
+          <View style={pg.tlItem}>
+            <View style={pg.tlLineCol}>
+              <View style={[pg.tlDot, !item.active && pg.tlDotDim]} />
+              {i < TIMELINE.length - 1 && <View style={pg.tlConnector} />}
+            </View>
+            <View style={{flex: 1}}>
+              <AppText
+                style={pg.tlAge}
+                color={item.active ? Colors.paleGreen : 'rgba(255,255,255,0.3)'}>
+                {item.age}
+              </AppText>
+              <AppText
+                style={pg.tlEvent}
+                color={item.active ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.25)'}>
+                {item.event}
+              </AppText>
+            </View>
           </View>
-          <View style={{flex: 1}}>
-            <AppText
-              style={pg.tlAge}
-              color={item.active ? Colors.paleGreen : 'rgba(255,255,255,0.3)'}>
-              {item.age}
-            </AppText>
-            <AppText
-              style={pg.tlEvent}
-              color={item.active ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.25)'}>
-              {item.event}
-            </AppText>
-          </View>
-        </View>
+        </AnimatedItem>
       ))}
 
-      <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          See how Ayu reads your record
-        </AppText>
-        <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
-      </TouchableOpacity>
+      <AnimatedItem active={active} delay={1020} direction="up" distance={32}>
+        <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
+            See how Ayu reads your record
+          </AppText>
+          <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
+        </TouchableOpacity>
+      </AnimatedItem>
     </ScrollView>
   </View>
 );
@@ -144,64 +240,77 @@ const LIFESTYLE = [
   {icon: 'bandage-outline', label: 'Symptoms'},
 ];
 
-const TrackPage = ({onNext}) => (
+const TrackPage = ({onNext, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
+    <DecorBlobs />
     <ScrollView style={{flex: 1}} contentContainerStyle={pg.scrollContent} showsVerticalScrollIndicator={false}>
-      <AppText style={pg.eyebrow} color={Colors.paleGreen}>
-        TRACK EVERYTHING
-      </AppText>
+      <AnimatedItem active={active} delay={60} direction="left">
+        <AppText style={pg.eyebrow} color={Colors.paleGreen}>TRACK EVERYTHING</AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.headline} color={Colors.white}>
-        {'Your vitals.\nYour habits.\nAll in one place.'}
-      </AppText>
+      <AnimatedItem active={active} delay={140} direction="up">
+        <AppText style={pg.headline} color={Colors.white}>
+          {'Your vitals.\nYour habits.\nAll in one place.'}
+        </AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.body} color="rgba(255,255,255,0.5)">
-        Log blood glucose, BP, heart rate, weight, sleep, mood, medications, and more. Sync from devices or enter manually. TrustLife builds a complete picture of your health over time.
-      </AppText>
+      <AnimatedItem active={active} delay={240} direction="up">
+        <AppText style={pg.body} color="rgba(255,255,255,0.5)">
+          Log blood glucose, BP, heart rate, weight, sleep, mood, medications, and more. Sync from devices or enter manually. TrustLife builds a complete picture of your health over time.
+        </AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.miniLabel} color="rgba(255,255,255,0.25)">
-        VITALS & CONDITIONS
-      </AppText>
+      <AnimatedItem active={active} delay={320} direction="left">
+        <AppText style={pg.miniLabel} color="rgba(255,255,255,0.25)">VITALS & CONDITIONS</AppText>
+      </AnimatedItem>
       <View style={pg.gridWrap}>
         {VITALS.map((v, i) => (
-          <View key={i} style={pg.gridItem}>
-            <View style={[pg.gridIcon, {backgroundColor: v.color + '20'}]}>
-              <Icon family="Ionicons" name={v.icon} size={ms(16)} color={v.color} />
+          <AnimatedItem key={i} active={active} delay={380 + i * 70} direction="up" style={{width: '31.5%'}}>
+            <View style={pg.gridItem}>
+              <View style={[pg.gridIcon, {backgroundColor: v.color + '20'}]}>
+                <Icon family="Ionicons" name={v.icon} size={ms(18)} color={v.color} />
+              </View>
+              <AppText variant="small" color="rgba(255,255,255,0.75)" style={{marginTop: vs(6), textAlign: 'center', fontSize: ms(10)}} numberOfLines={2}>
+                {v.label}
+              </AppText>
             </View>
-            <AppText variant="small" color="rgba(255,255,255,0.7)" style={{marginTop: vs(4), textAlign: 'center'}}>
-              {v.label}
-            </AppText>
-          </View>
+          </AnimatedItem>
         ))}
       </View>
 
-      <AppText style={[pg.miniLabel, {marginTop: vs(16)}]} color="rgba(255,255,255,0.25)">
-        LIFESTYLE & HABITS
-      </AppText>
+      <AnimatedItem active={active} delay={820} direction="left">
+        <AppText style={[pg.miniLabel, {marginTop: vs(16)}]} color="rgba(255,255,255,0.25)">LIFESTYLE & HABITS</AppText>
+      </AnimatedItem>
       <View style={{gap: vs(8)}}>
         {LIFESTYLE.map((l, i) => (
-          <View key={i} style={pg.listRow}>
-            <Icon family="Ionicons" name={l.icon} size={ms(16)} color={Colors.paleGreen} />
-            <AppText variant="caption" color="rgba(255,255,255,0.65)" style={{marginLeft: s(10)}}>
-              {l.label}
-            </AppText>
-          </View>
+          <AnimatedItem key={i} active={active} delay={880 + i * 60} direction="left">
+            <View style={pg.listRow}>
+              <Icon family="Ionicons" name={l.icon} size={ms(16)} color={Colors.paleGreen} />
+              <AppText variant="caption" color="rgba(255,255,255,0.65)" style={{marginLeft: s(10)}}>
+                {l.label}
+              </AppText>
+            </View>
+          </AnimatedItem>
         ))}
       </View>
 
-      <View style={pg.calloutBox}>
-        <Icon family="Ionicons" name="bluetooth-outline" size={ms(16)} color={Colors.accent} />
-        <AppText variant="small" color="rgba(255,255,255,0.55)" style={{flex: 1, marginLeft: s(10), lineHeight: ms(16)}}>
-          Sync from Accu-Chek, Omron, Apple Health, Fitbit, and 20+ devices. Or enter manually - your choice.
-        </AppText>
-      </View>
+      <AnimatedItem active={active} delay={1280} direction="up">
+        <View style={pg.calloutBox}>
+          <Icon family="Ionicons" name="bluetooth-outline" size={ms(16)} color={Colors.accent} />
+          <AppText variant="small" color="rgba(255,255,255,0.55)" style={{flex: 1, marginLeft: s(10), lineHeight: ms(16)}}>
+            Sync from Accu-Chek, Omron, Apple Health, Fitbit, and 20+ devices. Or enter manually - your choice.
+          </AppText>
+        </View>
+      </AnimatedItem>
 
-      <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          See your health vault
-        </AppText>
-        <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
-      </TouchableOpacity>
+      <AnimatedItem active={active} delay={1380} direction="up" distance={32}>
+        <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
+            See your health vault
+          </AppText>
+          <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
+        </TouchableOpacity>
+      </AnimatedItem>
     </ScrollView>
   </View>
 );
@@ -218,52 +327,63 @@ const RECORD_TYPES = [
   {icon: 'fitness-outline', title: 'Health logs', desc: 'Daily vitals, symptoms, medication adherence over years'},
 ];
 
-const VaultPage = ({onNext}) => (
+const VaultPage = ({onNext, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
+    <DecorBlobs />
     <ScrollView style={{flex: 1}} contentContainerStyle={pg.scrollContent} showsVerticalScrollIndicator={false}>
-      <AppText style={pg.eyebrow} color={Colors.paleGreen}>
-        YOUR HEALTH VAULT
-      </AppText>
+      <AnimatedItem active={active} delay={60} direction="left">
+        <AppText style={pg.eyebrow} color={Colors.paleGreen}>YOUR HEALTH VAULT</AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.headline} color={Colors.white}>
-        {'Every report.\nEvery prescription.\nAlways accessible.'}
-      </AppText>
+      <AnimatedItem active={active} delay={140} direction="up">
+        <AppText style={pg.headline} color={Colors.white}>
+          {'Every report.\nEvery prescription.\nAlways accessible.'}
+        </AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.body} color="rgba(255,255,255,0.5)">
-        No more searching WhatsApp for that lab PDF. TrustLife organises every record into a permanent, searchable vault - sorted by date, doctor, condition, and organ.
-      </AppText>
+      <AnimatedItem active={active} delay={240} direction="up">
+        <AppText style={pg.body} color="rgba(255,255,255,0.5)">
+          No more searching WhatsApp for that lab PDF. TrustLife organises every record into a permanent, searchable vault - sorted by date, doctor, condition, and organ.
+        </AppText>
+      </AnimatedItem>
 
       <View style={{gap: vs(10)}}>
         {RECORD_TYPES.map((r, i) => (
-          <View key={i} style={pg.vaultRow}>
-            <View style={pg.vaultIcon}>
-              <Icon family="Ionicons" name={r.icon} size={ms(18)} color={Colors.accent} />
+          <AnimatedItem key={i} active={active} delay={320 + i * 90} direction="left">
+            <View style={pg.vaultRow}>
+              <View style={pg.vaultIcon}>
+                <Icon family="Ionicons" name={r.icon} size={ms(18)} color={Colors.accent} />
+              </View>
+              <View style={{flex: 1}}>
+                <AppText variant="bodyBold" color="rgba(255,255,255,0.85)">
+                  {r.title}
+                </AppText>
+                <AppText variant="small" color="rgba(255,255,255,0.4)" style={{marginTop: vs(2), lineHeight: ms(15)}}>
+                  {r.desc}
+                </AppText>
+              </View>
             </View>
-            <View style={{flex: 1}}>
-              <AppText variant="bodyBold" color="rgba(255,255,255,0.85)">
-                {r.title}
-              </AppText>
-              <AppText variant="small" color="rgba(255,255,255,0.4)" style={{marginTop: vs(2), lineHeight: ms(15)}}>
-                {r.desc}
-              </AppText>
-            </View>
-          </View>
+          </AnimatedItem>
         ))}
       </View>
 
-      <View style={pg.calloutBox}>
-        <Icon family="Ionicons" name="lock-closed-outline" size={ms(16)} color={Colors.accent} />
-        <AppText variant="small" color="rgba(255,255,255,0.55)" style={{flex: 1, marginLeft: s(10), lineHeight: ms(16)}}>
-          End-to-end encrypted. DPDP Act 2023 compliant. Your records never leave your control.
-        </AppText>
-      </View>
+      <AnimatedItem active={active} delay={820} direction="up">
+        <View style={pg.calloutBox}>
+          <Icon family="Ionicons" name="lock-closed-outline" size={ms(16)} color={Colors.accent} />
+          <AppText variant="small" color="rgba(255,255,255,0.55)" style={{flex: 1, marginLeft: s(10), lineHeight: ms(16)}}>
+            End-to-end encrypted. DPDP Act 2023 compliant. Your records never leave your control.
+          </AppText>
+        </View>
+      </AnimatedItem>
 
-      <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          Meet your health companion
-        </AppText>
-        <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
-      </TouchableOpacity>
+      <AnimatedItem active={active} delay={920} direction="up" distance={32}>
+        <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
+            Meet your health companion
+          </AppText>
+          <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
+        </TouchableOpacity>
+      </AnimatedItem>
     </ScrollView>
   </View>
 );
@@ -281,43 +401,55 @@ const SERVICES = [
   {icon: 'chatbubbles-outline', title: 'Mental wellness', desc: 'Counsellors and therapists on demand'},
 ];
 
-const ServicesPage = ({onNext}) => (
+const ServicesPage = ({onNext, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
+    <DecorBlobs />
     <ScrollView style={{flex: 1}} contentContainerStyle={pg.scrollContent} showsVerticalScrollIndicator={false}>
-      <AppText style={pg.eyebrow} color={Colors.paleGreen}>
-        HEALTH SERVICES
-      </AppText>
+      <AnimatedItem active={active} delay={60} direction="left">
+        <AppText style={pg.eyebrow} color={Colors.paleGreen}>HEALTH SERVICES</AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.headline} color={Colors.white}>
-        {'Doctors. Labs.\nMedicines. Coaches.\nAll here.'}
-      </AppText>
+      <AnimatedItem active={active} delay={140} direction="up">
+        <AppText style={pg.headline} color={Colors.white}>
+          {'Doctors. Labs.\nMedicines. Coaches.\nAll here.'}
+        </AppText>
+      </AnimatedItem>
 
-      <AppText style={pg.body} color="rgba(255,255,255,0.5)">
-        Book appointments, order tests, get medicines delivered, talk to a coach - without leaving the app. Every interaction feeds into your life record.
-      </AppText>
+      <AnimatedItem active={active} delay={240} direction="up">
+        <AppText style={pg.body} color="rgba(255,255,255,0.5)">
+          Book appointments, order tests, get medicines delivered, talk to a coach - without leaving the app. Every interaction feeds into your life record.
+        </AppText>
+      </AnimatedItem>
 
       <View style={pg.serviceGrid}>
-        {SERVICES.map((srv, i) => (
-          <View key={i} style={pg.serviceCard}>
-            <View style={pg.serviceIcon}>
-              <Icon family="Ionicons" name={srv.icon} size={ms(18)} color={Colors.accent} />
-            </View>
-            <AppText variant="caption" color="rgba(255,255,255,0.8)" style={{fontWeight: '600', marginTop: vs(6)}}>
-              {srv.title}
-            </AppText>
-            <AppText variant="small" color="rgba(255,255,255,0.35)" style={{marginTop: vs(2), lineHeight: ms(14)}}>
-              {srv.desc}
-            </AppText>
-          </View>
-        ))}
+        {SERVICES.map((srv, i) => {
+          const dir = i % 2 === 0 ? 'left' : 'right';
+          return (
+            <AnimatedItem key={i} active={active} delay={320 + i * 90} direction={dir} style={{width: '48.5%'}}>
+              <View style={pg.serviceCard}>
+                <View style={pg.serviceIcon}>
+                  <Icon family="Ionicons" name={srv.icon} size={ms(18)} color={Colors.accent} />
+                </View>
+                <AppText variant="caption" color="rgba(255,255,255,0.8)" style={{fontWeight: '600', marginTop: vs(6)}}>
+                  {srv.title}
+                </AppText>
+                <AppText variant="small" color="rgba(255,255,255,0.35)" style={{marginTop: vs(2), lineHeight: ms(14)}}>
+                  {srv.desc}
+                </AppText>
+              </View>
+            </AnimatedItem>
+          );
+        })}
       </View>
 
-      <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          Meet Ayu, your AI companion
-        </AppText>
-        <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
-      </TouchableOpacity>
+      <AnimatedItem active={active} delay={920} direction="up" distance={32}>
+        <TouchableOpacity style={pg.navBtn} onPress={onNext} activeOpacity={0.8}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
+            Meet Ayu, your AI companion
+          </AppText>
+          <Icon family="Ionicons" name="arrow-forward" size={ms(14)} color={Colors.white} style={{marginLeft: s(6)}} />
+        </TouchableOpacity>
+      </AnimatedItem>
     </ScrollView>
   </View>
 );
@@ -334,53 +466,68 @@ const AYU_FEATURES = [
   {icon: 'lock-closed-outline', title: 'Yours alone', desc: 'Your record never leaves your control'},
 ];
 
-const MeetAyuPage = ({onFinish}) => (
+const MeetAyuPage = ({onFinish, active}) => (
   <View style={[pg.container, {backgroundColor: Colors.primary}]}>
+    <DecorBlobs />
     <ScrollView style={{flex: 1}} contentContainerStyle={pg.scrollContent} showsVerticalScrollIndicator={false}>
-      <View style={pg.ayuAvatar}>
-        <AppText style={{fontSize: ms(22), fontWeight: '700', fontStyle: 'italic', color: Colors.white}}>A</AppText>
-      </View>
+      <AnimatedItem active={active} delay={60} direction="down">
+        <View style={pg.ayuAvatarGlow}>
+          <View style={pg.ayuAvatar}>
+            <AppText style={{fontSize: ms(22), fontWeight: '700', fontStyle: 'italic', color: Colors.white}}>A</AppText>
+          </View>
+        </View>
+      </AnimatedItem>
 
-      <AppText style={pg.eyebrow} color="rgba(255,255,255,0.35)">
-        MEET YOUR COMPANION
-      </AppText>
-      <AppText style={pg.ayuName} color={Colors.white}>Ayu</AppText>
-      <AppText style={pg.ayuSub} color="rgba(255,255,255,0.4)">
-        The intelligence that reads your life record and guides what comes next.
-      </AppText>
-
-      <View style={pg.ayuBubble}>
-        <AppText style={pg.ayuBubbleText} color="rgba(255,255,255,0.75)">
-          Hi. I've been built to understand health{' '}
-          <AppText style={[pg.ayuBubbleText, {color: Colors.paleGreen, fontWeight: '500'}]}>across time</AppText>
-          {' '}- not just today's numbers, but how your body has changed over years.{' '}
-          <AppText style={[pg.ayuBubbleText, {color: Colors.paleGreen, fontWeight: '500'}]}>Your record is my memory.</AppText>
+      <AnimatedItem active={active} delay={160} direction="left">
+        <AppText style={pg.eyebrow} color="rgba(255,255,255,0.35)">MEET YOUR COMPANION</AppText>
+      </AnimatedItem>
+      <AnimatedItem active={active} delay={240} direction="up">
+        <AppText style={pg.ayuName} color={Colors.white}>Ayu</AppText>
+      </AnimatedItem>
+      <AnimatedItem active={active} delay={320} direction="up">
+        <AppText style={pg.ayuSub} color="rgba(255,255,255,0.4)">
+          The intelligence that reads your life record and guides what comes next.
         </AppText>
-      </View>
+      </AnimatedItem>
+
+      <AnimatedItem active={active} delay={420} direction="left">
+        <View style={pg.ayuBubble}>
+          <AppText style={pg.ayuBubbleText} color="rgba(255,255,255,0.75)">
+            Hi. I've been built to understand health{' '}
+            <AppText style={[pg.ayuBubbleText, {color: Colors.paleGreen, fontWeight: '500'}]}>across time</AppText>
+            {' '}- not just today's numbers, but how your body has changed over years.{' '}
+            <AppText style={[pg.ayuBubbleText, {color: Colors.paleGreen, fontWeight: '500'}]}>Your record is my memory.</AppText>
+          </AppText>
+        </View>
+      </AnimatedItem>
 
       <View style={{gap: vs(10), marginTop: vs(4)}}>
         {AYU_FEATURES.map((feat, i) => (
-          <View key={i} style={pg.featRow}>
-            <View style={pg.featIcon}>
-              <Icon family="Ionicons" name={feat.icon} size={ms(14)} color={Colors.accent} />
+          <AnimatedItem key={i} active={active} delay={540 + i * 90} direction="left">
+            <View style={pg.featRow}>
+              <View style={pg.featIcon}>
+                <Icon family="Ionicons" name={feat.icon} size={ms(14)} color={Colors.accent} />
+              </View>
+              <View style={{flex: 1}}>
+                <AppText variant="caption" color="rgba(255,255,255,0.8)" style={{fontWeight: '500'}}>
+                  {feat.title}
+                </AppText>
+                <AppText variant="small" color="rgba(255,255,255,0.4)" style={{marginTop: vs(1), lineHeight: ms(15)}}>
+                  {feat.desc}
+                </AppText>
+              </View>
             </View>
-            <View style={{flex: 1}}>
-              <AppText variant="caption" color="rgba(255,255,255,0.8)" style={{fontWeight: '500'}}>
-                {feat.title}
-              </AppText>
-              <AppText variant="small" color="rgba(255,255,255,0.4)" style={{marginTop: vs(1), lineHeight: ms(15)}}>
-                {feat.desc}
-              </AppText>
-            </View>
-          </View>
+          </AnimatedItem>
         ))}
       </View>
 
-      <TouchableOpacity style={pg.navBtn} onPress={onFinish} activeOpacity={0.8}>
-        <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
-          Begin my record
-        </AppText>
-      </TouchableOpacity>
+      <AnimatedItem active={active} delay={1080} direction="up" distance={32}>
+        <TouchableOpacity style={pg.navBtn} onPress={onFinish} activeOpacity={0.8}>
+          <AppText variant="bodyBold" color={Colors.white} style={{letterSpacing: 0.3}}>
+            Begin my record
+          </AppText>
+        </TouchableOpacity>
+      </AnimatedItem>
     </ScrollView>
   </View>
 );
@@ -419,20 +566,21 @@ const OnboardingScreen = () => {
 
   const viewabilityConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
 
-  const renderPage = ({item}) => {
+  const renderPage = ({item, index}) => {
+    const active = currentPage === index;
     switch (item) {
       case 'splash':
-        return <SplashPage onNext={goNext} />;
+        return <SplashPage onNext={goNext} active={active} />;
       case 'liferecord':
-        return <LifeRecordPage onNext={goNext} />;
+        return <LifeRecordPage onNext={goNext} active={active} />;
       case 'track':
-        return <TrackPage onNext={goNext} />;
+        return <TrackPage onNext={goNext} active={active} />;
       case 'vault':
-        return <VaultPage onNext={goNext} />;
+        return <VaultPage onNext={goNext} active={active} />;
       case 'services':
-        return <ServicesPage onNext={goNext} />;
+        return <ServicesPage onNext={goNext} active={active} />;
       case 'meetayu':
-        return <MeetAyuPage onFinish={goToSplash} />;
+        return <MeetAyuPage onFinish={goToSplash} active={active} />;
       default:
         return null;
     }
@@ -463,6 +611,7 @@ const OnboardingScreen = () => {
       <FlatList
         ref={flatListRef}
         data={PAGES}
+        extraData={currentPage}
         renderItem={renderPage}
         keyExtractor={item => item}
         horizontal
@@ -486,6 +635,7 @@ const pg = StyleSheet.create({
   container: {
     width: SCREEN_W,
     height: SCREEN_H,
+    overflow: 'hidden',
   },
   center: {
     flex: 1,
@@ -499,10 +649,72 @@ const pg = StyleSheet.create({
     paddingBottom: vs(40),
   },
 
+  // Decorative background blobs
+  blobTopRight: {
+    position: 'absolute',
+    top: -SCREEN_W * 0.3,
+    right: -SCREEN_W * 0.3,
+    width: SCREEN_W * 0.75,
+    height: SCREEN_W * 0.75,
+    borderRadius: SCREEN_W * 0.4,
+    backgroundColor: 'rgba(29,158,117,0.10)',
+  },
+  blobBottomLeft: {
+    position: 'absolute',
+    bottom: -SCREEN_W * 0.35,
+    left: -SCREEN_W * 0.3,
+    width: SCREEN_W * 0.85,
+    height: SCREEN_W * 0.85,
+    borderRadius: SCREEN_W * 0.45,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+
+  // Splash glow rings (behind logo)
+  splashGlowOuter: {
+    position: 'absolute',
+    top: SCREEN_H * 0.18,
+    alignSelf: 'center',
+    width: ms(280),
+    height: ms(280),
+    borderRadius: ms(140),
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splashGlowMid: {
+    width: ms(220),
+    height: ms(220),
+    borderRadius: ms(110),
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splashGlowInner: {
+    width: ms(160),
+    height: ms(160),
+    borderRadius: ms(80),
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+
   // Page 1: Splash
+  heroBadge: {
+    width: ms(48),
+    height: ms(48),
+    borderRadius: ms(14),
+    backgroundColor: 'rgba(29,158,117,0.18)',
+    borderWidth: 1,
+    borderColor: 'rgba(167,233,203,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: vs(20),
+  },
   logoWrap: {
     alignItems: 'flex-start',
-    marginBottom: vs(24),
+    marginBottom: vs(20),
   },
   logoSmall: {
     fontSize: ms(14),
@@ -525,14 +737,24 @@ const pg = StyleSheet.create({
     marginBottom: vs(32),
   },
   ctaBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: Colors.accent,
-    paddingVertical: vs(12),
-    paddingHorizontal: s(32),
+    paddingVertical: vs(14),
+    paddingHorizontal: s(36),
     borderRadius: ms(50),
+    shadowColor: Colors.accent,
+    shadowOffset: {width: 0, height: 6},
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(167,233,203,0.35)',
   },
   subText: {
-    fontSize: ms(10),
-    marginTop: vs(14),
+    fontSize: ms(11),
+    marginTop: vs(18),
     letterSpacing: 0.3,
   },
 
@@ -643,16 +865,17 @@ const pg = StyleSheet.create({
   gridWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: s(10),
+    justifyContent: 'space-between',
+    rowGap: vs(10),
   },
   gridItem: {
-    width: '29%',
     alignItems: 'center',
-    paddingVertical: vs(10),
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: ms(10),
+    paddingVertical: vs(12),
+    paddingHorizontal: s(6),
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: ms(12),
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   gridIcon: {
     width: ms(32),
@@ -701,15 +924,16 @@ const pg = StyleSheet.create({
   serviceGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: s(8),
+    justifyContent: 'space-between',
+    rowGap: vs(10),
   },
   serviceCard: {
-    width: '47%',
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
-    borderRadius: ms(12),
-    padding: ms(12),
+    borderRadius: ms(14),
+    padding: ms(13),
+    minHeight: vs(110),
   },
   serviceIcon: {
     width: ms(32),
@@ -721,6 +945,17 @@ const pg = StyleSheet.create({
   },
 
   // Page 6: Meet Ayu
+  ayuAvatarGlow: {
+    width: ms(78),
+    height: ms(78),
+    borderRadius: ms(24),
+    borderWidth: 1,
+    borderColor: 'rgba(167,233,203,0.25)',
+    backgroundColor: 'rgba(29,158,117,0.10)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: vs(14),
+  },
   ayuAvatar: {
     width: ms(52),
     height: ms(52),
@@ -728,7 +963,11 @@ const pg = StyleSheet.create({
     borderRadius: ms(16),
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: vs(14),
+    shadowColor: Colors.accent,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   ayuName: {
     fontSize: ms(30),

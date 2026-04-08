@@ -8,7 +8,9 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
+import Svg, {Circle as SvgCircle} from 'react-native-svg';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import {useNavigation} from '@react-navigation/native';
 
@@ -17,8 +19,6 @@ import AppText from '../../shared/AppText';
 
 /* ─── Constants ─────────────────────────────────────── */
 
-const RING_SIZE = ms(170);
-const DOT_COUNT = 30;
 
 const PERIOD_MAP = {
   '07:00': 'Morning',
@@ -68,6 +68,8 @@ const periodEmoji = (p) => {
 
 const TodayTab = ({meds, setMeds}) => {
   const navigation = useNavigation();
+  const {width: screenWidth} = useWindowDimensions();
+  const ringSize = Math.min(Math.max(screenWidth * 0.3, ms(100)), ms(140));
 
   /* Refill bottom sheet state */
   const [refillSheet, setRefillSheet] = useState({visible: false, med: null});
@@ -193,30 +195,41 @@ const TodayTab = ({meds, setMeds}) => {
       {/* ── 1. DAILY PROGRESS RING ──────────────────────── */}
       <View style={styles.card}>
         <View style={styles.ringRow}>
-          {/* Dot-segment ring */}
-          <View style={styles.ringOuter}>
-            {Array.from({length: DOT_COUNT}).map((_, i) => {
-              const filled = i < Math.round((stats.pct / 100) * DOT_COUNT);
-              const angle = (i / DOT_COUNT) * 360 - 90;
-              const r = (RING_SIZE - ms(14)) / 2;
-              const cx = RING_SIZE / 2 + r * Math.cos((angle * Math.PI) / 180) - ms(5);
-              const cy = RING_SIZE / 2 + r * Math.sin((angle * Math.PI) / 180) - ms(5);
-              const dotColor = filled ? Colors.primary : Colors.borderLight;
+          {/* SVG progress ring */}
+          <View style={[styles.ringOuter, {width: ringSize, height: ringSize}]}>
+            {(() => {
+              const ringThickness = Math.max(ringSize * 0.085, 6);
+              const radius = (ringSize - ringThickness) / 2;
+              const circumference = 2 * Math.PI * radius;
+              const offset = circumference * (1 - stats.pct / 100);
               return (
-                <View
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    left: cx,
-                    top: cy,
-                    width: ms(10),
-                    height: ms(10),
-                    borderRadius: ms(5),
-                    backgroundColor: dotColor,
-                  }}
-                />
+                <Svg
+                  width={ringSize}
+                  height={ringSize}
+                  style={{position: 'absolute', top: 0, left: 0}}>
+                  <SvgCircle
+                    cx={ringSize / 2}
+                    cy={ringSize / 2}
+                    r={radius}
+                    stroke={Colors.borderLight}
+                    strokeWidth={ringThickness}
+                    fill="none"
+                  />
+                  <SvgCircle
+                    cx={ringSize / 2}
+                    cy={ringSize / 2}
+                    r={radius}
+                    stroke={Colors.primary}
+                    strokeWidth={ringThickness}
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${circumference} ${circumference}`}
+                    strokeDashoffset={offset}
+                    transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
+                  />
+                </Svg>
               );
-            })}
+            })()}
             <View style={styles.ringInner}>
               <AppText variant="header" style={styles.ringPct}>
                 {stats.pct}%
@@ -586,9 +599,9 @@ const styles = StyleSheet.create({
   /* Card */
   card: {
     backgroundColor: Colors.white,
-    borderRadius: ms(14),
-    padding: s(16),
-    marginBottom: vs(12),
+    borderRadius: ms(12),
+    padding: s(12),
+    marginBottom: vs(10),
     borderWidth: 0.5,
     borderColor: Colors.borderLight,
   },
@@ -599,28 +612,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ringOuter: {
-    width: RING_SIZE,
-    height: RING_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
   },
   ringInner: {alignItems: 'center'},
-  ringPct: {fontSize: ms(30), fontWeight: '700', lineHeight: ms(36)},
+  ringPct: {fontSize: ms(22), fontWeight: '700', lineHeight: ms(26)},
 
   statGrid: {
     flex: 1,
-    marginLeft: s(16),
+    marginLeft: s(12),
   },
   statItem: {
-    borderRadius: ms(10),
-    paddingVertical: vs(8),
-    paddingHorizontal: s(12),
-    marginBottom: vs(6),
+    borderRadius: ms(9),
+    paddingVertical: vs(6),
+    paddingHorizontal: s(10),
+    marginBottom: vs(5),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  statNum: {fontSize: ms(18), fontWeight: '700', lineHeight: ms(22)},
+  statNum: {fontSize: ms(15), fontWeight: '700', lineHeight: ms(18)},
 
   /* ── 2. Upcoming Alert ────────────────────────────────── */
   upcomingCard: {

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import Svg, {Circle as SvgCircle} from 'react-native-svg';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 
 import Colors from '../../../constants/colors';
@@ -442,30 +443,41 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
       {/* Score ring + key metrics */}
       <View style={styles.card}>
         <View style={styles.scoreSection}>
-          {/* Score Ring - segmented arc */}
+          {/* Score Ring - SVG arc */}
           <View style={styles.scoreRingOuter}>
-            {/* Render 20 segments around the circle */}
-            {Array.from({length: 20}).map((_, i) => {
-              const filled = i < Math.round(scorePct * 20);
-              const angle = (i / 20) * 360 - 90;
-              const rad = (RING_SIZE - ms(8)) / 2;
-              const x = RING_SIZE / 2 + rad * Math.cos((angle * Math.PI) / 180) - ms(4);
-              const y = RING_SIZE / 2 + rad * Math.sin((angle * Math.PI) / 180) - ms(4);
+            {(() => {
+              const ringThickness = ms(8);
+              const radius = (RING_SIZE - ringThickness) / 2;
+              const circumference = 2 * Math.PI * radius;
+              const offset = circumference * (1 - scorePct);
               return (
-                <View
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    left: x,
-                    top: y,
-                    width: ms(8),
-                    height: ms(8),
-                    borderRadius: ms(4),
-                    backgroundColor: filled ? scoreColor : Colors.borderLight,
-                  }}
-                />
+                <Svg
+                  width={RING_SIZE}
+                  height={RING_SIZE}
+                  style={{position: 'absolute', top: 0, left: 0}}>
+                  <SvgCircle
+                    cx={RING_SIZE / 2}
+                    cy={RING_SIZE / 2}
+                    r={radius}
+                    stroke={Colors.borderLight}
+                    strokeWidth={ringThickness}
+                    fill="none"
+                  />
+                  <SvgCircle
+                    cx={RING_SIZE / 2}
+                    cy={RING_SIZE / 2}
+                    r={radius}
+                    stroke={scoreColor}
+                    strokeWidth={ringThickness}
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeDasharray={`${circumference} ${circumference}`}
+                    strokeDashoffset={offset}
+                    transform={`rotate(-90 ${RING_SIZE / 2} ${RING_SIZE / 2})`}
+                  />
+                </Svg>
               );
-            })}
+            })()}
             {/* Center content */}
             <AppText style={[styles.scoreNumber, {color: scoreColor}]}>
               {LAST_NIGHT.score}
