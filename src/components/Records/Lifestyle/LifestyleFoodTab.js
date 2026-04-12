@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {
   scale as s,
   verticalScale as vs,
@@ -69,7 +70,7 @@ const LUNCH_NUTRIENTS = [
 
 const FOOD_RULES = [
   {label: 'Fenugreek seeds before meals', done: true, status: 'Done', statusColor: Colors.tealText},
-  {label: 'Sodium under 2g', done: true, status: '1.3g \u00B7 On track', statusColor: Colors.tealText},
+  {label: 'Sodium under 2g', done: true, status: '1.3g - On track', statusColor: Colors.tealText},
   {label: 'No fruit juice', done: true, status: 'Good', statusColor: Colors.tealText},
 ];
 
@@ -208,7 +209,7 @@ const InsightCard = ({text, bg, color, iconColor}) => (
 const GIGaugeCard = () => (
   <View style={sty.card}>
     <AppText variant="caption" color={Colors.textSecondary} style={sty.cardPad}>
-      Glycaemic index score \u00B7 Today
+      Glycaemic index score - Today
     </AppText>
     <View style={sty.cardPad}>
       <View style={sty.gaugeBar}>
@@ -254,42 +255,70 @@ const NutrientsGrid = ({nutrients}) => (
   </View>
 );
 
-const MealCard = ({title, time, kcal, gi, iconName, iconBg, items, nutrients}) => (
-  <View style={sty.card}>
-    <View style={sty.mealHeader}>
-      <View style={[sty.mealIcon, {backgroundColor: iconBg}]}>
-        <Icon family="Ionicons" name={iconName} size={ms(16)} color={Colors.textPrimary} />
-      </View>
-      <View style={{flex: 1, marginLeft: s(10)}}>
-        <AppText variant="bodyBold" color={Colors.textPrimary}>{title}</AppText>
-        <AppText variant="small" color={Colors.textSecondary}>
-          {time} \u00B7 {kcal} kcal \u00B7 GI {gi}
-        </AppText>
-      </View>
-    </View>
-    {items.map((item, i) => (
-      <MealItemRow key={i} item={item} />
-    ))}
-    <NutrientsGrid nutrients={nutrients} />
-  </View>
-);
+const MEAL_BAR_COLORS = {
+  Breakfast: Colors.amber,
+  Lunch: Colors.accent,
+  Dinner: '#7C3AED',
+  Snack: Colors.blue,
+};
 
-const DinnerCard = () => (
-  <View style={sty.dinnerCard}>
-    <View style={sty.mealHeader}>
-      <View style={[sty.mealIcon, {backgroundColor: backgroundSecondary}]}>
-        <Icon family="Ionicons" name="moon-outline" size={ms(16)} color={Colors.textTertiary} />
+const MealCard = ({title, time, kcal, gi, iconName, iconBg, items, nutrients}) => {
+  const [expanded, setExpanded] = useState(false);
+  const mealNav = useNavigation();
+  const barColor = MEAL_BAR_COLORS[title] || Colors.accent;
+
+  return (
+    <TouchableOpacity
+      style={sty.mealRow}
+      activeOpacity={0.7}
+      onPress={() => setExpanded(!expanded)}>
+      {/* Colored left bar */}
+      <View style={[sty.mealLeftBar, {backgroundColor: barColor}]} />
+
+      <View style={sty.mealBody}>
+        {/* Compact summary row */}
+        <View style={sty.mealSummary}>
+          <View style={[sty.mealIcon, {backgroundColor: iconBg}]}>
+            <Icon family="Ionicons" name={iconName} size={ms(14)} color={barColor} />
+          </View>
+          <View style={{flex: 1, marginLeft: s(8)}}>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(12)}}>{title}</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>{time}</AppText>
+          </View>
+          <View style={{alignItems: 'flex-end', marginRight: s(6)}}>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(12)}}>{kcal} kcal</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>GI {gi}</AppText>
+          </View>
+          <Icon
+            family="Ionicons"
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={ms(14)}
+            color={Colors.textTertiary}
+          />
+        </View>
+
+        {/* Expanded detail */}
+        {expanded && (
+          <View style={sty.mealExpanded}>
+            {items.map((item, i) => (
+              <MealItemRow key={i} item={item} />
+            ))}
+            <NutrientsGrid nutrients={nutrients} />
+            <TouchableOpacity
+              style={sty.viewNutrientsBtn}
+              activeOpacity={0.7}
+              onPress={() => mealNav.navigate('NutrientsDetail', {mealTitle: title, mealTime: time})}>
+              <Icon family="Ionicons" name="nutrition-outline" size={ms(14)} color={Colors.white} />
+              <AppText variant="caption" color={Colors.white} style={{fontWeight: '600', flex: 1, marginLeft: s(6)}}>View Nutrients</AppText>
+              <Icon family="Ionicons" name="chevron-forward" size={ms(14)} color={Colors.white} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-      <View style={{flex: 1, marginLeft: s(10)}}>
-        <AppText variant="bodyBold" color={Colors.textTertiary}>Dinner</AppText>
-        <AppText variant="small" color={Colors.textTertiary}>Not logged yet</AppText>
-      </View>
-      <TouchableOpacity activeOpacity={0.7} style={sty.logPill}>
-        <AppText variant="caption" color={Colors.tealText}>+ Log</AppText>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
+    </TouchableOpacity>
+  );
+};
+
 
 const FoodRulesCard = () => (
   <View style={sty.card}>
@@ -369,10 +398,10 @@ const HeatmapGrid = () => {
     <View style={sty.card}>
       <View style={sty.cardHeader}>
         <AppText variant="bodyBold" color={Colors.textPrimary}>
-          Daily GI score {'\u00B7'} March 2026
+          Daily GI score {'-'} March 2026
         </AppText>
         <AppText variant="small" color={Colors.textTertiary}>
-          Green = low GI {'\u00B7'} Red = high GI
+          Green = low GI {'-'} Red = high GI
         </AppText>
       </View>
       <View style={sty.cardPad}>
@@ -477,23 +506,63 @@ const MonthlyView = () => (
 
 /* ─── Main Component ─── */
 
-const LifestyleFoodTab = () => {
-  const [view, setView] = useState('daily');
+const DateGroup = ({label}) => (
+  <View style={sty.dateGroup}>
+    <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+      {label}
+    </AppText>
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+  </View>
+);
 
+const LifestyleFoodTab = () => {
+  const navigation = useNavigation();
   return (
-    <ScrollView
-      style={sty.container}
-      contentContainerStyle={sty.content}
-      showsVerticalScrollIndicator={false}>
-      <ToggleBar
-        view={view}
-        setView={setView}
-        dateLabel="24 Mar 2026"
-        monthLabel="Mar 2026"
-      />
-      {view === 'daily' && <CalendarStrip />}
-      {view === 'daily' ? <DailyView /> : <MonthlyView />}
-    </ScrollView>
+    <View style={sty.container}>
+      {/* Ayu Intel banner */}
+      <TouchableOpacity style={sty.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('LifestyleDetail', {lifestyleId: 'nutrition'})}>
+        <View style={sty.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
+        <View style={{flex: 1}}>
+          <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Nutrition</AppText>
+          <AppText variant="subtext" color="rgba(255,255,255,0.7)">GI patterns - Meal timing - Diet recommendations</AppText>
+        </View>
+        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
+      </TouchableOpacity>
+
+      {/* Today */}
+      <DateGroup label="Today - 24 Mar 2026" />
+      <MealCard title="Breakfast" time="7:45 AM" kcal="380" gi="42" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="1:10 PM" kcal="620" gi="55" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+
+      {/* Yesterday */}
+      <DateGroup label="Yesterday - 23 Mar 2026" />
+      <MealCard title="Breakfast" time="8:00 AM" kcal="340" gi="38" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="1:30 PM" kcal="580" gi="48" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+      <MealCard title="Dinner" time="8:15 PM" kcal="510" gi="52" iconName="moon-outline" iconBg="#F3E8FF" items={BREAKFAST_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+
+      {/* 22 Mar 2026 */}
+      <DateGroup label="22 Mar 2026 - Saturday" />
+      <MealCard title="Breakfast" time="9:15 AM" kcal="420" gi="40" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="2:00 PM" kcal="590" gi="50" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+      <MealCard title="Dinner" time="8:45 PM" kcal="480" gi="46" iconName="moon-outline" iconBg="#F3E8FF" items={LUNCH_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+
+      {/* 21 Mar 2026 */}
+      <DateGroup label="21 Mar 2026 - Friday" />
+      <MealCard title="Breakfast" time="7:30 AM" kcal="360" gi="35" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="1:00 PM" kcal="640" gi="58" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+      <MealCard title="Dinner" time="7:50 PM" kcal="530" gi="44" iconName="moon-outline" iconBg="#F3E8FF" items={BREAKFAST_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+
+      {/* 20 Mar 2026 */}
+      <DateGroup label="20 Mar 2026 - Thursday" />
+      <MealCard title="Breakfast" time="8:10 AM" kcal="390" gi="44" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="1:20 PM" kcal="610" gi="60" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+
+      {/* 19 Mar 2026 */}
+      <DateGroup label="19 Mar 2026 - Wednesday" />
+      <MealCard title="Breakfast" time="7:50 AM" kcal="350" gi="36" iconName="cafe-outline" iconBg={Colors.amberBg} items={BREAKFAST_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+      <MealCard title="Lunch" time="1:45 PM" kcal="570" gi="52" iconName="restaurant-outline" iconBg={Colors.tealBg} items={LUNCH_ITEMS} nutrients={LUNCH_NUTRIENTS} />
+      <MealCard title="Dinner" time="8:30 PM" kcal="490" gi="48" iconName="moon-outline" iconBg="#F3E8FF" items={LUNCH_ITEMS} nutrients={BREAKFAST_NUTRIENTS} />
+    </View>
   );
 };
 
@@ -502,6 +571,13 @@ const LifestyleFoodTab = () => {
 const sty = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
   content: {paddingBottom: vs(32)},
+
+  /* Ayu Intel */
+  ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
+  ayuIconWrap: {width: ms(32), height: ms(32), borderRadius: ms(9), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
+
+  /* Date group */
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
 
   /* Toggle */
   toggleWrap: {marginBottom: vs(12)},
@@ -616,18 +692,49 @@ const sty = StyleSheet.create({
   /* Section title */
   sectionTitle: {marginBottom: vs(10), marginTop: vs(4)},
 
-  /* Meal card */
-  mealHeader: {
+  /* Meal row (Glucose-style) */
+  mealRow: {
+    backgroundColor: Colors.white,
+    borderRadius: ms(12),
+    borderWidth: 0.5,
+    borderColor: '#dde8e2',
+    marginBottom: vs(7),
+    overflow: 'hidden',
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  mealLeftBar: {
+    width: ms(4),
+  },
+  mealBody: {
+    flex: 1,
+  },
+  mealSummary: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: s(14),
-    paddingTop: vs(12),
-    paddingBottom: vs(8),
+    padding: ms(10),
+    gap: s(4),
+  },
+  mealExpanded: {
+    borderTopWidth: 0.5,
+    borderTopColor: '#f0f4f2',
+    paddingHorizontal: s(12),
+    paddingTop: vs(8),
+    paddingBottom: vs(6),
+  },
+  viewNutrientsBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.accent,
+    borderRadius: ms(10),
+    paddingVertical: vs(9),
+    paddingHorizontal: s(12),
+    marginTop: vs(8),
   },
   mealIcon: {
-    width: ms(34),
-    height: ms(34),
-    borderRadius: ms(10),
+    width: ms(30),
+    height: ms(30),
+    borderRadius: ms(8),
     alignItems: 'center',
     justifyContent: 'center',
   },

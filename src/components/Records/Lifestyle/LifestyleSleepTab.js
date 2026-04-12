@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import Svg, {Circle} from 'react-native-svg';
 import {
   scale as s,
@@ -525,23 +526,91 @@ const MonthlyView = () => (
 
 /* ─── Main Component ─── */
 
-const LifestyleSleepTab = () => {
-  const [view, setView] = useState('daily');
+const SLEEP_BAR_COLORS = {
+  good: Colors.accent,
+  fair: Colors.amber,
+  poor: Colors.red,
+};
+
+const SLEEP_RECORDS = [
+  {date: 'Today - 24 Mar 2026', bed: '11:45 PM', wake: '5:10 AM', hours: '5h 25m', totalMins: 325, score: 71, quality: 'poor', deep: '1.2h', rem: '1.3h', light: '2.4h', deepMins: 72, remMins: 78, lightMins: 144, awakeMins: 31, sleepLatency: 18, awakenings: 4, hrAvg: 62, hrMin: 54, hrv: 34, spo2: 95.8, breathRate: 16.2, tempDev: -0.2, restlessness: 24, hypnogram: [2,2,3,3,2,2,1,1,2,3,3,2,2,1,1,2,2,0,0,2,2,1,2,2,3,2,2,1,2,2]},
+  {date: 'Yesterday - 23 Mar 2026', bed: '11:20 PM', wake: '6:10 AM', hours: '6h 50m', totalMins: 410, score: 78, quality: 'fair', deep: '1.5h', rem: '1.4h', light: '3.2h', deepMins: 90, remMins: 84, lightMins: 192, awakeMins: 44, sleepLatency: 12, awakenings: 3, hrAvg: 59, hrMin: 51, hrv: 40, spo2: 96.4, breathRate: 15.6, tempDev: -0.3, restlessness: 16, hypnogram: [2,2,3,3,3,2,1,1,2,3,3,2,2,1,1,2,2,0,2,2,1,1,2,2,3,2,2,1,2,2]},
+  {date: '22 Mar 2026 - Saturday', bed: '11:00 PM', wake: '7:20 AM', hours: '8h 20m', totalMins: 500, score: 89, quality: 'good', deep: '2.0h', rem: '1.8h', light: '3.5h', deepMins: 120, remMins: 108, lightMins: 210, awakeMins: 62, sleepLatency: 8, awakenings: 2, hrAvg: 56, hrMin: 50, hrv: 48, spo2: 97.2, breathRate: 14.8, tempDev: -0.4, restlessness: 10, hypnogram: [2,2,3,3,3,2,2,1,1,2,3,3,3,2,1,1,2,2,0,2,2,1,1,2,2,3,3,2,1,2]},
+  {date: '21 Mar 2026 - Friday', bed: '12:15 AM', wake: '5:30 AM', hours: '5h 15m', totalMins: 315, score: 65, quality: 'poor', deep: '0.9h', rem: '1.1h', light: '2.6h', deepMins: 54, remMins: 66, lightMins: 156, awakeMins: 39, sleepLatency: 22, awakenings: 5, hrAvg: 64, hrMin: 56, hrv: 28, spo2: 95.1, breathRate: 16.8, tempDev: -0.1, restlessness: 32, hypnogram: [2,2,3,2,2,1,0,0,2,3,2,2,1,1,2,2,0,2,2,1,2,2,3,2,2,1,2,2,0,2]},
+  {date: '20 Mar 2026 - Thursday', bed: '10:50 PM', wake: '6:00 AM', hours: '7h 10m', totalMins: 430, score: 82, quality: 'good', deep: '1.7h', rem: '1.5h', light: '3.1h', deepMins: 102, remMins: 90, lightMins: 186, awakeMins: 52, sleepLatency: 10, awakenings: 2, hrAvg: 57, hrMin: 51, hrv: 44, spo2: 96.9, breathRate: 15.2, tempDev: -0.3, restlessness: 12, hypnogram: [2,2,3,3,3,2,2,1,1,2,3,3,2,2,1,1,2,2,0,2,2,1,1,2,3,3,2,1,2,2]},
+  {date: '19 Mar 2026 - Wednesday', bed: '11:30 PM', wake: '5:45 AM', hours: '6h 15m', totalMins: 375, score: 74, quality: 'fair', deep: '1.3h', rem: '1.2h', light: '2.9h', deepMins: 78, remMins: 72, lightMins: 174, awakeMins: 51, sleepLatency: 15, awakenings: 3, hrAvg: 60, hrMin: 53, hrv: 36, spo2: 96.2, breathRate: 15.8, tempDev: -0.2, restlessness: 20, hypnogram: [2,2,3,3,2,2,1,1,2,3,3,2,2,1,1,2,2,0,0,2,2,1,2,2,3,2,2,1,2,2]},
+];
+
+const DateGroup = ({label}) => (
+  <View style={sty.dateGroup}>
+    <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+      {label}
+    </AppText>
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+  </View>
+);
+
+const SleepRow = ({record, onPress}) => {
+  const barColor = SLEEP_BAR_COLORS[record.quality] || Colors.accent;
 
   return (
-    <ScrollView
-      style={sty.container}
-      contentContainerStyle={sty.content}
-      showsVerticalScrollIndicator={false}>
-      <ToggleBar
-        view={view}
-        setView={setView}
-        dateLabel="24 Mar 2026"
-        monthLabel="Mar 2026"
-      />
-      {view === 'daily' && <CalendarStrip />}
-      {view === 'daily' ? <DailyView /> : <MonthlyView />}
-    </ScrollView>
+    <TouchableOpacity style={sty.sleepRow} activeOpacity={0.7} onPress={onPress}>
+      <View style={[sty.sleepLeftBar, {backgroundColor: barColor}]} />
+      <View style={sty.sleepBody}>
+        <View style={sty.sleepSummary}>
+          <View style={[sty.sleepIcon, {backgroundColor: barColor + '18'}]}>
+            <Icon family="Ionicons" name="moon-outline" size={ms(14)} color={barColor} />
+          </View>
+          <View style={{flex: 1, marginLeft: s(8)}}>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(13)}}>{record.hours}</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>{record.bed} - {record.wake}</AppText>
+          </View>
+          <View style={{alignItems: 'flex-end', marginRight: s(6)}}>
+            <AppText variant="bodyBold" color={barColor} style={{fontSize: ms(13)}}>{record.score}</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>score</AppText>
+          </View>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color={Colors.textPrimary} />
+        </View>
+        <View style={sty.sleepStagesRow}>
+          <View style={sty.sleepStageItem}>
+            <View style={[sty.sleepStageDot, {backgroundColor: '#3C3489'}]} />
+            <AppText variant="small" color={Colors.textSecondary}>Deep {record.deep}</AppText>
+          </View>
+          <View style={sty.sleepStageItem}>
+            <View style={[sty.sleepStageDot, {backgroundColor: '#9F94ED'}]} />
+            <AppText variant="small" color={Colors.textSecondary}>REM {record.rem}</AppText>
+          </View>
+          <View style={sty.sleepStageItem}>
+            <View style={[sty.sleepStageDot, {backgroundColor: '#7F77DD'}]} />
+            <AppText variant="small" color={Colors.textSecondary}>Light {record.light}</AppText>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const LifestyleSleepTab = () => {
+  const navigation = useNavigation();
+  return (
+    <View style={sty.container}>
+      {/* Ayu Intel banner */}
+      <TouchableOpacity style={sty.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('LifestyleDetail', {lifestyleId: 'sleep'})}>
+        <View style={sty.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
+        <View style={{flex: 1}}>
+          <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Sleep</AppText>
+          <AppText variant="subtext" color="rgba(255,255,255,0.7)">Sleep patterns - Recovery - HRV trends</AppText>
+        </View>
+        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
+      </TouchableOpacity>
+
+      {SLEEP_RECORDS.map((rec, i) => (
+        <View key={i}>
+          <DateGroup label={rec.date} />
+          <SleepRow record={rec} onPress={() => navigation.navigate('SleepDetail', {record: rec})} />
+        </View>
+      ))}
+    </View>
   );
 };
 
@@ -550,6 +619,23 @@ const LifestyleSleepTab = () => {
 const sty = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
   content: {paddingBottom: vs(32)},
+
+  /* Ayu Intel */
+  ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
+  ayuIconWrap: {width: ms(32), height: ms(32), borderRadius: ms(9), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
+
+  /* Date group */
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
+
+  /* Sleep row */
+  sleepRow: {backgroundColor: Colors.white, borderRadius: ms(12), borderWidth: 0.5, borderColor: '#dde8e2', marginBottom: vs(7), overflow: 'hidden', flexDirection: 'row', alignItems: 'stretch'},
+  sleepLeftBar: {width: ms(4)},
+  sleepBody: {flex: 1},
+  sleepSummary: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: ms(10), paddingTop: ms(10), paddingBottom: ms(6), gap: s(4)},
+  sleepIcon: {width: ms(30), height: ms(30), borderRadius: ms(8), alignItems: 'center', justifyContent: 'center'},
+  sleepStagesRow: {flexDirection: 'row', paddingHorizontal: ms(10), paddingBottom: ms(10), gap: s(12)},
+  sleepStageItem: {flexDirection: 'row', alignItems: 'center', gap: s(4)},
+  sleepStageDot: {width: ms(6), height: ms(6), borderRadius: ms(3)},
 
   /* Toggle */
   toggleWrap: {marginBottom: vs(12)},

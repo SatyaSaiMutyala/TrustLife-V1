@@ -23,8 +23,8 @@ import AyuTab from '../../../components/Fitness/Medication/AyuTab';
 const TABS = [
   {key: 'today', label: 'Today', emoji: '\uD83D\uDC8A'},
   {key: 'mymeds', label: 'My Meds', emoji: '\uD83D\uDCCB'},
-  {key: 'adherence', label: 'Adherence', emoji: '\uD83D\uDCCA'},
-  {key: 'ayu', label: 'Ayu', emoji: '\uD83C\uDF3F'},
+//   {key: 'adherence', label: 'Adherence', emoji: '\uD83D\uDCCA'},
+//   {key: 'ayu', label: 'Ayu', emoji: '\uD83C\uDF3F'},
 ];
 
 /* ─── Helpers ───────────────────────────────────────── */
@@ -58,10 +58,6 @@ const MedicationScreen = () => {
         return <TodayTab meds={meds} setMeds={setMeds} />;
       case 'mymeds':
         return <MyMedsTab meds={meds} setMeds={setMeds} />;
-      case 'adherence':
-        return <AdherenceTab meds={meds} />;
-      case 'ayu':
-        return <AyuTab meds={meds} />;
       default:
         return null;
     }
@@ -96,7 +92,7 @@ const MedicationScreen = () => {
             style={styles.backBtn}
             onPress={() => navigation.goBack()}>
             <AppText variant="body" style={styles.backText}>
-              {'\u2039'} Profile
+              {'\u2039'} Tracking
             </AppText>
           </TouchableOpacity>
 

@@ -429,7 +429,6 @@ const RecordCard = ({rec}) => {
 
 /* ─── Lifestyle Sub-Tabs ─── */
 const LIFESTYLE_TABS = [
-  {key: 'summary', label: 'Summary', icon: 'grid-outline'},
   {key: 'food', label: 'Food', icon: 'restaurant-outline'},
   {key: 'sleep', label: 'Sleep', icon: 'moon-outline'},
   {key: 'medication', label: 'Medication', icon: 'medical-outline'},
@@ -439,19 +438,18 @@ const LIFESTYLE_TABS = [
 export const LIFESTYLE_TAB_LIST = LIFESTYLE_TABS;
 
 export const LifestyleSubTabs = ({activeSubTab: controlledTab, onSubTabChange} = {}) => {
-  const [internalSubTab, setInternalSubTab] = useState('summary');
+  const [internalSubTab, setInternalSubTab] = useState('food');
   const isControlled = controlledTab !== undefined;
   const activeSubTab = isControlled ? controlledTab : internalSubTab;
   const setActiveSubTab = isControlled ? (onSubTabChange || (() => {})) : setInternalSubTab;
 
   const renderTab = () => {
     switch (activeSubTab) {
-      case 'summary': return <LifestyleSummaryTab onTabChange={setActiveSubTab} />;
       case 'food': return <LifestyleFoodTab />;
       case 'sleep': return <LifestyleSleepTab />;
       case 'medication': return <LifestyleMedicationTab />;
       case 'activity': return <LifestyleActivityTab />;
-      default: return <LifestyleSummaryTab onTabChange={setActiveSubTab} />;
+      default: return <LifestyleFoodTab />;
     }
   };
 

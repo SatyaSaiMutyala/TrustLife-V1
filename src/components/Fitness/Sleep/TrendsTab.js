@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   content: {
-    paddingHorizontal: s(16),
+    // paddingHorizontal: s(16),
     paddingTop: vs(16),
     paddingBottom: vs(40),
   },

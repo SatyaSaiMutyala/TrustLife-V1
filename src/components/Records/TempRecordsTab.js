@@ -150,6 +150,18 @@ const TempRecordsTab = ({navigation}) => {
         })}
       </ScrollView>
 
+      {/* Ayu Intel button */}
+      <View style={{paddingHorizontal: s(6), marginBottom: vs(12)}}>
+        <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('SymptomsDetail', {symptomId: 'temperature', initialTab: 'tempIntel'})}>
+          <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
+          <View style={{flex: 1}}>
+            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Temperature</AppText>
+            <AppText variant="subtext" color="rgba(255,255,255,0.7)">Fever history - Condition risk - Patterns</AppText>
+          </View>
+          <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
+        </TouchableOpacity>
+      </View>
+
       <View style={{paddingHorizontal: s(6)}}>
         {/* Summary cards */}
         {activeFilter === 'all' && (

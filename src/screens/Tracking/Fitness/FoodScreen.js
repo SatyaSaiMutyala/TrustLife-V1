@@ -23,8 +23,6 @@ import TrendsTab from '../../../components/Fitness/Food/TrendsTab';
 const TABS = [
   {key: 'today', label: 'Today', emoji: '\uD83C\uDF7D'},
   {key: 'add', label: 'Add food', emoji: '\u270F'},
-  {key: 'nutrients', label: 'Nutrients', emoji: '\uD83D\uDD2C'},
-  {key: 'trends', label: 'Trends', emoji: '\uD83D\uDCCA'},
 ];
 
 /* ─── Helpers ───────────────────────────────────────── */
@@ -83,10 +81,10 @@ const FoodScreen = () => {
             onDone={handleDoneAdding}
           />
         );
-      case 'nutrients':
-        return <NutrientsTab meals={meals} />;
-      case 'trends':
-        return <TrendsTab />;
+    //   case 'nutrients':
+    //     return <NutrientsTab meals={meals} />;
+    //   case 'trends':
+    //     return <TrendsTab />;
 
       default:
         return null;
@@ -126,7 +124,7 @@ const FoodScreen = () => {
             style={styles.backBtn}
             onPress={() => navigation.goBack()}>
             <AppText variant="body" style={styles.backText}>
-              {'\u2039'} Dashboard
+              {'\u2039'} Tracking
             </AppText>
           </TouchableOpacity>
 

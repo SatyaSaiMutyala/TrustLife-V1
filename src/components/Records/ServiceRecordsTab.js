@@ -82,7 +82,20 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
     );
   });
 
-  /* Group by category */
+  /* Group by date */
+  const dateGrouped = {};
+  filtered.forEach(inv => {
+    const dateKey = inv.date || 'Unknown';
+    if (!dateGrouped[dateKey]) dateGrouped[dateKey] = [];
+    dateGrouped[dateKey].push(inv);
+  });
+  // Sort date keys newest first (parse "24 Mar 2026" etc.)
+  const parseDateKey = (d) => {
+    try { return new Date(d).getTime(); } catch { return 0; }
+  };
+  const dateOrder = Object.keys(dateGrouped).sort((a, b) => parseDateKey(b) - parseDateKey(a));
+
+  // Keep old grouped for legacy refs
   const grouped = {};
   filtered.forEach(inv => {
     if (!grouped[inv.cat]) grouped[inv.cat] = [];
@@ -159,16 +172,18 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
           </TouchableOpacity>
         </View>
       ) : (
-        catOrder.map(cat => {
-          if (!grouped[cat]) return null;
-          const meta = CAT_META[cat] || {emoji: '📄', section: cat};
-          return (
-            <View key={cat}>
-              {/* Section header */}
-              <AppText variant="sectionTitle" style={sty.sectionHeader}>
-                {meta.emoji} {meta.section}
+        dateOrder.map(dateKey => (
+          <View key={dateKey}>
+            {/* Date section header */}
+            <View style={sty.dateGroup}>
+              <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+                {dateKey}
               </AppText>
-              {grouped[cat].map(inv => (
+              <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+            </View>
+            {dateGrouped[dateKey].map(inv => {
+              const meta = CAT_META[inv.cat] || {emoji: '📄', section: inv.cat};
+              return (
                 <TouchableOpacity
                   key={inv.id}
                   style={sty.card}
@@ -195,7 +210,6 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                     </View>
                     <View style={sty.invRight}>
                       <AppText style={sty.invAmount}>{fmt(inv.amount)}</AppText>
-                      <AppText variant="caption" color={Colors.textTertiary}>{inv.date}</AppText>
                     </View>
                   </View>
                   {/* Footer row */}
@@ -222,10 +236,10 @@ const ServiceRecordsTab = ({navigation, onAddRef, activeFilter = 'all'}) => {
                     </View>
                   </View>
                 </TouchableOpacity>
-              ))}
-            </View>
-          );
-        })
+              );
+            })}
+          </View>
+        ))
       )}
 
       {/* ── 6. Invoice Detail Modal ── */}
@@ -712,6 +726,7 @@ const sty = StyleSheet.create({
 
   /* Section header */
   sectionHeader: {marginTop: vs(8), marginBottom: vs(6)},
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
 
   /* Empty state */
   emptyWrap: {alignItems: 'center', paddingVertical: vs(40)},

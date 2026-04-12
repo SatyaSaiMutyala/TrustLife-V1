@@ -375,27 +375,6 @@ const TodayTab = ({meals, setMeals, water, setWater, onAddFood, onSwitchTab}) =>
         )}
       </View>
 
-      {/* ── 6. AYU DAILY INSIGHT ─────────────────────── */}
-      <View style={[S.card, S.ayuCard]}>
-        <View style={S.ayuTop}>
-          <AppText style={{fontSize: ms(22), marginRight: s(8)}}>{'\uD83C\uDF3F'}</AppText>
-          <View style={{flex: 1}}>
-            <AppText variant="bodyBold" color={Colors.primary}>Ayu Daily Insight</AppText>
-            {ayuFlags.map((f, i) => (
-              <View key={i} style={S.ayuRow}>
-                <AppText style={S.ayuIco}>{f.ico}</AppText>
-                <AppText variant="caption" style={{flex: 1}}>{f.msg}</AppText>
-              </View>
-            ))}
-            {dinnerRec && (
-              <View style={S.ayuRow}>
-                <AppText style={S.ayuIco}>{'\uD83C\uDF7D'}</AppText>
-                <AppText variant="caption" color={Colors.primary} style={{flex: 1}}>{dinnerRec}</AppText>
-              </View>
-            )}
-          </View>
-        </View>
-      </View>
 
       {/* ── 7. ADD ANOTHER MEAL ──────────────────────── */}
       <TouchableOpacity style={S.addMealBtn} onPress={handleAddMeal}>

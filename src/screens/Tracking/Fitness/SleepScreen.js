@@ -13,16 +13,6 @@ import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
 
 import TonightTab from '../../../components/Fitness/Sleep/TonightTab';
-import MorningTab from '../../../components/Fitness/Sleep/MorningTab';
-import TrendsTab from '../../../components/Fitness/Sleep/TrendsTab';
-
-/* ─── Tab configuration ─────────────────────────────── */
-
-const TABS = [
-  {key: 'tonight', label: 'Tonight', emoji: '\uD83C\uDF19'},
-  {key: 'morning', label: 'Morning', emoji: '\u2600\uFE0F'},
-  {key: 'trends', label: 'Trends', emoji: '\uD83D\uDCCA'},
-];
 
 /* ─── Component ─────────────────────────────────────── */
 
@@ -30,63 +20,20 @@ const SleepScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  // ── State ──────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('tonight');
   const [isTracking, setIsTracking] = useState(false);
-
-  // ── Handlers ───────────────────────────────────────
   const handleToggleTracking = () => setIsTracking((prev) => !prev);
 
-  // ── Tab content ────────────────────────────────────
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'tonight':
-        return (
-          <TonightTab
-            isTracking={isTracking}
-            onToggleTracking={handleToggleTracking}
-          />
-        );
-      case 'morning':
-        return <MorningTab />;
-      case 'trends':
-        return <TrendsTab />;
-      default:
-        return null;
-    }
-  };
-
-  // ── Bottom bar label ───────────────────────────────
   const renderBottomBar = () => {
-    if (activeTab === 'trends') return null;
-
-    let label = '';
-    let icon = '';
-    let onPress = null;
-    let btnStyle = styles.saveBtn;
-
-    if (activeTab === 'tonight') {
-      if (isTracking) {
-        label = 'Stop tracking';
-        icon = '\u23F9';
-        btnStyle = styles.stopBtn;
-      } else {
-        label = 'Start sleep tracking';
-        icon = '\uD83C\uDF19';
-      }
-      onPress = handleToggleTracking;
-    } else if (activeTab === 'morning') {
-      label = 'Save morning data';
-      icon = '\uD83D\uDCBE';
-      onPress = () => {};
-    }
+    const label = isTracking ? 'Stop tracking' : 'Start sleep tracking';
+    const icon = isTracking ? '\u23F9' : '\uD83C\uDF19';
+    const btnStyle = isTracking ? styles.stopBtn : styles.saveBtn;
 
     return (
       <View style={[styles.bottomBar, {paddingBottom: Math.max(insets.bottom, vs(12))}]}>
         <TouchableOpacity
           style={btnStyle}
           activeOpacity={0.8}
-          onPress={onPress}>
+          onPress={handleToggleTracking}>
           <AppText variant="bodyBold" style={styles.saveBtnText}>
             {icon} {label}
           </AppText>
@@ -106,7 +53,7 @@ const SleepScreen = () => {
             style={styles.backBtn}
             onPress={() => navigation.goBack()}>
             <AppText variant="body" style={styles.backText}>
-              {'\u2039'} Fitness
+              {'\u2039'} Tracking
             </AppText>
           </TouchableOpacity>
 
@@ -125,31 +72,10 @@ const SleepScreen = () => {
         </AppText>
       </View>
 
-      {/* ── TAB BAR ────────────────────────────────────── */}
-      <View style={styles.tabBar}>
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.key;
-          return (
-            <TouchableOpacity
-              key={tab.key}
-              style={[styles.tab, isActive && styles.tabActive]}
-              activeOpacity={0.7}
-              onPress={() => setActiveTab(tab.key)}>
-              <AppText
-                variant="small"
-                style={[
-                  styles.tabLabel,
-                  isActive && styles.tabLabelActive,
-                ]}>
-                {tab.emoji} {tab.label}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+      {/* ── CONTENT ──────────────────────────────────── */}
+      <View style={styles.content}>
+        <TonightTab isTracking={isTracking} onToggleTracking={handleToggleTracking} />
       </View>
-
-      {/* ── TAB CONTENT ────────────────────────────────── */}
-      <View style={styles.content}>{renderTabContent()}</View>
 
       {/* ── BOTTOM BAR ─────────────────────────────────── */}
       {renderBottomBar()}

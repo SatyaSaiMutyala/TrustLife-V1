@@ -474,7 +474,6 @@ const AyuTab = ({meds}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: s(16),
     paddingTop: vs(8),
   },
 

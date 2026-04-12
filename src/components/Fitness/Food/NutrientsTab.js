@@ -427,84 +427,6 @@ const NutrientsTab = ({meals}) => {
         </View>
       )}
 
-      {/* ─── 5. Ayu Intelligence ─────────────── */}
-      <View style={sty.section}>
-        <View style={sty.ayuCard}>
-          <View style={sty.ayuHeader}>
-            <View style={sty.ayuAvatar}>
-              <AppText style={{fontSize: ms(18)}}>{'🌿'}</AppText>
-            </View>
-            <AppText variant="bodyBold" color={Colors.white} style={{marginLeft: s(8), fontSize: ms(16)}}>
-              Ayu Intelligence
-            </AppText>
-          </View>
-
-          {/* Summary tiles */}
-          <View style={sty.ayuTileRow}>
-            {scoreStrip.map((t) => (
-              <View key={t.label} style={sty.ayuTile}>
-                <AppText variant="small" color={Colors.heroTextMuted}>{t.label}</AppText>
-                <AppText variant="bodyBold" color={Colors.white} style={{fontSize: ms(16)}}>{t.pct}%</AppText>
-              </View>
-            ))}
-          </View>
-
-          {/* Priority insights */}
-          {ayuInsights.length > 0 && (
-            <View style={{marginTop: vs(12)}}>
-              <AppText variant="caption" color={Colors.heroTextMuted} style={{fontWeight: '600', marginBottom: vs(6)}}>
-                Priority insights
-              </AppText>
-              {ayuInsights.map((ins, idx) => (
-                <InsightCard key={idx} icon={ins.icon} title={ins.title} text={ins.text} type={ins.type} />
-              ))}
-            </View>
-          )}
-
-          {/* What's going well */}
-          {positives.length > 0 && (
-            <View style={{marginTop: vs(14)}}>
-              <AppText variant="caption" color={Colors.paleGreen} style={{fontWeight: '600', marginBottom: vs(6)}}>
-                What's going well
-              </AppText>
-              <View style={sty.positiveChips}>
-                {positives.map((chip, idx) => (
-                  <View key={idx} style={sty.positiveChip}>
-                    <AppText style={{fontSize: ms(12)}}>{chip.icon}</AppText>
-                    <AppText variant="small" color={Colors.tealText} style={{marginLeft: s(4)}}>{chip.label}</AppText>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Dinner recommendation */}
-          {dinnerRec && (
-            <View style={sty.dinnerRec}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <AppText style={{fontSize: ms(16)}}>{'🍽️'}</AppText>
-                <AppText variant="bodyBold" color={Colors.purpleText} style={{marginLeft: s(6)}}>
-                  Dinner recommendation
-                </AppText>
-              </View>
-              <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(4)}}>
-                Remaining calorie budget: {dinnerRec.calBudget} kcal
-              </AppText>
-              <AppText variant="caption" color={Colors.purpleText} style={{marginTop: vs(4), lineHeight: ms(16)}}>
-                {dinnerRec.text}
-              </AppText>
-              <View style={sty.gapChips}>
-                {dinnerRec.gaps.map((gap, idx) => (
-                  <View key={idx} style={sty.gapChip}>
-                    <AppText variant="small" color={Colors.amberText}>fills {gap}</AppText>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </View>
-      </View>
-
       <View style={{height: vs(100)}} />
     </ScrollView>
   );
@@ -512,7 +434,7 @@ const NutrientsTab = ({meals}) => {
 
 /* ─── Styles ──────────────────────────────────────── */
 const sty = StyleSheet.create({
-  container: {flex: 1, paddingHorizontal: s(16), paddingTop: vs(8)},
+  container: {flex: 1, paddingTop: vs(8)},
 
   /* Card */
   card: {backgroundColor: Colors.white, borderRadius: ms(14), padding: s(14), borderWidth: 1, borderColor: Colors.borderLight},

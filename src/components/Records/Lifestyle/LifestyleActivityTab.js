@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
 import AppText from '../../shared/AppText';
@@ -124,324 +125,144 @@ const clinicalImpact = [
 ];
 
 
-const LifestyleActivityTab = () => {
-  const [view, setView] = useState('daily');
+const ACT_BAR_COLORS = {
+  high: Colors.accent,
+  medium: Colors.amber,
+  low: Colors.red,
+};
 
-  const renderToggle = () => (
-    <View style={styles.toggleRow}>
-      {['daily', 'monthly'].map(v => (
-        <TouchableOpacity
-          key={v}
-          style={[styles.toggleBtn, view === v && styles.toggleBtnActive]}
-          onPress={() => setView(v)}
-          activeOpacity={0.7}>
-          <AppText
-            variant="caption"
-            color={view === v ? Colors.white : Colors.textSecondary}
-            style={{fontWeight: view === v ? '600' : '400'}}>
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </AppText>
-        </TouchableOpacity>
-      ))}
+const a = (type, icon, iconBg, iconColor, time, duration, steps, distance, kcal, zone, note) => ({
+  type, icon, iconBg, iconColor, time, duration, steps, distance, kcal, zone, note,
+});
+
+const ACTIVITY_RECORDS = [
+  {date: 'Today - 24 Mar 2026', total: '8,240 steps - 5.8 km - 42 active min', level: 'high', activities: [
+    a('Brisk walk', 'walk-outline', Colors.tealBg, Colors.tealText, '7:50 AM', '22 min', '2,400', '1.7 km', 140, 'Aerobic', 'MET 4.5 - Zone 2-3 HR'),
+    a('Stair climb', 'trending-up-outline', Colors.amberBg, Colors.amberText, '10:30 AM', '8 min', '960', '—', 85, 'Threshold', '6 flights at office'),
+    a('Leisure walk', 'walk-outline', '#EAF3DE', '#4A7C23', '1:40 PM', '10 min', '1,040', '0.8 km', 55, 'Easy', 'Post-lunch - glucose dropped 18 mg/dL'),
+    a('Power walk', 'walk-outline', Colors.tealBg, Colors.tealText, '6:30 PM', '20 min', '2,200', '1.6 km', 130, 'Aerobic', 'Post-dinner walk target hit'),
+  ]},
+  {date: 'Yesterday - 23 Mar 2026', total: '10,120 steps - 7.1 km - 55 active min', level: 'high', activities: [
+    a('Brisk walk', 'walk-outline', Colors.tealBg, Colors.tealText, '6:45 AM', '35 min', '3,800', '2.8 km', 210, 'Aerobic', 'Best walk this week - 5:30 AM alarm'),
+    a('Light jog', 'fitness-outline', Colors.blueBg, Colors.blueText, '7:20 AM', '8 min', '1,100', '0.9 km', 95, 'Threshold', 'Last 8 min of morning session'),
+    a('Stair climb', 'trending-up-outline', Colors.amberBg, Colors.amberText, '11:00 AM', '5 min', '600', '—', 55, 'Threshold', '4 flights'),
+    a('Leisure walk', 'walk-outline', '#EAF3DE', '#4A7C23', '8:30 PM', '20 min', '2,120', '1.4 km', 95, 'Easy', 'Glucose dropped 22 mg/dL after dinner'),
+  ]},
+  {date: '22 Mar 2026 - Saturday', total: '12,600 steps - 9.4 km - 68 active min', level: 'high', activities: [
+    a('Hiking', 'trail-sign-outline', '#EAF3DE', '#4A7C23', '7:00 AM', '55 min', '7,400', '5.5 km', 380, 'Aerobic', 'KBR Park trail - MET 5.8'),
+    a('Cycling', 'bicycle-outline', Colors.amberBg, Colors.amberText, '5:30 PM', '25 min', '—', '6.2 km', 220, 'Aerobic', 'Evening ride around Hussain Sagar'),
+    a('Leisure walk', 'walk-outline', Colors.tealBg, Colors.tealText, '8:45 PM', '15 min', '1,600', '1.1 km', 65, 'Easy', 'Post-dinner cooldown'),
+  ]},
+  {date: '21 Mar 2026 - Friday', total: '11,800 steps - 8.2 km - 62 active min', level: 'high', activities: [
+    a('Brisk walk', 'walk-outline', Colors.tealBg, Colors.tealText, '6:30 AM', '40 min', '4,200', '3.1 km', 240, 'Aerobic', 'Longest walk this week'),
+    a('Stair climb', 'trending-up-outline', Colors.amberBg, Colors.amberText, 'Office hours', null, '1,200', '—', 110, 'Threshold', '8 flights throughout the day'),
+    a('Zumba', 'musical-notes-outline', '#FCE4EC', '#C62828', '7:00 PM', '30 min', '3,400', '—', 250, 'Cardio', 'Community class - MET 6.5'),
+    a('Leisure walk', 'walk-outline', '#EAF3DE', '#4A7C23', '8:15 PM', '15 min', '1,600', '1.1 km', 65, 'Easy', null),
+  ]},
+  {date: '20 Mar 2026 - Thursday', total: '5,200 steps - 3.5 km - 18 active min', level: 'low', activities: [
+    a('Leisure walk', 'walk-outline', Colors.redBg, Colors.redText, '1:15 PM', '12 min', '1,200', '0.9 km', 50, 'Easy', 'Only walk today - back pain'),
+    a('Elliptical', 'sync-outline', Colors.blueBg, Colors.blueText, '9:00 PM', '15 min', '1,800', '—', 90, 'Easy', 'Low impact due to back - MET 5.5'),
+  ]},
+  {date: '19 Mar 2026 - Wednesday', total: '9,800 steps - 6.9 km - 48 active min', level: 'high', activities: [
+    a('Brisk walk', 'walk-outline', Colors.tealBg, Colors.tealText, '7:00 AM', '30 min', '3,200', '2.3 km', 175, 'Aerobic', null),
+    a('Swimming', 'water-outline', Colors.blueBg, Colors.blueText, '6:00 PM', '25 min', '—', '0.8 km', 190, 'Aerobic', 'Lap pool - MET 6.0 - great for recovery'),
+    a('Leisure walk', 'walk-outline', '#EAF3DE', '#4A7C23', '8:20 PM', '18 min', '2,000', '1.5 km', 85, 'Easy', 'Glucose response improved post-dinner'),
+  ]},
+];
+
+const DateGroup = ({label}) => (
+  <View style={styles.dateGroup}>
+    <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+      {label}
+    </AppText>
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+  </View>
+);
+
+const DaySummaryPill = ({total, level}) => {
+  const color = ACT_BAR_COLORS[level] || Colors.accent;
+  return (
+    <View style={[styles.daySummary, {borderLeftColor: color}]}>
+      <Icon family="Ionicons" name="footsteps-outline" size={ms(13)} color={color} />
+      <AppText variant="small" color={Colors.textSecondary} style={{flex: 1, marginLeft: s(6)}}>{total}</AppText>
     </View>
   );
+};
 
-  const renderDateNav = () => (
-    <View style={styles.dateNav}>
-      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
-        <Icon family="Ionicons" name="chevron-back" size={ms(16)} color={Colors.textSecondary} />
-      </TouchableOpacity>
-      <AppText variant="bodyBold" color={Colors.textPrimary}>Tue, 24 Mar 2026</AppText>
-      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
-        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color={Colors.textSecondary} />
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderCalendarStrip = () => (
-    <View style={styles.calendarStrip}>
-      {calendarDays.map((d, i) => (
-        <TouchableOpacity
-          key={i}
-          style={[styles.calDay, d.active && styles.calDayActive]}
-          activeOpacity={0.7}>
-          <AppText variant="small" color={d.active ? Colors.white : Colors.textTertiary}>
-            {d.day}
-          </AppText>
-          <AppText
-            variant="bodyBold"
-            color={d.active ? Colors.white : Colors.textPrimary}
-            style={{marginTop: vs(2)}}>
-            {d.date}
-          </AppText>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
-  const renderDailyView = () => (
-    <View>
-      {/* Hero card */}
-      <View style={[styles.card, {borderRadius: ms(16)}]}>
-        <AppText variant="caption" color={Colors.textSecondary} style={{marginBottom: vs(10)}}>
-          Today's activity {'\u00B7'} Tue 24 Mar
-        </AppText>
-
-        <View style={styles.heroRow}>
-          {heroMetrics.map((m, i) => (
-            <View key={i} style={styles.heroMetric}>
-              <AppText variant="small" color={Colors.textSecondary}>{m.label}</AppText>
-              <View style={{flexDirection: 'row', alignItems: 'baseline', marginTop: vs(2)}}>
-                <AppText variant="header" color={Colors.primary}>{m.value}</AppText>
-                {m.target && (
-                  <AppText variant="small" color={Colors.textTertiary}> {m.target}</AppText>
-                )}
-              </View>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, {width: `${m.pct}%`, backgroundColor: m.barColor}]} />
-              </View>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Heart rate zones card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>
-          Heart rate zones {'\u00B7'} Today
-        </AppText>
-
-        {/* Colored bar */}
-        <View style={styles.hrBar}>
-          {hrZones.map((z, i) => (
-            <View key={i} style={{flex: z.flex, backgroundColor: z.color, height: vs(10)}} />
-          ))}
-        </View>
-
-        {/* Zone labels */}
-        <View style={styles.hrLabels}>
-          {hrZones.map((z, i) => (
-            <View key={i} style={{flex: z.flex, alignItems: 'center'}}>
-              <AppText variant="small" color={Colors.textTertiary}>{z.label}</AppText>
-            </View>
-          ))}
-        </View>
-
-        {/* Time grid */}
-        <View style={styles.hrGrid}>
-          {hrDetails.map((h, i) => (
-            <View key={i} style={styles.hrGridItem}>
-              <AppText variant="bodyBold" color={Colors.textPrimary}>{h.time}</AppText>
-              <AppText variant="small" color={Colors.textSecondary}>{h.label}</AppText>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Activity breakdown card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>Activity breakdown</AppText>
-
-        {activityBreakdown.map((a, i) => (
-          <View key={i} style={[styles.actRow, i < activityBreakdown.length - 1 && styles.rowBorder]}>
-            <View style={[styles.actIcon, {backgroundColor: a.iconBg}]}>
-              <Icon family="Ionicons" name={a.icon} size={ms(16)} color={a.iconColor} />
-            </View>
-            <View style={{flex: 1}}>
-              <View style={styles.actHeader}>
-                <AppText variant="bodyBold" style={{flex: 1}}>
-                  {a.title}{a.time ? ` ${a.time}` : ''}
-                </AppText>
-                <View style={[styles.pill, {backgroundColor: a.statusBg}]}>
-                  <AppText variant="small" color={a.statusColor}>{a.status}</AppText>
-                </View>
-              </View>
-              <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(2)}}>
-                {a.detail}
-              </AppText>
-            </View>
-          </View>
-        ))}
-      </View>
-
-      {/* Green insight */}
-      <View style={[styles.insightBox, {backgroundColor: Colors.tealBg}]}>
-        <Icon family="Ionicons" name="analytics-outline" size={ms(16)} color={Colors.tealText} />
-        <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-          On days you do a post-dinner walk (8 this month), fasting glucose averages 7.4 vs 8.9 on skip days. That single habit is your biggest glucose lever.
-        </AppText>
-      </View>
-
-      {/* Hydration card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>Hydration</AppText>
-        <AppText variant="small" color={Colors.textSecondary} style={{marginBottom: vs(8)}}>
-          Target 2.5L for T2DM + HTN
-        </AppText>
-
-        <View style={styles.hydrationRow}>
-          {/* Left */}
-          <View style={{flex: 1}}>
-            <AppText variant="screenName" color="#185FA5">1.4L</AppText>
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(2)}}>
-              of 2.5L target {'\u00B7'} 56%
-            </AppText>
-            <View style={[styles.barTrack, {marginTop: vs(6)}]}>
-              <View style={[styles.barFill, {width: '56%', backgroundColor: '#185FA5'}]} />
-            </View>
-          </View>
-
-          {/* Right mini bars */}
-          <View style={styles.miniBars}>
-            {hydrationBars.map((b, i) => (
-              <View key={i} style={styles.miniBarCol}>
-                <View style={{flex: 1 - b.height}} />
-                <View
-                  style={{
-                    flex: b.height,
-                    backgroundColor: b.color,
-                    borderRadius: ms(3),
-                    width: s(12),
-                  }}
-                />
-              </View>
-            ))}
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
-  const renderMonthlyView = () => (
-    <View>
-      {/* Month strip */}
-      <View style={styles.monthStrip}>
-        {months.map((m, i) => (
-          <TouchableOpacity
-            key={i}
-            style={[styles.monthBtn, m === 'Mar' && styles.monthBtnActive]}
-            activeOpacity={0.7}>
-            <AppText
-              variant="caption"
-              color={m === 'Mar' ? Colors.white : Colors.textSecondary}
-              style={{fontWeight: m === 'Mar' ? '600' : '400'}}>
-              {m}
-            </AppText>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Monthly stats row */}
-      <View style={styles.statsRow}>
-        {monthlyStats.map((stat, i) => (
-          <View key={i} style={[styles.statCard, {backgroundColor: stat.bg}]}>
-            <AppText variant="bodyBold" color={stat.color}>{stat.value}</AppText>
-            <AppText variant="small" color={stat.color}>{stat.label}</AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* Daily steps heatmap */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <AppText variant="bodyBold" color={Colors.textPrimary}>
-            Daily steps {'\u00B7'} March 2026
-          </AppText>
-          <AppText variant="small" color={Colors.textTertiary}>
-            Green {'\u2265'}10k {'\u00B7'} Amber 7-10k {'\u00B7'} Red {'<'}7k
-          </AppText>
-        </View>
-        <View style={[styles.heatmapGrid, {paddingHorizontal: s(13), paddingTop: vs(10)}]}>
-          {heatmapData.map((d, i) => {
-            if (!d.day) return <View key={i} style={styles.heatCellEmpty} />;
-            const colorMap = {green: '#1D9E75', amber: '#BA7517', red: '#E24B4A'};
-            return (
-              <View key={i} style={[styles.heatSquare, {backgroundColor: colorMap[d.c]}]}>
-                <Text style={[styles.heatCellText, {color: '#fff'}]}>
-                  {d.steps}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
-
-        {/* Legend */}
-        <View style={styles.legendRow}>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, {backgroundColor: Colors.red}]} />
-            <AppText variant="small" color={Colors.textTertiary}>{'<7k'}</AppText>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, {backgroundColor: Colors.amber}]} />
-            <AppText variant="small" color={Colors.textTertiary}>7-10k</AppText>
-          </View>
-          <View style={styles.legendItem}>
-            <View style={[styles.legendDot, {backgroundColor: Colors.teal}]} />
-            <AppText variant="small" color={Colors.textTertiary}>10k+</AppText>
-          </View>
-        </View>
-      </View>
-
-      {/* Week-by-week steps trend */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>Week-by-week steps trend</AppText>
-        {weeklyTrend.map((w, i) => (
-          <View key={i} style={styles.trendRow}>
-            <AppText variant="caption" color={Colors.textPrimary} style={{width: s(55)}}>
-              {w.label}
-            </AppText>
-            <View style={{flex: 1, marginHorizontal: s(8)}}>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, {width: `${w.pct}%`, backgroundColor: w.barColor}]} />
-              </View>
-            </View>
-            <AppText variant="caption" color={w.color} style={{width: s(45), textAlign: 'right'}}>
-              {w.value}
-            </AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* Post-dinner walk clinical impact */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>
-          Post-dinner walk {'\u00B7'} Clinical impact
-        </AppText>
-        {clinicalImpact.map((c, i) => (
-          <View key={i} style={styles.trendRow}>
-            <AppText variant="small" color={Colors.textPrimary} style={{width: s(100)}}>
-              {c.label}
-            </AppText>
-            <View style={{flex: 1, marginHorizontal: s(8)}}>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, {width: `${c.pct}%`, backgroundColor: c.barColor}]} />
-              </View>
-            </View>
-            <AppText variant="small" color={c.color} style={{width: s(55), textAlign: 'right'}}>
-              {c.value}
-            </AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* Green insight */}
-      <View style={[styles.insightBox, {backgroundColor: Colors.tealBg}]}>
-        <Icon family="Ionicons" name="trophy-outline" size={ms(16)} color={Colors.tealText} />
-        <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-          Activity is your best-performing lifestyle category. Consistent morning walks and office movement keep your daily average above 8k steps. The post-dinner walk remains your highest-impact habit for glucose control.
-        </AppText>
-      </View>
-    </View>
-  );
+const ActivityRow = ({act}) => {
+  const zoneColors = {
+    Cardio: {bg: Colors.tealBg, color: Colors.tealText},
+    'Fat burn': {bg: '#EAF3DE', color: '#4A7C23'},
+    Light: {bg: Colors.blueBg, color: Colors.blueText},
+    Rest: {bg: Colors.amberBg, color: Colors.amberText},
+  };
+  const zc = zoneColors[act.zone] || zoneColors.Light;
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      {renderToggle()}
-      {view === 'daily' && renderDateNav()}
-      {view === 'daily' && renderCalendarStrip()}
-      {view === 'daily' ? renderDailyView() : renderMonthlyView()}
-      <View style={{height: vs(24)}} />
-    </ScrollView>
+    <View style={styles.actRow}>
+      <View style={[styles.actLeftBar, {backgroundColor: zc.color}]} />
+      <View style={styles.actBodyCol}>
+        <View style={styles.actTopRow}>
+          <View style={[styles.actIcon, {backgroundColor: act.iconBg}]}>
+            <Icon family="Ionicons" name={act.icon} size={ms(14)} color={act.iconColor} />
+          </View>
+          <View style={{flex: 1, marginLeft: s(8)}}>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(12)}}>{act.type}</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>{act.time}{act.duration ? ` - ${act.duration}` : ''}</AppText>
+          </View>
+          <View style={[styles.zonePill, {backgroundColor: zc.bg}]}>
+            <AppText variant="small" color={zc.color} style={{fontWeight: '600'}}>{act.zone}</AppText>
+          </View>
+        </View>
+        <View style={styles.actChipRow}>
+          <View style={styles.actChip}>
+            <Icon family="Ionicons" name="footsteps-outline" size={ms(10)} color={Colors.textTertiary} />
+            <AppText variant="small" color={Colors.textSecondary}>{act.steps}</AppText>
+          </View>
+          <View style={styles.actChip}>
+            <Icon family="Ionicons" name="navigate-outline" size={ms(10)} color={Colors.textTertiary} />
+            <AppText variant="small" color={Colors.textSecondary}>{act.distance}</AppText>
+          </View>
+          <View style={styles.actChip}>
+            <Icon family="Ionicons" name="flame-outline" size={ms(10)} color={Colors.textTertiary} />
+            <AppText variant="small" color={Colors.textSecondary}>{act.kcal} kcal</AppText>
+          </View>
+        </View>
+        {act.note ? (
+          <View style={styles.actNote}>
+            <Icon family="Ionicons" name="information-circle-outline" size={ms(11)} color={Colors.tealText} />
+            <AppText variant="small" color={Colors.tealText}>{act.note}</AppText>
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+};
+
+const LifestyleActivityTab = () => {
+  const navigation = useNavigation();
+  return (
+    <View style={styles.container}>
+      {/* Ayu Intel banner */}
+      <TouchableOpacity style={styles.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('LifestyleDetail', {lifestyleId: 'fitness'})}>
+        <View style={styles.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
+        <View style={{flex: 1}}>
+          <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Activity</AppText>
+          <AppText variant="subtext" color="rgba(255,255,255,0.7)">Step trends - Glucose impact - Movement patterns</AppText>
+        </View>
+        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
+      </TouchableOpacity>
+
+      {ACTIVITY_RECORDS.map((day, i) => (
+        <View key={i}>
+          <DateGroup label={day.date} />
+          <DaySummaryPill total={day.total} level={day.level} />
+          {day.activities.map((act, j) => (
+            <ActivityRow key={j} act={act} />
+          ))}
+        </View>
+      ))}
+    </View>
   );
 };
 
@@ -449,6 +270,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  /* Ayu Intel */
+  ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
+  ayuIconWrap: {width: ms(32), height: ms(32), borderRadius: ms(9), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
+
+  /* Date group */
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
+
+  /* Day summary pill */
+  daySummary: {flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: ms(10), borderWidth: 0.5, borderColor: '#dde8e2', borderLeftWidth: ms(3), paddingHorizontal: s(10), paddingVertical: vs(7), marginBottom: vs(7)},
+
+  /* Activity row */
+  actRow: {backgroundColor: Colors.white, borderRadius: ms(12), borderWidth: 0.5, borderColor: '#dde8e2', marginBottom: vs(7), overflow: 'hidden', flexDirection: 'row', alignItems: 'stretch'},
+  actLeftBar: {width: ms(4)},
+  actBodyCol: {flex: 1, padding: ms(10)},
+  actTopRow: {flexDirection: 'row', alignItems: 'center', gap: s(4)},
+  actIcon: {width: ms(30), height: ms(30), borderRadius: ms(8), alignItems: 'center', justifyContent: 'center'},
+  zonePill: {paddingHorizontal: s(8), paddingVertical: vs(3), borderRadius: ms(8)},
+  actChipRow: {flexDirection: 'row', flexWrap: 'wrap', gap: s(8), marginTop: vs(6), paddingLeft: ms(38)},
+  actChip: {flexDirection: 'row', alignItems: 'center', gap: s(4), backgroundColor: Colors.background, paddingHorizontal: s(7), paddingVertical: vs(3), borderRadius: ms(6)},
+  actNote: {flexDirection: 'row', alignItems: 'center', gap: s(4), backgroundColor: Colors.tealBg, paddingHorizontal: s(7), paddingVertical: vs(3), borderRadius: ms(6), marginTop: vs(6), marginLeft: ms(38), alignSelf: 'flex-start'},
+
   toggleRow: {
     flexDirection: 'row',
     backgroundColor: Colors.background,
@@ -549,24 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: ms(8),
     paddingVertical: vs(6),
   },
-  actRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: vs(10),
-  },
-  rowBorder: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: BORDER,
-  },
-  actIcon: {
-    width: ms(32),
-    height: ms(32),
-    borderRadius: ms(16),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: s(10),
-    marginTop: vs(2),
-  },
+  /* old actRow/actIcon removed - using new definitions above */
   actHeader: {
     flexDirection: 'row',
     alignItems: 'center',

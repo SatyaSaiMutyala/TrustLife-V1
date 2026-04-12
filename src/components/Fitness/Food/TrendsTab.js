@@ -314,7 +314,7 @@ const TrendsTab = () => {
 /* ─── Styles ───────────────────────────────────────── */
 
 const sty = StyleSheet.create({
-  container: {flex: 1, paddingHorizontal: s(16), paddingTop: vs(8)},
+  container: {flex: 1, paddingTop: vs(8)},
   section: {marginTop: vs(16)},
 
   /* 1. Pills */

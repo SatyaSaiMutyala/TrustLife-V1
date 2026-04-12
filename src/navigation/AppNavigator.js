@@ -502,6 +502,16 @@ const AppNavigator = () => {
         options={{animation: 'slide_from_right'}}
       />
       <Stack.Screen
+        name="SleepDetail"
+        component={require('../screens/Records/SleepDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
+        name="NutrientsDetail"
+        component={require('../screens/Records/NutrientsDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
         name="PregnancyLog"
         component={PregnancyLogScreen}
         options={{animation: 'slide_from_right'}}

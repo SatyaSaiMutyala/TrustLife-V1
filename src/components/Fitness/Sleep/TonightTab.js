@@ -343,11 +343,10 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
       </View>
 
       {/* ─── 4. PRE-SLEEP CLINICAL MARKERS ────────────── */}
-      <AppText variant="bodyBold" style={styles.sectionTitle}>
+      {/* <AppText variant="bodyBold" style={styles.sectionTitle}>
         Pre-sleep clinical markers
       </AppText>
       <View style={styles.card}>
-        {/* Glucose */}
         <AppText variant="smallBold" style={styles.fieldLabel}>
           Bedtime glucose (mg/dL)
         </AppText>
@@ -367,7 +366,6 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           </View>
         )}
 
-        {/* BP */}
         <AppText variant="smallBold" style={styles.fieldLabel}>BP systolic (mmHg)</AppText>
         <TextInput
           style={styles.input}
@@ -378,7 +376,6 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           placeholderTextColor={Colors.textTertiary}
         />
 
-        {/* Meds */}
         <View style={styles.medRow}>
           <View style={{flex: 1}}>
             <AppText variant="smallBold" style={styles.fieldLabel}>Metformin taken</AppText>
@@ -399,7 +396,6 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           </View>
         </View>
 
-        {/* Stress */}
         <AppText variant="smallBold" style={styles.fieldLabel}>Stress level (1-10)</AppText>
         <TextInput
           style={styles.input}
@@ -410,7 +406,6 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           placeholderTextColor={Colors.textTertiary}
         />
 
-        {/* Mind state */}
         <AppText variant="smallBold" style={styles.fieldLabel}>Mind state at bedtime</AppText>
         <TouchableOpacity
           style={styles.dropdown}
@@ -433,17 +428,15 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
             ))}
           </View>
         )}
-      </View>
+      </View> */}
 
       {/* ─── 5. LAST NIGHT SUMMARY ────────────────────── */}
-      <AppText variant="bodyBold" style={styles.sectionTitle}>
+      {/* <AppText variant="bodyBold" style={styles.sectionTitle}>
         Last night — {LAST_NIGHT.date}
-      </AppText>
+      </AppText> */}
 
-      {/* Score ring + key metrics */}
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         <View style={styles.scoreSection}>
-          {/* Score Ring - SVG arc */}
           <View style={styles.scoreRingOuter}>
             {(() => {
               const ringThickness = ms(8);
@@ -478,14 +471,12 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
                 </Svg>
               );
             })()}
-            {/* Center content */}
             <AppText style={[styles.scoreNumber, {color: scoreColor}]}>
               {LAST_NIGHT.score}
             </AppText>
             <AppText variant="caption" style={styles.scoreLabel}>Score</AppText>
           </View>
 
-          {/* Key metrics */}
           <View style={styles.keyMetrics}>
             <View style={styles.keyMetricRow}>
               <AppText variant="caption" style={styles.keyMetricLabel}>Total sleep</AppText>
@@ -513,10 +504,9 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
             </View>
           </View>
         </View>
-      </View>
+      </View> */}
 
-      {/* Hypnogram */}
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         <AppText variant="bodyBold" style={styles.cardTitle}>Hypnogram</AppText>
         <AppText variant="caption" style={styles.cardSub}>Sleep stage progression through the night</AppText>
         <View style={styles.hypnogramBar}>
@@ -540,9 +530,8 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
             </View>
           ))}
         </View>
-      </View>
-
-      {/* Stage breakdown */}
+      </View> */}
+{/*
       <View style={styles.card}>
         <AppText variant="bodyBold" style={styles.cardTitle}>Stage breakdown</AppText>
         {['deep', 'rem', 'light', 'awake'].map((key) => (
@@ -571,10 +560,9 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
             </AppText>
           </View>
         ))}
-      </View>
+      </View> */}
 
-      {/* Biometric signals */}
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
         <AppText variant="bodyBold" style={styles.cardTitle}>Biometric signals</AppText>
         <View style={styles.bioGrid}>
           {[
@@ -593,7 +581,6 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           ))}
         </View>
 
-        {/* Restlessness */}
         <View style={styles.restlessnessRow}>
           <AppText variant="caption" style={styles.bioLabel}>Restlessness index</AppText>
           <View style={styles.restlessnessBarTrack}>
@@ -601,7 +588,7 @@ const TonightTab = ({isTracking, onToggleTracking}) => {
           </View>
           <AppText variant="smallBold" style={styles.bioValue}>{LAST_NIGHT.restlessness}</AppText>
         </View>
-      </View>
+      </View> */}
 
       <View style={{height: vs(24)}} />
     </ScrollView>

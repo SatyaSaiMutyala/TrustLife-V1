@@ -18,6 +18,10 @@ import Colors from '../../constants/colors';
 import AppText from '../../components/shared/AppText';
 import Icon from '../../components/shared/Icons';
 import TrendChart from '../../components/shared/TrendChart';
+import TrendsTab from '../../components/Fitness/Sleep/TrendsTab';
+import AdherenceTab from '../../components/Fitness/Medication/AdherenceTab';
+import AyuMedTab from '../../components/Fitness/Medication/AyuTab';
+import FoodTrendsTab from '../../components/Fitness/Food/TrendsTab';
 
 const {width: SCREEN_W} = Dimensions.get('window');
 
@@ -431,13 +435,20 @@ const statusBg = status => {
   return Colors.redBg;
 };
 
-const TABS = [
+const BASE_TABS = [
   {key: 'ayuIntel', label: '\uD83E\uDDE0 Ayu Intel'},
   {key: 'progression', label: '\uD83D\uDCC8 Progression'},
   {key: 'organs', label: '\uD83E\uDEC1 Organs'},
   {key: 'cluster', label: '\uD83D\uDD17 Cluster'},
   {key: 'care', label: '\u2713 Care'},
 ];
+
+const SLEEP_EXTRA_TAB = {key: 'trends', label: '\uD83D\uDCCA Trends'};
+const MED_EXTRA_TABS = [
+  {key: 'adherence', label: '\uD83D\uDCCA Adherence'},
+  {key: 'ayuMed', label: '\uD83C\uDF3F Ayu'},
+];
+const NUTRITION_EXTRA_TAB = {key: 'foodTrends', label: '\uD83D\uDCCA Trends'};
 
 // ──────────────────────────────────────────────
 // Chart components
@@ -936,6 +947,14 @@ const LifestyleDetailScreen = () => {
     return LIFESTYLE_DATA[lifestyleId] || LIFESTYLE_DATA.nutrition;
   }, [lifestyleId]);
 
+  const TABS = useMemo(() => {
+    const tabs = [...BASE_TABS];
+    if (lifestyleId === 'sleep') tabs.push(SLEEP_EXTRA_TAB);
+    if (lifestyleId === 'medication') tabs.push(...MED_EXTRA_TABS);
+    if (lifestyleId === 'nutrition') tabs.push(NUTRITION_EXTRA_TAB);
+    return tabs;
+  }, [lifestyleId]);
+
   const metricCards = useMemo(() => {
     return ls.hdr.map(h => ({label: h.lbl, value: h.val, sub: h.unit, color: h.col}));
   }, [ls]);
@@ -952,6 +971,14 @@ const LifestyleDetailScreen = () => {
         return <ClusterTab ls={ls} />;
       case 'care':
         return <CareTab ls={ls} />;
+      case 'trends':
+        return <TrendsTab />;
+      case 'adherence':
+        return <AdherenceTab />;
+      case 'ayuMed':
+        return <AyuMedTab />;
+      case 'foodTrends':
+        return <FoodTrendsTab />;
       default:
         return <AyuIntelTab ls={ls} />;
     }

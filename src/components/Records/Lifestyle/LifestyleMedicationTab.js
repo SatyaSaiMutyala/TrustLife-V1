@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../../constants/colors';
 import AppText from '../../shared/AppText';
@@ -169,259 +170,133 @@ const missedPatterns = [
   {label: 'When dinner was late', pct: 71, color: Colors.amberText, barColor: Colors.amber, detail: '5 of 7'},
 ];
 
-const LifestyleMedicationTab = () => {
-  const [view, setView] = useState('daily');
+const MED_STATUS_COLORS = {
+  Done: Colors.accent,
+  Pending: Colors.blue,
+  Due: Colors.amber,
+  Missed: Colors.red,
+};
 
-  const renderToggle = () => (
-    <View style={styles.toggleRow}>
-      {['daily', 'monthly'].map(v => (
-        <TouchableOpacity
-          key={v}
-          style={[styles.toggleBtn, view === v && styles.toggleBtnActive]}
-          onPress={() => setView(v)}
-          activeOpacity={0.7}>
-          <AppText
-            variant="caption"
-            color={view === v ? Colors.white : Colors.textSecondary}
-            style={{fontWeight: view === v ? '600' : '400'}}>
-            {v.charAt(0).toUpperCase() + v.slice(1)}
-          </AppText>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+const m = (name, schedule, status, icon, iconBg, iconColor, time, context, note) => ({
+  name, schedule, status,
+  statusColor: status === 'Done' ? Colors.tealText : status === 'Missed' ? Colors.redText : status === 'Due' ? Colors.amberText : Colors.blueText,
+  statusBg: status === 'Done' ? Colors.tealBg : status === 'Missed' ? Colors.redBg : status === 'Due' ? Colors.amberBg : Colors.blueBg,
+  icon, iconBg, iconColor, time, context, note,
+});
 
-  const renderDateNav = () => (
-    <View style={styles.dateNav}>
-      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
-        <Icon family="Ionicons" name="chevron-back" size={ms(16)} color={Colors.textSecondary} />
-      </TouchableOpacity>
-      <AppText variant="bodyBold" color={Colors.textPrimary}>Tue, 24 Mar 2026</AppText>
-      <TouchableOpacity activeOpacity={0.6} style={styles.arrowBtn}>
-        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color={Colors.textSecondary} />
-      </TouchableOpacity>
-    </View>
-  );
+const MED_RECORDS = [
+  {date: 'Today - 24 Mar 2026', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:45 AM', 'With breakfast', '28-day streak'),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '8:02 AM', 'Empty stomach', '30-day streak'),
+    m('Atorvastatin 10mg', 'Bedtime', 'Pending', 'medical-outline', Colors.blueBg, Colors.blueText, 'Due 10 PM', 'Before sleep', null),
+    m('Metformin 500mg', 'PM', 'Due', 'warning-outline', Colors.amberBg, Colors.amberText, 'Due 8 PM', 'With dinner', 'Critical - controls overnight glucose'),
+    m('Methylcobalamin 500mcg', 'Lunch', 'Done', 'leaf-outline', '#EAF3DE', '#4A7C23', '1:10 PM', 'With food', 'Day 9 of treatment'),
+  ]},
+  {date: 'Yesterday - 23 Mar 2026', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:50 AM', 'With breakfast', null),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '8:00 AM', 'Empty stomach', null),
+    m('Methylcobalamin 500mcg', 'Lunch', 'Done', 'leaf-outline', '#EAF3DE', '#4A7C23', '1:15 PM', 'With food', null),
+    m('Metformin 500mg', 'PM', 'Missed', 'warning-outline', Colors.redBg, Colors.redText, 'Missed', 'Dinner was late', 'Fasting glucose was 9.2 next morning'),
+    m('Atorvastatin 10mg', 'Bedtime', 'Done', 'medical-outline', Colors.blueBg, Colors.blueText, '10:15 PM', 'Before sleep', null),
+  ]},
+  {date: '22 Mar 2026 - Saturday', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '9:00 AM', 'Late breakfast', null),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '9:05 AM', 'Empty stomach', null),
+    m('Metformin 500mg', 'PM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '8:10 PM', 'With dinner', null),
+    m('Atorvastatin 10mg', 'Bedtime', 'Done', 'medical-outline', Colors.blueBg, Colors.blueText, '10:30 PM', 'Before sleep', null),
+  ]},
+  {date: '21 Mar 2026 - Friday', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:40 AM', 'With breakfast', null),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:45 AM', 'Empty stomach', '29-day streak'),
+    m('Metformin 500mg', 'PM', 'Missed', 'warning-outline', Colors.redBg, Colors.redText, 'Missed', 'Stayed up past 11 PM', 'Streak broken at 14 days'),
+    m('Atorvastatin 10mg', 'Bedtime', 'Done', 'medical-outline', Colors.blueBg, Colors.blueText, '11:00 PM', 'Late but taken', null),
+  ]},
+  {date: '20 Mar 2026 - Thursday', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:55 AM', 'With breakfast', null),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '8:00 AM', 'Empty stomach', null),
+    m('Methylcobalamin 500mcg', 'Lunch', 'Done', 'leaf-outline', '#EAF3DE', '#4A7C23', '1:30 PM', 'With food', 'Day 5 of treatment'),
+    m('Metformin 500mg', 'PM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '8:00 PM', 'With dinner', null),
+    m('Atorvastatin 10mg', 'Bedtime', 'Done', 'medical-outline', Colors.blueBg, Colors.blueText, '10:20 PM', 'Before sleep', null),
+  ]},
+  {date: '19 Mar 2026 - Wednesday', meds: [
+    m('Metformin 500mg', 'AM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:30 AM', 'With breakfast', null),
+    m('Amlodipine 5mg', 'Morning', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:35 AM', 'Empty stomach', null),
+    m('Metformin 500mg', 'PM', 'Done', 'medical-outline', Colors.tealBg, Colors.tealText, '7:50 PM', 'With dinner', 'On time'),
+    m('Atorvastatin 10mg', 'Bedtime', 'Done', 'medical-outline', Colors.blueBg, Colors.blueText, '10:00 PM', 'Before sleep', null),
+  ]},
+];
 
-  const renderCalendarStrip = () => (
-    <View style={styles.calendarStrip}>
-      {calendarDays.map((d, i) => (
-        <TouchableOpacity
-          key={i}
-          style={[styles.calDay, d.active && styles.calDayActive]}
-          activeOpacity={0.7}>
-          <AppText variant="small" color={d.active ? Colors.white : Colors.textTertiary}>
-            {d.day}
-          </AppText>
-          <AppText
-            variant="bodyBold"
-            color={d.active ? Colors.white : Colors.textPrimary}
-            style={{marginTop: vs(2)}}>
-            {d.date}
-          </AppText>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+const DateGroup = ({label}) => (
+  <View style={styles.dateGroup}>
+    <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+      {label}
+    </AppText>
+    <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+  </View>
+);
 
-  const renderDailyView = () => (
-    <View>
-      {/* Stats row */}
-      <View style={styles.statsRow}>
-        {dailyStats.map((stat, i) => (
-          <View key={i} style={[styles.statCard, {backgroundColor: stat.bg}]}>
-            <AppText variant="bodyBold" color={stat.color}>{stat.value}</AppText>
-            <AppText variant="small" color={stat.color}>{stat.label}</AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* Medication log card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>
-          Medication log {'\u00B7'} Tue 24 Mar
-        </AppText>
-
-        {medications.map((med, i) => (
-          <View
-            key={i}
-            style={[
-              styles.medRow,
-              med.rowBg && {backgroundColor: med.rowBg},
-              i < medications.length - 1 && styles.medRowBorder,
-            ]}>
-            {/* Icon */}
-            <View style={[styles.medIcon, {backgroundColor: med.iconBg}]}>
-              <Icon family="Ionicons" name={med.icon} size={ms(16)} color={med.iconColor} />
-            </View>
-
-            <View style={styles.medContent}>
-              {/* Name + status pill */}
-              <View style={styles.medHeader}>
-                <View style={{flex: 1}}>
-                  <AppText variant="bodyBold">
-                    {med.name}{med.schedule ? ` \u00B7 ${med.schedule}` : ''}
-                  </AppText>
-                </View>
-                <View style={[styles.pill, {backgroundColor: med.statusBg}]}>
-                  <AppText variant="small" color={med.statusColor}>{med.status}</AppText>
-                </View>
-              </View>
-
-              {/* Description */}
-              <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(2)}}>
-                {med.description}
-              </AppText>
-
-              {/* Chips */}
-              <View style={styles.chipsRow}>
-                {med.chips.map((chip, ci) => (
-                  <View key={ci} style={[styles.chip, {backgroundColor: chip.bg}]}>
-                    {chip.icon === 'checkmark' && (
-                      <Icon family="Ionicons" name="checkmark" size={ms(10)} color={chip.color} />
-                    )}
-                    {chip.iconName && (
-                      <Icon family="Ionicons" name={chip.iconName} size={ms(10)} color={chip.color} />
-                    )}
-                    <AppText variant="small" color={chip.color}>{chip.label}</AppText>
-                  </View>
-                ))}
-              </View>
-
-              {/* Extra text */}
-              {med.extraText && (
-                <AppText variant="small" color={Colors.amberText} style={{marginTop: vs(4)}}>
-                  {med.extraText}
-                </AppText>
-              )}
-            </View>
-          </View>
-        ))}
-      </View>
-
-      {/* Green insight */}
-      <View style={[styles.insightBox, {backgroundColor: Colors.tealBg}]}>
-        <Icon family="Ionicons" name="time-outline" size={ms(16)} color={Colors.tealText} />
-        <AppText variant="caption" color={Colors.tealText} style={{flex: 1}}>
-          AM doses on time today. PM Metformin alarm set for 8 PM. Evening routine reminder will fire at 7:45 PM.
-        </AppText>
-      </View>
-    </View>
-  );
-
-  const renderMonthlyView = () => (
-    <View>
-      {/* Month strip */}
-      <View style={styles.monthStrip}>
-        {months.map((m, i) => (
-          <TouchableOpacity
-            key={i}
-            style={[styles.monthBtn, m === 'Mar' && styles.monthBtnActive]}
-            activeOpacity={0.7}>
-            <AppText
-              variant="caption"
-              color={m === 'Mar' ? Colors.white : Colors.textSecondary}
-              style={{fontWeight: m === 'Mar' ? '600' : '400'}}>
-              {m}
-            </AppText>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Adherence by drug card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>
-          Adherence by drug {'\u00B7'} March 2026
-        </AppText>
-
-        {monthlyDrugs.map((drug, i) => (
-          <View key={i} style={[styles.drugSection, i < monthlyDrugs.length - 1 && styles.medRowBorder]}>
-            {/* Header row */}
-            <View style={styles.drugHeader}>
-              <AppText variant="bodyBold" style={{flex: 1}}>
-                {drug.name} {'\u00B7'} {drug.schedule}
-                {drug.warn && (
-                  <AppText variant="bodyBold" color={Colors.amberText}> </AppText>
-                )}
-              </AppText>
-              {drug.warn && (
-                <Icon family="Ionicons" name="warning-outline" size={ms(14)} color={Colors.amberText} />
-              )}
-              <AppText variant="bodyBold" color={drug.color} style={{marginLeft: s(4)}}>
-                {drug.pct}%
-              </AppText>
-            </View>
-
-            {/* Progress bar */}
-            <View style={styles.barTrack}>
-              <View style={[styles.barFill, {width: `${drug.pct}%`, backgroundColor: drug.barColor}]} />
-            </View>
-
-            {/* Detail text */}
-            <AppText variant="caption" color={Colors.textSecondary} style={{marginTop: vs(4)}}>
-              {drug.detail}
-            </AppText>
-
-            {/* Dots row */}
-            {drug.showDots && (
-              <View style={styles.dotsRow}>
-                {drug.dots.map((dot, di) => (
-                  <View
-                    key={di}
-                    style={[
-                      styles.dot,
-                      {backgroundColor: dot === 'green' ? Colors.teal : Colors.red},
-                    ]}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
-
-      {/* Missed dose pattern card */}
-      <View style={styles.card}>
-        <AppText variant="bodyBold" style={styles.cardTitle}>
-          Missed dose pattern {'\u00B7'} Metformin PM
-        </AppText>
-
-        {missedPatterns.map((p, i) => (
-          <View key={i} style={styles.patternRow}>
-            <View style={styles.patternLabel}>
-              <AppText variant="caption" color={Colors.textPrimary}>{p.label}</AppText>
-            </View>
-            <View style={styles.patternBarWrap}>
-              <View style={styles.barTrack}>
-                <View style={[styles.barFill, {width: `${p.pct}%`, backgroundColor: p.barColor}]} />
-              </View>
-            </View>
-            <AppText variant="small" color={p.color} style={{width: s(55), textAlign: 'right'}}>
-              {p.detail}
-            </AppText>
-          </View>
-        ))}
-      </View>
-
-      {/* Amber insight */}
-      <View style={[styles.insightBox, {backgroundColor: Colors.amberBg}]}>
-        <Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.amberText} />
-        <AppText variant="caption" color={Colors.amberText} style={{flex: 1}}>
-          Pattern is clear: you miss the PM dose when you eat dinner late or stay up past 11 PM. Setting
-          a fixed 8 PM alarm and eating by 7:30 PM could push adherence above 90%.
-        </AppText>
-      </View>
-    </View>
-  );
-
+const MedRow = ({med}) => {
+  const barColor = MED_STATUS_COLORS[med.status] || Colors.accent;
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-      {renderToggle()}
-      {view === 'daily' && renderDateNav()}
-      {view === 'daily' && renderCalendarStrip()}
-      {view === 'daily' ? renderDailyView() : renderMonthlyView()}
-      <View style={{height: vs(24)}} />
-    </ScrollView>
+    <View style={styles.medRowCard}>
+      <View style={[styles.medLeftBar, {backgroundColor: barColor}]} />
+      <View style={styles.medBodyCol}>
+        {/* Top: icon + name + status */}
+        <View style={styles.medTopRow}>
+          <View style={[styles.medIcon, {backgroundColor: med.iconBg}]}>
+            <Icon family="Ionicons" name={med.icon} size={ms(14)} color={med.iconColor} />
+          </View>
+          <View style={{flex: 1, marginLeft: s(8)}}>
+            <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(12)}}>{med.name}</AppText>
+            <AppText variant="small" color={Colors.textTertiary}>{med.schedule} - {med.time || ''}</AppText>
+          </View>
+          <View style={[styles.statusPill, {backgroundColor: med.statusBg}]}>
+            <AppText variant="small" color={med.statusColor} style={{fontWeight: '600'}}>{med.status}</AppText>
+          </View>
+        </View>
+        {/* Bottom: context + note */}
+        <View style={styles.medDetailRow}>
+          {med.context ? (
+            <View style={styles.contextChip}>
+              <Icon family="Ionicons" name="information-circle-outline" size={ms(11)} color={Colors.textTertiary} />
+              <AppText variant="small" color={Colors.textSecondary}>{med.context}</AppText>
+            </View>
+          ) : null}
+          {med.note ? (
+            <View style={[styles.contextChip, {backgroundColor: med.status === 'Missed' ? Colors.redBg : Colors.tealBg}]}>
+              <Icon family="Ionicons" name={med.status === 'Missed' ? 'alert-circle-outline' : 'flame-outline'} size={ms(11)} color={med.status === 'Missed' ? Colors.redText : Colors.tealText} />
+              <AppText variant="small" color={med.status === 'Missed' ? Colors.redText : Colors.tealText}>{med.note}</AppText>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const LifestyleMedicationTab = () => {
+  const navigation = useNavigation();
+  return (
+    <View style={styles.container}>
+      {/* Ayu Intel banner */}
+      <TouchableOpacity style={styles.ayuBtn} activeOpacity={0.8} onPress={() => navigation.navigate('LifestyleDetail', {lifestyleId: 'medication'})}>
+        <View style={styles.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
+        <View style={{flex: 1}}>
+          <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Medication</AppText>
+          <AppText variant="subtext" color="rgba(255,255,255,0.7)">Adherence patterns - Missed dose analysis</AppText>
+        </View>
+        <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
+      </TouchableOpacity>
+
+      {MED_RECORDS.map((day, i) => (
+        <View key={i}>
+          <DateGroup label={day.date} />
+          {day.meds.map((med, j) => (
+            <MedRow key={j} med={med} />
+          ))}
+        </View>
+      ))}
+    </View>
   );
 };
 
@@ -429,6 +304,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
+  /* Ayu Intel */
+  ayuBtn: {flexDirection: 'row', alignItems: 'center', gap: s(8), backgroundColor: Colors.accent, borderRadius: ms(12), padding: ms(12), marginBottom: vs(12)},
+  ayuIconWrap: {width: ms(32), height: ms(32), borderRadius: ms(9), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
+
+  /* Date group */
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
+
+  /* Med row */
+  medRowCard: {backgroundColor: Colors.white, borderRadius: ms(12), borderWidth: 0.5, borderColor: '#dde8e2', marginBottom: vs(7), overflow: 'hidden', flexDirection: 'row', alignItems: 'stretch'},
+  medLeftBar: {width: ms(4)},
+  medBodyCol: {flex: 1, padding: ms(10)},
+  medTopRow: {flexDirection: 'row', alignItems: 'center', gap: s(4)},
+  medIcon: {width: ms(30), height: ms(30), borderRadius: ms(8), alignItems: 'center', justifyContent: 'center'},
+  statusPill: {paddingHorizontal: s(8), paddingVertical: vs(3), borderRadius: ms(8)},
+  medDetailRow: {flexDirection: 'row', flexWrap: 'wrap', gap: s(6), marginTop: vs(6), paddingLeft: ms(38)},
+  contextChip: {flexDirection: 'row', alignItems: 'center', gap: s(4), backgroundColor: Colors.background, paddingHorizontal: s(7), paddingVertical: vs(3), borderRadius: ms(6)},
+
+  /* Legacy (kept for compatibility) */
   toggleRow: {
     flexDirection: 'row',
     backgroundColor: Colors.background,

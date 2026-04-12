@@ -86,7 +86,7 @@ const RecordsScreen = ({route}) => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [healthlogFilter, setHealthlogFilter] = useState(initialLogFilter);
-  const [lifestyleSubTab, setLifestyleSubTab] = useState('summary');
+  const [lifestyleSubTab, setLifestyleSubTab] = useState('food');
   const addRef = useRef(null);
 
   return (

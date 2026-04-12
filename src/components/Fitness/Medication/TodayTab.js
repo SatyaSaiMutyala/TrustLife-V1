@@ -449,24 +449,7 @@ const TodayTab = ({meds, setMeds}) => {
       )}
 
       {/* ── Daily summary ───────────────────────────────── */}
-      <View style={[styles.card, styles.summaryCard]}>
-        <AppText variant="bodyBold" color={Colors.primary}>
-          {'\uD83D\uDCCB'} Daily Summary
-        </AppText>
-        <AppText variant="caption" color={Colors.textSecondary} style={styles.summaryText}>
-          {stats.taken} of {stats.total} doses taken today.
-          {stats.missed > 0
-            ? ` ${stats.missed} dose${stats.missed > 1 ? 's' : ''} missed.`
-            : ' No missed doses so far \u2014 keep it up!'}
-        </AppText>
-        {stats.pct >= 80 && (
-          <View style={[styles.summaryBadge, {backgroundColor: Colors.tealBg}]}>
-            <AppText variant="small" color={Colors.tealText}>
-              {'\u2B50'} Great adherence today!
-            </AppText>
-          </View>
-        )}
-      </View>
+
 
       <View style={styles.bottomSpacer} />
 

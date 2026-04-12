@@ -597,7 +597,33 @@ const RecordsFinalTab = ({navigation, lockToTab}) => {
   const renderGadgetCards = () => {
     const filtered = getFilteredGadgets();
     if (filtered.length === 0) return renderEmpty('No gadgets found');
-    return filtered.map(gad => renderGadgetCard(gad));
+
+    // Group by purchaseDate
+    const dateGrouped = {};
+    filtered.forEach(gad => {
+      const dk = gad.purchaseDate || 'Unknown';
+      if (!dateGrouped[dk]) dateGrouped[dk] = [];
+      dateGrouped[dk].push(gad);
+    });
+    const dateKeys = Object.keys(dateGrouped).sort((a, b) => new Date(b) - new Date(a));
+
+    const fmtDate = d => {
+      try {
+        return new Date(d).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
+      } catch { return d; }
+    };
+
+    return dateKeys.map(dk => (
+      <View key={dk}>
+        <View style={sty.dateGroup}>
+          <AppText variant="small" color={Colors.textSecondary} style={{textTransform: 'uppercase', fontWeight: '700', letterSpacing: 0.5, marginRight: s(8)}}>
+            Purchased - {fmtDate(dk)}
+          </AppText>
+          <View style={{flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#dde8e2'}} />
+        </View>
+        {dateGrouped[dk].map(gad => renderGadgetCard(gad))}
+      </View>
+    ));
   };
 
   /* ═══════════════════════════════════════════════ */
@@ -1453,6 +1479,7 @@ const sty = StyleSheet.create({
     marginBottom: vs(9),
     overflow: 'hidden',
   },
+  dateGroup: {flexDirection: 'row', alignItems: 'center', marginTop: vs(14), marginBottom: vs(10)},
 
   /* Record top row */
   recTop: {
