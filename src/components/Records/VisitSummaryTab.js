@@ -113,7 +113,7 @@ const VisitSummaryTab = () => (
 
                 {/* Hospital line */}
                 <AppText variant="caption" color={Colors.textSecondary}>
-                  {card.hospital} \u00B7 {card.date} \u00B7 {card.duration}
+                  {card.hospital} - {card.date} - {card.duration}
                 </AppText>
 
                 {/* Outcome box */}

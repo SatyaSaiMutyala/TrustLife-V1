@@ -22,6 +22,7 @@ import TrendsTab from '../../components/Fitness/Sleep/TrendsTab';
 import AdherenceTab from '../../components/Fitness/Medication/AdherenceTab';
 import AyuMedTab from '../../components/Fitness/Medication/AyuTab';
 import FoodTrendsTab from '../../components/Fitness/Food/TrendsTab';
+import MovementTrendsTab from '../../components/Fitness/Movement/TrendsTab';
 
 const {width: SCREEN_W} = Dimensions.get('window');
 
@@ -449,6 +450,7 @@ const MED_EXTRA_TABS = [
   {key: 'ayuMed', label: '\uD83C\uDF3F Ayu'},
 ];
 const NUTRITION_EXTRA_TAB = {key: 'foodTrends', label: '\uD83D\uDCCA Trends'};
+const FITNESS_EXTRA_TAB = {key: 'moveTrends', label: '\uD83D\uDCCA Trends'};
 
 // ──────────────────────────────────────────────
 // Chart components
@@ -952,6 +954,7 @@ const LifestyleDetailScreen = () => {
     if (lifestyleId === 'sleep') tabs.push(SLEEP_EXTRA_TAB);
     if (lifestyleId === 'medication') tabs.push(...MED_EXTRA_TABS);
     if (lifestyleId === 'nutrition') tabs.push(NUTRITION_EXTRA_TAB);
+    if (lifestyleId === 'fitness') tabs.push(FITNESS_EXTRA_TAB);
     return tabs;
   }, [lifestyleId]);
 
@@ -979,6 +982,8 @@ const LifestyleDetailScreen = () => {
         return <AyuMedTab />;
       case 'foodTrends':
         return <FoodTrendsTab />;
+      case 'moveTrends':
+        return <MovementTrendsTab />;
       default:
         return <AyuIntelTab ls={ls} />;
     }

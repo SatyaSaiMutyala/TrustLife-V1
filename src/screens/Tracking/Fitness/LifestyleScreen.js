@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -13,14 +13,6 @@ import Colors from '../../../constants/colors';
 import AppText from '../../../components/shared/AppText';
 
 import LogTab from '../../../components/Fitness/Lifestyle/LogTab';
-import AnalyticsTab from '../../../components/Fitness/Lifestyle/AnalyticsTab';
-
-/* ─── Tab configuration ─────────────────────────────── */
-
-const TABS = [
-  {key: 'log', label: 'Log', emoji: '\uD83D\uDCCB'},
-  {key: 'analytics', label: 'Analytics', emoji: '\uD83D\uDCCA'},
-];
 
 /* ─── Component ─────────────────────────────────────── */
 
@@ -28,23 +20,9 @@ const LifestyleScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
-  const [activeTab, setActiveTab] = useState('log');
-
   /* ── Save handler ────────────────────────────────── */
   const handleSave = (payload) => {
     // TODO: persist payload
-  };
-
-  /* ── Tab content ─────────────────────────────────── */
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'log':
-        return <LogTab onSave={handleSave} />;
-      case 'analytics':
-        return <AnalyticsTab />;
-      default:
-        return null;
-    }
   };
 
   return (
@@ -73,49 +51,26 @@ const LifestyleScreen = () => {
           Lifestyle Activity
         </AppText>
         <AppText variant="caption" style={styles.headerSubtitle}>
-          Occupational & daily life {'\u00B7'} health impact logging
+          Occupational & daily life - health impact logging
         </AppText>
       </View>
 
-      {/* ── TAB BAR ────────────────────────────────────── */}
-      <View style={styles.tabBar}>
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.key;
-          return (
-            <TouchableOpacity
-              key={tab.key}
-              style={[styles.tab, isActive && styles.tabActive]}
-              activeOpacity={0.7}
-              onPress={() => setActiveTab(tab.key)}>
-              <AppText
-                variant="small"
-                style={[
-                  styles.tabLabel,
-                  isActive && styles.tabLabelActive,
-                ]}>
-                {tab.emoji} {tab.label}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+      {/* ── CONTENT ────────────────────────────────────── */}
+      <View style={styles.content}>
+        <LogTab onSave={handleSave} />
       </View>
 
-      {/* ── TAB CONTENT ────────────────────────────────── */}
-      <View style={styles.content}>{renderTabContent()}</View>
-
-      {/* ── BOTTOM BAR (only on Log tab) ────────────────── */}
-      {activeTab === 'log' && (
-        <View style={[styles.bottomBar, {paddingBottom: Math.max(insets.bottom, vs(12))}]}>
-          <TouchableOpacity
-            style={styles.saveBtn}
-            activeOpacity={0.8}
-            onPress={handleSave}>
-            <AppText variant="bodyBold" style={styles.saveBtnText}>
-              Save activity
-            </AppText>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* ── BOTTOM BAR ─────────────────────────────────── */}
+      <View style={[styles.bottomBar, {paddingBottom: Math.max(insets.bottom, vs(12))}]}>
+        <TouchableOpacity
+          style={styles.saveBtn}
+          activeOpacity={0.8}
+          onPress={handleSave}>
+          <AppText variant="bodyBold" style={styles.saveBtnText}>
+            Save activity
+          </AppText>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -97,7 +97,7 @@ const ConnectTab = () => {
   }, []);
 
   return (
-    <ScrollView style={sty.container} showsVerticalScrollIndicator={false}>
+    <View style={sty.container}>
       {/* ─── 1. Phone Step Tracking Card ───────── */}
       <View style={sty.phoneCard}>
         <View style={sty.phoneHeader}>
@@ -269,7 +269,7 @@ const ConnectTab = () => {
       </View>
 
       <View style={{height: vs(40)}} />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -278,7 +278,7 @@ const ConnectTab = () => {
 const sty = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: s(16),
+    // paddingHorizontal: s(16),
     paddingTop: vs(8),
   },
 

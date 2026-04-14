@@ -3,8 +3,8 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import Svg, {Circle} from 'react-native-svg';
-import Emoji from '../shared/Emoji';
 import AppText from '../shared/AppText';
+import Icon from '../shared/Icons';
 
 const RING_SIZE = ms(68);
 const VB = 68;
@@ -22,13 +22,13 @@ const HeroSection = ({navigation}) => {
         </View>
         <View style={styles.iconRow}>
           <TouchableOpacity style={styles.iconBtn}>
-            <Emoji icon="🔔" size={ms(16)} />
+            <Icon family="Ionicons" name="notifications-outline" size={ms(18)} color={Colors.white} />
             <View style={styles.badge}>
               <AppText variant="small" color={Colors.white} style={styles.badgeText}>3</AppText>
             </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconBtn}>
-            <Emoji icon="📋" size={ms(16)} />
+            <Icon family="Ionicons" name="clipboard-outline" size={ms(18)} color={Colors.white} />
             <View style={styles.badge}>
               <AppText variant="small" color={Colors.white} style={styles.badgeText}>2</AppText>
             </View>

@@ -25,7 +25,9 @@ import {
   SOCIAL_CONTEXT,
   MEAL_FLAGS,
   HEALTH_BENEFITS,
+  WEARABLES,
 } from '../../../constants/movementData';
+import Icon from '../../shared/Icons';
 
 /* ─── Helpers ──────────────────────────────────────────────── */
 
@@ -165,6 +167,12 @@ const FieldInput = ({field, value, onChange}) => {
 
 const LogActivityTab = ({onSave}) => {
   /* ── State ─────────────────────────────────────────── */
+  const [dataSource, setDataSource] = useState('manual');
+  const [wearableStates, setWearableStates] = useState(() => {
+    const map = {};
+    (WEARABLES || []).forEach(w => { map[w.id] = w.status || 'disconnected'; });
+    return map;
+  });
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [formValues, setFormValues] = useState({});
 
@@ -1209,42 +1217,81 @@ const LogActivityTab = ({onSave}) => {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
 
-      {/* 1. Activity Selector Grid */}
-      {renderActivityGrid()}
+      {/* 1. Data Source Selector */}
+      <AppText variant="sectionTitle" color={Colors.textSecondary} style={{marginBottom: vs(10)}}>Data source</AppText>
+      <View style={sty.sourceGrid}>
+        {[
+          {id: 'wearable', ico: '\u231A', name: 'Wearable', sub: 'Sync from smartwatch', col: Colors.blue},
+          {id: 'manual', ico: '\u270F\uFE0F', name: 'Manual entry', sub: 'Log activity manually', col: Colors.accent},
+        ].map(src => {
+          const active = dataSource === src.id;
+          return (
+            <TouchableOpacity
+              key={src.id}
+              style={[sty.sourceCard, active && {borderColor: src.col, backgroundColor: src.col + '10'}]}
+              activeOpacity={0.7}
+              onPress={() => setDataSource(src.id)}>
+              <AppText style={{fontSize: ms(22)}}>{src.ico}</AppText>
+              <AppText variant="caption" color={active ? src.col : Colors.textPrimary} style={{fontWeight: '600', marginTop: vs(4)}}>{src.name}</AppText>
+              <AppText variant="small" color={Colors.textTertiary} style={{marginTop: vs(2), textAlign: 'center', lineHeight: ms(14)}}>{src.sub}</AppText>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-      {/* Show form sections only when activity is selected */}
-      {selectedActivity && (
+      {/* 2. Wearable - device list */}
+      {dataSource === 'wearable' && (
+        <View style={sty.devicesSection}>
+          <AppText variant="bodyBold" style={sty.sectionTitle}>Connect a device</AppText>
+          <AppText variant="caption" color={Colors.textTertiary} style={{marginBottom: vs(10)}}>Tap to pair. Paired devices sync activity data automatically.</AppText>
+          {(WEARABLES || []).map(w => {
+            const st = wearableStates[w.id] || 'disconnected';
+            const connected = st === 'connected';
+            return (
+              <TouchableOpacity
+                key={w.id}
+                style={[sty.deviceRow, connected && {borderColor: Colors.accent, backgroundColor: Colors.tealBg}]}
+                activeOpacity={0.7}
+                onPress={() => {
+                  if (!connected) {
+                    setWearableStates(prev => ({...prev, [w.id]: 'connected'}));
+                  } else {
+                    setWearableStates(prev => ({...prev, [w.id]: 'disconnected'}));
+                  }
+                }}>
+                <AppText style={{fontSize: ms(22)}}>{w.ico}</AppText>
+                <View style={{flex: 1, marginLeft: s(10)}}>
+                  <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(12)}}>{w.name}</AppText>
+                  <AppText variant="small" color={Colors.textTertiary}>{w.sub}</AppText>
+                </View>
+                <View style={[sty.sourceBadge, {backgroundColor: connected ? Colors.tealBg : Colors.background}]}>
+                  <AppText variant="small" color={connected ? Colors.tealText : Colors.textTertiary} style={{fontWeight: '600'}}>{connected ? 'Connected' : 'Connect'}</AppText>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      {/* 3. Manual - Activity Selector + Form */}
+      {dataSource === 'manual' && (
         <>
-          {/* 2. Dynamic Activity Form (Layers 1-4) */}
-          {renderLayer1()}
-          {renderLayer2()}
-          {renderLayer3()}
-          {renderLayer4()}
+          {renderActivityGrid()}
 
-          {/* 3. HR Monitoring */}
-          {renderHRMonitoring()}
+          {selectedActivity && (
+            <>
+              {renderLayer1()}
+              {renderLayer2()}
+              {renderLayer3()}
+              {renderLayer4()}
+              {renderHRMonitoring()}
+              {renderIntensity()}
+              {renderPostMeal()}
+              {renderCaloriePreview()}
+              {renderAyuIntelligence()}
 
-          {/* 4. Intensity */}
-          {renderIntensity()}
-
-          {/* 5. Post-meal Tag */}
-          {renderPostMeal()}
-
-          {/* 6. Calorie Preview */}
-          {renderCaloriePreview()}
-
-          {/* 7. Ayu Intelligence */}
-          {renderAyuIntelligence()}
-
-          {/* Save Button */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={sty.saveBtn}
-            onPress={handleSave}>
-            <AppText variant="bodyBold" color={Colors.white} style={sty.saveBtnText}>
-              Save Activity Log
-            </AppText>
-          </TouchableOpacity>
+            </>
+          )}
         </>
       )}
 
@@ -1936,6 +1983,43 @@ const sty = StyleSheet.create({
   saveBtnText: {
     fontSize: ms(15),
     letterSpacing: 0.5,
+  },
+
+  divider: {height: 0.5, backgroundColor: '#dde8e2', marginVertical: vs(16)},
+
+  /* ── Data source section ────────────────────────────── */
+  sourceGrid: {
+    flexDirection: 'row',
+    gap: s(10),
+    marginBottom: vs(16),
+  },
+  sourceCard: {
+    flex: 1,
+    backgroundColor: Colors.white,
+    borderRadius: ms(14),
+    borderWidth: 1.5,
+    borderColor: '#dde8e2',
+    padding: ms(14),
+    alignItems: 'center',
+  },
+  sourceBadge: {
+    paddingHorizontal: s(10),
+    paddingVertical: vs(3),
+    borderRadius: ms(8),
+    marginTop: vs(6),
+  },
+  devicesSection: {
+    marginBottom: vs(12),
+  },
+  deviceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: ms(12),
+    borderWidth: 0.5,
+    borderColor: '#dde8e2',
+    padding: ms(12),
+    marginBottom: vs(8),
   },
 
   /* ── Bottom spacer ────────────────────────────────── */

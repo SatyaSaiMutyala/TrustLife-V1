@@ -25,7 +25,7 @@ const ProfileHeader = ({onBack}) => {
   <View style={styles.header}>
     <View style={styles.top}>
       <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-        <Ionicons name="chevron-back" size={ms(22)} color={Colors.white} />
+        <Ionicons name="chevron-back" size={ms(18)} color={Colors.white} />
       </TouchableOpacity>
       <View style={styles.avatar}>
         <Text style={styles.avatarText}>PR</Text>
@@ -68,7 +68,7 @@ const ProfileHeader = ({onBack}) => {
 const styles = StyleSheet.create({
   header: {backgroundColor: Colors.primary, paddingHorizontal: s(16), paddingTop: vs(14), paddingBottom: vs(24)},
   top: {flexDirection: 'row', alignItems: 'center', gap: s(13), marginBottom: vs(14)},
-  backBtn: {width: ms(38), height: ms(38), borderRadius: ms(19), backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center'},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center'},
   avatar: {width: ms(54), height: ms(54), borderRadius: ms(27), backgroundColor: Colors.lightGreen, alignItems: 'center', justifyContent: 'center', borderWidth: 2.5, borderColor: 'rgba(255,255,255,0.3)'},
   avatarText: {fontSize: ms(20), fontWeight: '500', color: '#04342C'},
   sub: {marginTop: vs(3)},

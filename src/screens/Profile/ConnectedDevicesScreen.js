@@ -5,6 +5,8 @@ import {useNavigation} from '@react-navigation/native';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 import Colors from '../../constants/colors';
 import AppText from '../../components/shared/AppText';
+import Icon from '../../components/shared/Icons';
+import ConnectTab from '../../components/Fitness/Movement/ConnectTab';
 
 const SYNC = {live: Colors.accent, idle: '#E9A23A', off: '#BDBDBD'};
 const SYNC_LABEL = {live: 'Live sync', idle: 'Synced', off: 'Manual'};
@@ -50,17 +52,16 @@ const ConnectedDevicesScreen = () => {
     <View style={st.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topBar}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={st.backBtn}>
-            <AppText variant="body" style={st.backText}>{'\u2039'} Profile</AppText>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={st.addPill} activeOpacity={0.7}>
-            <AppText variant="small" style={st.addPillText}>+ Connect Device</AppText>
-          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={st.headerTitle}>Connected Devices</AppText>
+            <AppText variant="caption" style={st.headerSub}>Wearables, medical devices & health apps</AppText>
+          </View>
         </View>
-        <AppText variant="screenName" style={st.headerTitle}>Connected Devices</AppText>
-        <AppText variant="caption" style={st.headerSub}>Wearables, medical devices & health apps</AppText>
       </View>
 
       <ScrollView style={st.scroll} contentContainerStyle={st.scrollContent} showsVerticalScrollIndicator={false}>
@@ -143,6 +144,10 @@ const ConnectedDevicesScreen = () => {
           ))}
         </View>
 
+        {/* Fitness Sync & Permissions */}
+        <AppText variant="sectionTitle" style={st.secLabel}>FITNESS SYNC & PERMISSIONS</AppText>
+        <ConnectTab />
+
         <View style={{height: vs(40)}} />
       </ScrollView>
     </View>
@@ -151,14 +156,11 @@ const ConnectedDevicesScreen = () => {
 
 const st = StyleSheet.create({
   container: {flex: 1, backgroundColor: Colors.background},
-  header: {backgroundColor: Colors.primary, paddingBottom: vs(16), paddingHorizontal: s(16)},
-  topBar: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: vs(12)},
-  backBtn: {paddingVertical: vs(4), paddingRight: s(12)},
-  backText: {color: Colors.white, fontSize: ms(15)},
-  addPill: {paddingHorizontal: s(14), paddingVertical: vs(6), borderRadius: ms(20), backgroundColor: 'rgba(93,202,165,0.18)', borderWidth: 1, borderColor: 'rgba(93,202,165,0.3)'},
-  addPillText: {color: Colors.lightGreen, fontSize: ms(11), fontWeight: '600'},
-  headerTitle: {color: Colors.white, fontSize: ms(20), fontWeight: '700', marginBottom: vs(4)},
-  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(12)},
+  header: {backgroundColor: Colors.primary, paddingBottom: vs(10), paddingHorizontal: s(16)},
+  topBar: {flexDirection: 'row', alignItems: 'center', marginBottom: vs(2)},
+  backBtn: {width: ms(30), height: ms(30), borderRadius: ms(15), backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', paddingRight: ms(2)},
+  headerTitle: {color: Colors.white, fontSize: ms(18), fontWeight: '700'},
+  headerSub: {color: 'rgba(255,255,255,0.5)', fontSize: ms(11)},
   scroll: {flex: 1},
   scrollContent: {padding: s(16)},
   secLabel: {marginBottom: vs(8), marginTop: vs(6)},

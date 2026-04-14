@@ -103,7 +103,7 @@ const SplashPage = ({ onNext, active }) => (
             </AnimatedItem>
 
             <AnimatedItem active={active} delay={300} direction="up">
-                <AppText style={pg.tagline} color="rgba(63, 62, 62, 0.55)">
+                <AppText style={pg.tagline} color="white">
                     {'Your health.\nConnected. For life.'}
                 </AppText>
             </AnimatedItem>
@@ -117,12 +117,12 @@ const SplashPage = ({ onNext, active }) => (
                 </TouchableOpacity>
             </AnimatedItem>
 
-            <AnimatedItem active={active} delay={580} direction="up">
+            {/* <AnimatedItem active={active} delay={580} direction="up">
                 <AppText style={pg.subText} color="rgba(255,255,255,0.4)">
                     Already have a record?{' '}
                     <AppText style={[pg.subText, { color: Colors.paleGreen, fontWeight: '600' }]}>Sign in</AppText>
                 </AppText>
-            </AnimatedItem>
+            </AnimatedItem> */}
         </View>
     </View>
 );
@@ -748,7 +748,8 @@ const pg = StyleSheet.create({
         textTransform: 'uppercase',
         textAlign: 'center',
         lineHeight: ms(20),
-        marginBottom: vs(32),
+        marginBottom: vs(20),
+        marginTop:vs(45)
     },
 
     ctaBtn: {

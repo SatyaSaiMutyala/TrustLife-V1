@@ -512,6 +512,11 @@ const AppNavigator = () => {
         options={{animation: 'slide_from_right', headerShown: false}}
       />
       <Stack.Screen
+        name="ActivityDetail"
+        component={require('../screens/Records/ActivityDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
         name="PregnancyLog"
         component={PregnancyLogScreen}
         options={{animation: 'slide_from_right'}}

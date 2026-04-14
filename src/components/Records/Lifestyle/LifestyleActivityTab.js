@@ -179,13 +179,14 @@ const DateGroup = ({label}) => (
   </View>
 );
 
-const DaySummaryPill = ({total, level}) => {
+const DaySummaryPill = ({total, level, onPress}) => {
   const color = ACT_BAR_COLORS[level] || Colors.accent;
   return (
-    <View style={[styles.daySummary, {borderLeftColor: color}]}>
+    <TouchableOpacity style={[styles.daySummary, {borderLeftColor: color}]} activeOpacity={0.7} onPress={onPress}>
       <Icon family="Ionicons" name="footsteps-outline" size={ms(13)} color={color} />
       <AppText variant="small" color={Colors.textSecondary} style={{flex: 1, marginLeft: s(6)}}>{total}</AppText>
-    </View>
+      <Icon family="Ionicons" name="chevron-forward" size={ms(14)} color={Colors.textPrimary} />
+    </TouchableOpacity>
   );
 };
 
@@ -256,7 +257,7 @@ const LifestyleActivityTab = () => {
       {ACTIVITY_RECORDS.map((day, i) => (
         <View key={i}>
           <DateGroup label={day.date} />
-          <DaySummaryPill total={day.total} level={day.level} />
+          <DaySummaryPill total={day.total} level={day.level} onPress={() => navigation.navigate('ActivityDetail', {record: day})} />
           {day.activities.map((act, j) => (
             <ActivityRow key={j} act={act} />
           ))}

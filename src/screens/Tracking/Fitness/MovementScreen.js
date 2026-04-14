@@ -14,16 +14,12 @@ import AppText from '../../../components/shared/AppText';
 
 import DashboardTab from '../../../components/Fitness/Movement/DashboardTab';
 import LogActivityTab from '../../../components/Fitness/Movement/LogActivityTab';
-import TrendsTab from '../../../components/Fitness/Movement/TrendsTab';
-import ConnectTab from '../../../components/Fitness/Movement/ConnectTab';
 
 /* ─── Tab configuration ─────────────────────────────── */
 
 const TABS = [
   {key: 'dashboard', label: 'Today', emoji: '\uD83D\uDCCA'},
   {key: 'log', label: 'Log', emoji: '\u270F\uFE0F'},
-  {key: 'trends', label: 'Trends', emoji: '\uD83D\uDCC8'},
-  {key: 'connect', label: 'Connect', emoji: '\uD83D\uDD17'},
 ];
 
 
@@ -66,10 +62,6 @@ const MovementScreen = () => {
         );
       case 'log':
         return <LogActivityTab />;
-      case 'trends':
-        return <TrendsTab />;
-      case 'connect':
-        return <ConnectTab />;
       default:
         return null;
     }

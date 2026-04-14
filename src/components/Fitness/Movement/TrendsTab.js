@@ -422,7 +422,6 @@ const TrendsTab = () => {
 const sty = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: s(16),
     paddingTop: vs(8),
   },
 

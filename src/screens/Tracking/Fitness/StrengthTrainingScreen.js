@@ -15,23 +15,17 @@ import {DEFAULT_PLAN} from '../../../constants/strengthData';
 
 import PlannerTab from '../../../components/Fitness/Strength/PlannerTab';
 import DailyLogTab from '../../../components/Fitness/Strength/DailyLogTab';
-import HistoryTab from '../../../components/Fitness/Strength/HistoryTab';
-import SummaryTab from '../../../components/Fitness/Strength/SummaryTab';
 import RestTimerOverlay from '../../../components/Fitness/Strength/RestTimerOverlay';
 import AyuOverlay from '../../../components/Fitness/Strength/AyuOverlay';
 
 const TABS = [
   {key: 'planner', label: 'Planner', emoji: '\uD83D\uDCCB'},
   {key: 'log', label: 'Daily Log', emoji: '\uD83D\uDCDD'},
-  {key: 'history', label: 'History', emoji: '\uD83D\uDCCA'},
-  {key: 'summary', label: 'Summary', emoji: '\uD83D\uDCC8'},
 ];
 
 const SAVE_LABELS = {
   planner: 'Save training plan',
   log: "Save today's session",
-  history: 'Export log history',
-  summary: 'Export programme summary',
 };
 
 const StrengthTrainingScreen = () => {
@@ -82,10 +76,6 @@ const StrengthTrainingScreen = () => {
             onShowAyu={onShowAyu}
           />
         );
-      case 'history':
-        return <HistoryTab onShowAyu={onShowAyu} />;
-      case 'summary':
-        return <SummaryTab plan={plan} setPlan={setPlan} onShowAyu={onShowAyu} />;
       default:
         return null;
     }

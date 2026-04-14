@@ -14,7 +14,7 @@ import Icon from '../../../../components/shared/Icons';
 const TILES = [
   {
     key: 'dev', name: 'Developmental milestones', icon: 'bulb-outline',
-    status: 'ASQ-3 built-in\n9 years \u00b7 IAP schedule',
+    status: 'ASQ-3 built-in\n9 years - IAP schedule',
     badge: 'On track', badgeBg: Colors.tealBg, badgeColor: Colors.tealText,
     barColor: Colors.primary, route: 'DevelopmentalMilestones',
   },
@@ -26,7 +26,7 @@ const TILES = [
   },
   {
     key: 'sym', name: 'Symptom checker', icon: 'thermometer-outline',
-    status: 'Age-stratified \u00b7 Red flags\nFever \u00b7 Cough \u00b7 Rash',
+    status: 'Age-stratified - Red flags\nFever - Cough - Rash',
     badge: 'Ready to use', badgeBg: '#E8F5F2', badgeColor: '#0B3A30',
     barColor: '#E24B4A', route: 'SymptomChecker',
   },
@@ -40,7 +40,7 @@ const TILES = [
 
 const MEDS_TILE = {
   key: 'med', name: 'Paediatric medicines tracker', icon: 'medkit-outline',
-  status: 'mg/kg dose calculator \u00b7 Antibiotic course tracker \u00b7 Allergy cross-reference \u00b7 0 active medications',
+  status: 'mg/kg dose calculator - Antibiotic course tracker - Allergy cross-reference - 0 active medications',
   badge: 'No active courses', badgeBg: '#E8F5F2', badgeColor: '#0B3A30',
   barColor: '#534AB7', route: 'MedicinesTracker',
 };
@@ -117,9 +117,11 @@ const PaediatricLogScreen = () => {
             <TouchableOpacity style={st.backBtn} onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
             </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)">Child health</AppText>
+            <View style={{flex: 1}}>
+              <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Child health</AppText>
+              <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>9y 2m</AppText>
+            </View>
           </View>
-          <AppText variant="caption" color="rgba(255,255,255,0.4)" style={{fontWeight: '600'}}>9y 2m</AppText>
         </View>
       </View>
 
@@ -128,8 +130,6 @@ const PaediatricLogScreen = () => {
 
         {/* Hero header section (green bg) */}
         <View style={st.heroBg}>
-          <AppText variant="screenName" color={Colors.white} style={{marginBottom: vs(2)}}>Child health</AppText>
-          <AppText variant="caption" color="rgba(255,255,255,0.55)" style={{marginBottom: vs(14)}}>Phase 2 {'\u00b7'} Development & screening</AppText>
 
           {/* Child card hero */}
           <View style={st.babyCard}>
@@ -138,8 +138,8 @@ const PaediatricLogScreen = () => {
                 <Icon family="Ionicons" name="happy-outline" size={ms(26)} color={Colors.white} />
               </View>
               <View style={{flex: 1}}>
-                <AppText variant="bodyBold" color={Colors.white} style={{fontSize: ms(17)}}>Child health {'\u00b7'} Phase 2</AppText>
-                <AppText variant="subtext" color="rgba(255,255,255,0.55)">Aarav {'\u00b7'} 9y 2m {'\u00b7'} IAP 2024 {'\u00b7'} Development & screening</AppText>
+                <AppText variant="bodyBold" color={Colors.white} style={{fontSize: ms(17)}}>Child health {'-'} Phase 2</AppText>
+                <AppText variant="subtext" color="rgba(255,255,255,0.55)">Aarav {'-'} 9y 2m {'-'} IAP 2024 {'-'} Development & screening</AppText>
               </View>
             </View>
 
@@ -170,7 +170,7 @@ const PaediatricLogScreen = () => {
         </View>
 
         {/* Ayu alerts */}
-        <Section title="Ayu alerts \u00b7 child health" />
+        <Section title="Ayu alerts - child health" />
         {AYU_ALERTS.map((alert, i) => (
           <View key={i} style={[st.insight, {backgroundColor: alert.bg, borderColor: alert.borderColor}]}>
             <Icon family="Ionicons" name={alert.icon} size={ms(16)} color={alert.iconColor} />

@@ -132,9 +132,11 @@ const PregnancyLogScreen = () => {
             <TouchableOpacity style={st.backBtn} onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
             </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)">Pregnancy</AppText>
+            <View style={{flex: 1}}>
+              <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Pregnancy</AppText>
+              <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Week 16</AppText>
+            </View>
           </View>
-          <AppText variant="caption" color="rgba(255,255,255,0.4)" style={{fontWeight: '600'}}>Week 16</AppText>
         </View>
       </View>
 
@@ -142,8 +144,6 @@ const PregnancyLogScreen = () => {
 
         {/* Hero section */}
         <View style={st.heroBg}>
-          <AppText variant="screenName" color={Colors.white} style={{marginBottom: vs(2)}}>Pregnancy</AppText>
-          <AppText variant="caption" color="rgba(255,255,255,0.55)" style={{marginBottom: vs(16)}}>Ananya {'-'} Week 16 {'-'} 2nd Trimester</AppText>
 
           {/* Week ring + baby card */}
           <View style={{flexDirection: 'row', alignItems: 'center', gap: s(16)}}>

@@ -14,7 +14,7 @@ import Icon from '../../../../components/shared/Icons';
 const TILES = [
   {
     key: 'growth', name: 'Growth monitor', icon: 'analytics-outline',
-    status: '3.82 kg \u00b7 53.1 cm\n50th percentile weight',
+    status: '3.82 kg - 53.1 cm\n50th percentile weight',
     badge: 'On track', badgeBg: Colors.tealBg, badgeColor: Colors.tealText,
     barColor: Colors.primary, route: 'GrowthMonitor',
   },
@@ -26,13 +26,13 @@ const TILES = [
   },
   {
     key: 'sleep', name: 'Sleep tracker', icon: 'moon-outline',
-    status: '14.5h total \u00b7 2 naps\nLast wake: 45 min ago',
+    status: '14.5h total - 2 naps\nLast wake: 45 min ago',
     badge: 'Age appropriate', badgeBg: Colors.tealBg, badgeColor: Colors.tealText,
     barColor: '#2A5FA0', route: 'BabySleepTracker',
   },
   {
     key: 'neo', name: 'Neonatal record', icon: 'happy-outline',
-    status: 'APGAR 9 \u00b7 Birth 3.1 kg\nNewborn screens \u2713',
+    status: 'APGAR 9 - Birth 3.1 kg\nNewborn screens \u2713',
     badge: 'All screens done', badgeBg: Colors.tealBg, badgeColor: Colors.tealText,
     barColor: Colors.accent, route: 'NeonatalRecord',
   },
@@ -40,7 +40,7 @@ const TILES = [
 
 const NAPPY_TILE = {
   key: 'nappy', name: 'Nappy output log', icon: 'water-outline',
-  status: '8 wet \u00b7 2 stools today \u00b7 Breastfed yellow \u00b7 Adequate hydration',
+  status: '8 wet - 2 stools today - Breastfed yellow - Adequate hydration',
   badge: 'Good output', badgeBg: Colors.tealBg, badgeColor: Colors.tealText,
   barColor: '#A16207', route: 'NappyOutput',
 };
@@ -48,9 +48,9 @@ const NAPPY_TILE = {
 const TIMELINE = [
   {time: '09:00', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 14min'},
   {time: '09:35', color: '#A16207', text: 'Nappy - Wet + stool (yellow, seedy)'},
-  {time: '10:00', color: '#2A5FA0', text: 'Nap - Morning nap 1h 45m \u00b7 Easy settle'},
+  {time: '10:00', color: '#2A5FA0', text: 'Nap - Morning nap 1h 45m - Easy settle'},
   {time: '11:50', color: '#D97316', text: 'Feed - Breastfeed L 20min, R 12min'},
-  {time: 'Now', color: Colors.primary, text: 'Awake \u00b7 Feed due in ~1h', isNow: true},
+  {time: 'Now', color: Colors.primary, text: 'Awake - Feed due in ~1h', isNow: true},
 ];
 
 const NEXT_ACTIONS = [
@@ -125,9 +125,11 @@ const NeonatalLogScreen = () => {
             <TouchableOpacity style={st.backBtn} onPress={() => navigation.goBack()} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
               <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
             </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)">Baby health</AppText>
+            <View style={{flex: 1}}>
+              <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Baby health</AppText>
+              <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Day 44</AppText>
+            </View>
           </View>
-          <AppText variant="caption" color="rgba(255,255,255,0.4)" style={{fontWeight: '600'}}>Day 44</AppText>
         </View>
       </View>
 
@@ -136,8 +138,6 @@ const NeonatalLogScreen = () => {
 
         {/* Hero header section (green bg) */}
         <View style={st.heroBg}>
-          <AppText variant="screenName" color={Colors.white} style={{marginBottom: vs(2)}}>Baby health</AppText>
-          <AppText variant="caption" color="rgba(255,255,255,0.55)" style={{marginBottom: vs(14)}}>Phase 1 \u00b7 Newborn essentials</AppText>
 
           {/* Baby card hero */}
           <View style={st.babyCard}>
@@ -146,12 +146,12 @@ const NeonatalLogScreen = () => {
             </View>
             <View style={{flex: 1}}>
               <AppText variant="bodyBold" color={Colors.white} style={{fontSize: ms(18)}}>Baby Zara</AppText>
-              <AppText variant="subtext" color="rgba(255,255,255,0.55)">44 days {'\u00b7'} 6 weeks 2 days {'\u00b7'} Born 20 Feb 2026</AppText>
+              <AppText variant="subtext" color="rgba(255,255,255,0.55)">44 days {'-'} 6 weeks 2 days {'-'} Born 20 Feb 2026</AppText>
               <View style={st.babyStatsRow}>
                 {[
-                  {v: '3.82', l: 'kg \u00b7 weight'},
-                  {v: '53.1', l: 'cm \u00b7 length'},
-                  {v: '36.5', l: 'cm \u00b7 HC'},
+                  {v: '3.82', l: 'kg - weight'},
+                  {v: '53.1', l: 'cm - length'},
+                  {v: '36.5', l: 'cm - HC'},
                 ].map((stat, i) => (
                   <View key={i} style={{alignItems: 'center'}}>
                     <AppText variant="bodyBold" color={Colors.white} style={{fontSize: ms(15)}}>{stat.v}</AppText>
@@ -183,7 +183,7 @@ const NeonatalLogScreen = () => {
         </View>
 
         {/* App grid */}
-        <Section title="Baby health apps \u00b7 Phase 1" />
+        <Section title="Baby health apps - Phase 1" />
         <View style={st.appGrid}>
           {TILES.map((tile) => (
             <AppTile key={tile.key} tile={tile} onPress={() => goTile(tile.route)} />

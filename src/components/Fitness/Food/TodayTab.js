@@ -4,7 +4,9 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
+import Svg, {Circle as SvgCircle} from 'react-native-svg';
 import {scale as s, verticalScale as vs, moderateScale as ms} from 'react-native-size-matters';
 
 import Colors from '../../../constants/colors';
@@ -19,9 +21,7 @@ import {
 
 /* ─── Constants ─────────────────────────────────────── */
 
-const RING_SIZE = ms(130);
-const DOT_COUNT = 20;
-const DOT_SIZE = ms(10);
+/* RING_SIZE now computed inside component via useWindowDimensions */
 
 const MACRO_CONFIG = [
   {key: 'pro', label: 'Protein', unit: 'g', color: Colors.blue},
@@ -72,6 +72,8 @@ const buildDinnerRec = totals => {
 /* ─── Component ─────────────────────────────────────── */
 
 const TodayTab = ({meals, setMeals, water, setWater, onAddFood, onSwitchTab}) => {
+  const {width: screenWidth} = useWindowDimensions();
+  const ringSize = Math.min(Math.max(screenWidth * 0.3, ms(100)), ms(140));
   const [tappedGlasses, setTappedGlasses] = useState({});
 
   const totals = useMemo(() => calcTotal(meals), [meals]);
@@ -143,31 +145,24 @@ const TodayTab = ({meals, setMeals, water, setWater, onAddFood, onSwitchTab}) =>
       {/* ── 1. CALORIE RING ──────────────────────────── */}
       <View style={S.card}>
         <View style={S.ringWrap}>
-          <View style={S.ringBox}>
-            {Array.from({length: DOT_COUNT}).map((_, i) => {
-              const filled = i < Math.round(calRatio * DOT_COUNT);
-              const angle = (i / DOT_COUNT) * 2 * Math.PI - Math.PI / 2;
-              const r = (RING_SIZE - DOT_SIZE) / 2;
-              const cx = RING_SIZE / 2 + r * Math.cos(angle) - DOT_SIZE / 2;
-              const cy = RING_SIZE / 2 + r * Math.sin(angle) - DOT_SIZE / 2;
-              const dotColor = filled ? (remaining >= 0 ? Colors.primary : Colors.red) : Colors.borderLight;
+          <View style={[S.ringBox, {width: ringSize, height: ringSize}]}>
+            {(() => {
+              const thickness = Math.max(ringSize * 0.085, 6);
+              const r = (ringSize - thickness) / 2;
+              const circ = 2 * Math.PI * r;
+              const off = circ * (1 - Math.min(calRatio, 1));
+              const strokeColor = remaining >= 0 ? Colors.primary : Colors.red;
               return (
-                <View
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    left: cx,
-                    top: cy,
-                    width: DOT_SIZE,
-                    height: DOT_SIZE,
-                    borderRadius: DOT_SIZE / 2,
-                    backgroundColor: dotColor,
-                  }}
-                />
+                <Svg width={ringSize} height={ringSize} style={{position: 'absolute'}}>
+                  <SvgCircle cx={ringSize / 2} cy={ringSize / 2} r={r} stroke={Colors.borderLight} strokeWidth={thickness} fill="none" />
+                  <SvgCircle cx={ringSize / 2} cy={ringSize / 2} r={r} stroke={strokeColor} strokeWidth={thickness} fill="none"
+                    strokeLinecap="round" strokeDasharray={`${circ} ${circ}`} strokeDashoffset={off}
+                    transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`} />
+                </Svg>
               );
-            })}
+            })()}
             <View style={S.ringCenter}>
-              <AppText variant="header" style={S.ringCal}>{eaten}</AppText>
+              <AppText variant="header" style={[S.ringCal, {fontSize: ringSize * 0.2}]}>{eaten}</AppText>
               <AppText variant="caption" color={Colors.textSecondary}>kcal eaten</AppText>
               <AppText
                 variant="bodyBold"
@@ -402,8 +397,6 @@ const S = StyleSheet.create({
   /* 1 Ring */
   ringWrap: {alignItems: 'center'},
   ringBox: {
-    width: RING_SIZE,
-    height: RING_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: vs(12),
