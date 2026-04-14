@@ -13,9 +13,6 @@ import Icon from '../../../../components/shared/Icons';
 
 const TABS = [
   {key: 'top8', label: 'Top 8 allergens'},
-  {key: 'leap', label: 'LEAP protocol'},
-  {key: 'reactions', label: 'Reactions log'},
-  {key: 'ayu', label: 'Ayu'},
 ];
 
 const SUMMARY_CELLS = [
@@ -261,6 +258,27 @@ const AllergenIntroScreen = () => {
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [selectedObservations, setSelectedObservations] = useState(['noreaction']);
 
+  // Dynamic allergen states
+  const [allergenStates, setAllergenStates] = useState(() => {
+    const map = {};
+    ALLERGENS.forEach(a => { map[a.key] = a.state; });
+    return map;
+  });
+
+  const cycleAllergenState = (key) => {
+    setAllergenStates(prev => {
+      const current = prev[key];
+      const next = current === 'pending' ? 'progress' : current === 'progress' ? 'safe' : 'pending';
+      return {...prev, [key]: next};
+    });
+  };
+
+  const STATE_LABELS = {
+    safe: 'Introduced - Safe',
+    progress: 'In progress',
+    pending: 'Not yet introduced',
+  };
+
   const toggleObservation = (id) => {
     setSelectedObservations((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
@@ -272,103 +290,51 @@ const AllergenIntroScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Fixed Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.9)">Allergen introduction</AppText>
-          </View>
-          <View style={st.savePill}>
-            <AppText variant="subtext" color={Colors.white} style={{fontWeight: '700', marginRight: s(4)}}>Save</AppText>
-            <Icon family="Ionicons" name="checkmark" size={ms(13)} color={Colors.white} />
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Allergen introduction</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Aarav - Top 8 allergens</AppText>
           </View>
         </View>
-
-        <AppText variant="subtext" color="rgba(255,255,255,0.55)" style={st.headerEyebrow}>
-          Allergen Introduction \u00b7 Log
-        </AppText>
-        <AppText variant="screenName" color={Colors.white} style={{marginBottom: vs(2)}}>
-          Allergen introduction
-        </AppText>
-        <AppText variant="caption" color="rgba(255,255,255,0.6)" style={{marginBottom: vs(12)}}>
-          Top 8 allergens \u00b7 LEAP protocol \u00b7 reaction tracker
-        </AppText>
-
-        {/* Tab pills */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{gap: s(6)}}>
-          {TABS.map((t) => {
-            const active = activeTab === t.key;
-            return (
-              <TouchableOpacity
-                key={t.key}
-                onPress={() => setActiveTab(t.key)}
-                style={[st.tabPill, active && st.tabPillActive]}
-                activeOpacity={0.75}>
-                <AppText
-                  variant="subtext"
-                  color={active ? Colors.primary : 'rgba(255,255,255,0.85)'}
-                  style={{fontWeight: '700'}}>
-                  {t.label}
-                </AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
       </View>
 
       {/* ── Scrollable body ── */}
       <ScrollView style={st.body} contentContainerStyle={st.bodyContent} showsVerticalScrollIndicator={false}>
         {activeTab === 'top8' && (
           <>
-            {/* Summary row */}
-            <View style={st.summaryRow}>
-              {SUMMARY_CELLS.map((c, i) => (
-                <View
-                  key={i}
-                  style={[st.sumCell, {backgroundColor: c.bg, borderColor: c.border}]}>
-                  <AppText variant="bodyBold" color={c.color} style={{fontSize: ms(22), fontWeight: '800'}}>
-                    {c.value}
-                  </AppText>
-                  <AppText variant="subtext" color={c.color} style={{textAlign: 'center', marginTop: vs(2), fontWeight: '600'}}>
-                    {c.label}
-                  </AppText>
-                </View>
-              ))}
-            </View>
-
             {/* Allergen grid */}
             <View style={st.allergenGrid}>
               {ALLERGENS.map((a) => {
+                const state = allergenStates[a.key] || 'pending';
                 const borderColor =
-                  a.state === 'safe' ? Colors.paleGreen :
-                  a.state === 'progress' ? '#FDDCB5' :
+                  state === 'safe' ? Colors.paleGreen :
+                  state === 'progress' ? '#FDDCB5' :
                   '#E5DDD3';
                 const iconColor =
-                  a.state === 'safe' ? Colors.tealText :
-                  a.state === 'progress' ? Colors.amberDark :
+                  state === 'safe' ? Colors.tealText :
+                  state === 'progress' ? Colors.amberDark :
                   Colors.textSecondary;
                 return (
                   <TouchableOpacity
                     key={a.key}
                     style={[st.allergenCard, {borderColor}]}
                     activeOpacity={0.7}
-                    onPress={() => {}}>
-                    {a.state === 'safe' && (
+                    onPress={() => cycleAllergenState(a.key)}>
+                    {state === 'safe' && (
                       <View style={[st.cornerBadge, {backgroundColor: Colors.tealBg}]}>
                         <Icon family="Ionicons" name="checkmark" size={ms(11)} color={Colors.tealText} />
                       </View>
                     )}
-                    {a.state === 'progress' && (
+                    {state === 'progress' && (
                       <View style={[st.cornerBadge, {backgroundColor: Colors.amberBg}]}>
-                        <Icon family="Ionicons" name="warning-outline" size={ms(11)} color={Colors.amberDark} />
+                        <Icon family="Ionicons" name="time-outline" size={ms(11)} color={Colors.amberDark} />
                       </View>
                     )}
                     <Icon family="Ionicons" name={a.icon} size={ms(22)} color={iconColor} />
@@ -376,10 +342,7 @@ const AllergenIntroScreen = () => {
                       {a.name}
                     </AppText>
                     <AppText variant="subtext" color={iconColor} style={{marginTop: vs(2), fontWeight: '600'}}>
-                      {a.status}
-                    </AppText>
-                    <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(1)}}>
-                      {a.sub}
+                      {STATE_LABELS[state]}
                     </AppText>
                   </TouchableOpacity>
                 );
@@ -471,18 +434,10 @@ const AllergenIntroScreen = () => {
               </View>
             </View>
 
-            {/* Red insight */}
-            <View style={[st.insight, {backgroundColor: '#FEE2E2', borderColor: '#FCA5A5'}]}>
-              <Icon family="Ionicons" name="warning-outline" size={ms(16)} color={'#B91C1C'} />
-              <AppText variant="caption" color={'#B91C1C'} style={{flex: 1, lineHeight: ms(17)}}>
-                <AppText style={{fontWeight: '700'}}>Anaphylaxis signs - call 108 immediately: </AppText>
-                facial/throat swelling, difficulty breathing, collapse, loss of consciousness. Do not wait. Administer EpiPen if prescribed. Anaphylaxis can occur within minutes.
-              </AppText>
-            </View>
           </>
         )}
 
-        {activeTab === 'leap' && (
+        {false && (
           <>
             {/* Blue insight */}
             <View style={[st.insight, {backgroundColor: '#DBEAFE', borderColor: '#BFDBFE'}]}>
@@ -523,7 +478,7 @@ const AllergenIntroScreen = () => {
           </>
         )}
 
-        {activeTab === 'reactions' && (
+        {false && (
           <>
             <View style={[st.insight, {backgroundColor: Colors.tealBg, borderColor: Colors.paleGreen}]}>
               <Icon family="Ionicons" name="checkmark-circle-outline" size={ms(16)} color={Colors.tealText} />
@@ -573,7 +528,7 @@ const AllergenIntroScreen = () => {
           </>
         )}
 
-        {activeTab === 'ayu' && (
+        {false && (
           <>
             <View style={st.ayuHeader}>
               <AppText variant="subtext" color="rgba(255,255,255,0.6)" style={{textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: '700'}}>

@@ -176,73 +176,18 @@ const SleepTrackerScreen = ({navigation}) => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Fixed Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon
-                family="Ionicons"
-                name="chevron-back"
-                size={18}
-                color={Colors.white}
-              />
-            </TouchableOpacity>
-            <AppText
-              variant="body"
-              color="rgba(255,255,255,0.8)">
-              Sleep tracker
-            </AppText>
-          </View>
-          <TouchableOpacity style={st.savePill} activeOpacity={0.8}>
-            <AppText
-              variant="caption"
-              color={Colors.white}
-              style={{fontWeight: '700'}}>
-              Save
-            </AppText>
-            <Icon
-              family="Ionicons"
-              name="checkmark"
-              size={ms(14)}
-              color={Colors.white}
-              style={{marginLeft: s(4)}}
-            />
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
-        </View>
-        <AppText
-          variant="screenName"
-          color={Colors.white}
-          style={{marginTop: vs(6)}}>
-          Sleep tracker
-        </AppText>
-        <AppText
-          variant="caption"
-          color="rgba(255,255,255,0.7)"
-          style={{marginTop: vs(3)}}>
-          14.5h logged today · 2 naps · Awake since 9:14 PM
-        </AppText>
-
-        {/* Tabs */}
-        <View style={st.tabRow}>
-          {TABS.map(t => (
-            <TouchableOpacity
-              key={t.key}
-              style={[st.tab, tab === t.key && st.tabOn]}
-              onPress={() => setTab(t.key)}
-              activeOpacity={0.7}>
-              <AppText
-                variant="caption"
-                color={
-                  tab === t.key ? Colors.white : 'rgba(255,255,255,0.6)'
-                }
-                style={{fontWeight: '700'}}>
-                {t.label}
-              </AppText>
-            </TouchableOpacity>
-          ))}
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Sleep tracker</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Baby Zara - 44 days</AppText>
+          </View>
         </View>
       </View>
 
@@ -252,8 +197,7 @@ const SleepTrackerScreen = ({navigation}) => {
         contentContainerStyle={st.bodyContent}
         showsVerticalScrollIndicator={false}>
 
-        {/* ═══════════ LOG SLEEP TAB ═══════════ */}
-        {tab === 'log' && (
+        {/* ═══════════ LOG SLEEP ═══════════ */}
           <>
             <Section title="Sleep type" />
             <View style={st.chipWrap}>
@@ -449,10 +393,9 @@ const SleepTrackerScreen = ({navigation}) => {
               ))}
             </View>
           </>
-        )}
 
-        {/* ═══════════ TODAY TAB ═══════════ */}
-        {tab === 'today' && (
+        {/* TODAY + AYU tabs removed — data in Records + Ayu Intel */}
+        {false && (
           <>
             <Section title="Sleep blocks · Apr 5" />
             <View style={st.wcard}>

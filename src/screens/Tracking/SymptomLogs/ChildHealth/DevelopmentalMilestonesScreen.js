@@ -14,8 +14,6 @@ import Icon from '../../../../components/shared/Icons';
 const TABS = [
   {key: 'log', label: 'Milestones'},
   {key: 'sdq', label: 'SDQ screen'},
-  {key: 'flags', label: 'Red flags'},
-  {key: 'ayu', label: 'Ayu'},
 ];
 
 const MILESTONE_GROUPS = [
@@ -310,34 +308,19 @@ const DevelopmentalMilestonesScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Fixed Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.85)">Developmental milestones</AppText>
-          </View>
-          <View style={st.savePill}>
-            <AppText variant="subtext" color={Colors.white} style={{fontWeight: '700'}}>Save \u2713</AppText>
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Developmental milestones</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Aarav - 9y 2m</AppText>
           </View>
         </View>
-
-        <AppText
-          variant="small"
-          color="rgba(255,255,255,0.55)"
-          style={{textTransform: 'uppercase', letterSpacing: 0.6, marginTop: vs(6), marginBottom: vs(2)}}>
-          Aarav \u00b7 9y 2m \u00b7 Milestones
-        </AppText>
-        <AppText variant="screenName" color={Colors.white} style={{marginBottom: vs(2)}}>
-          Developmental milestones
-        </AppText>
-        <AppText variant="subtext" color="rgba(255,255,255,0.55)" style={{marginBottom: vs(12)}}>
-          ASQ-3 (0-5.5y) \u00b7 SDQ (6-17y) \u00b7 IAP guidelines
-        </AppText>
 
         {/* Tab bar */}
         <View style={st.tabBar}>
@@ -365,13 +348,6 @@ const DevelopmentalMilestonesScreen = () => {
       <ScrollView style={st.body} contentContainerStyle={st.bodyContent} showsVerticalScrollIndicator={false}>
         {activeTab === 'log' && (
           <>
-            <View style={st.greenInfoBox}>
-              <Icon family="Ionicons" name="information-circle-outline" size={ms(16)} color={Colors.tealText} />
-              <AppText variant="caption" color={Colors.tealText} style={{flex: 1, lineHeight: ms(17)}}>
-                Aarav is 9 years 2 months. At this age, assessment moves from reflex-based milestones to cognitive, social, and academic function. Tap each item to record your observation.
-              </AppText>
-            </View>
-
             {MILESTONE_GROUPS.map((group, i) => (
               <MilestoneGroup
                 key={i}
@@ -385,13 +361,6 @@ const DevelopmentalMilestonesScreen = () => {
 
         {activeTab === 'sdq' && (
           <>
-            <View style={st.blueInfoBox}>
-              <Icon family="Ionicons" name="clipboard-outline" size={ms(16)} color="#2A5FA0" />
-              <AppText variant="caption" color="#2A5FA0" style={{flex: 1, lineHeight: ms(17)}}>
-                Strengths and Difficulties Questionnaire (SDQ). The SDQ is validated for ages 4-17 and is the gold-standard school-age screening tool used by IAP. 25 questions across 5 subscales. Takes 5 minutes. Tap each question to answer.
-              </AppText>
-            </View>
-
             {SDQ_SECTIONS.map((section, i) => (
               <View key={i} style={{marginBottom: vs(14)}}>
                 <AppText
@@ -412,19 +381,10 @@ const DevelopmentalMilestonesScreen = () => {
               </View>
             ))}
 
-            <View style={st.scoreBox}>
-              <AppText variant="bodyBold" color={Colors.tealText} style={{marginBottom: vs(6)}}>
-                SDQ Preliminary score \u00b7 Borderline attention
-              </AppText>
-              <AppText variant="caption" color={Colors.tealText} style={{lineHeight: ms(17)}}>
-                3 hyperactivity items scored 'Somewhat true' - borderline hyperactivity subscale (score 5/10). Emotional and peer subscales are normal.{' '}
-                <AppText style={{fontWeight: '700'}}>Recommendation:</AppText> Observe for 4 weeks and re-screen. If score unchanged, discuss with a paediatric psychologist - not ADHD medication at this stage.
-              </AppText>
-            </View>
           </>
         )}
 
-        {activeTab === 'flags' && (
+        {false && (
           <>
             <View style={st.redAlert}>
               <View style={{flexDirection: 'row', alignItems: 'center', gap: s(8), marginBottom: vs(10)}}>
@@ -486,7 +446,7 @@ const DevelopmentalMilestonesScreen = () => {
           </>
         )}
 
-        {activeTab === 'ayu' && (
+        {false && (
           <>
             <View style={st.ayuHeader}>
               <AppText

@@ -144,6 +144,7 @@ const MedicationScreen = () => {
 };
 
 /* ── STYLES ──────────────────────────────────────────── */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -156,20 +157,24 @@ const styles = StyleSheet.create({
     paddingBottom: vs(16),
     paddingHorizontal: s(16),
   },
+
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: vs(12),
   },
+
   backBtn: {
     paddingVertical: vs(4),
     paddingRight: s(12),
   },
+
   backText: {
     color: Colors.white,
     fontSize: ms(15),
   },
+
   pillBtn: {
     paddingHorizontal: s(14),
     paddingVertical: vs(6),
@@ -178,17 +183,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(93,202,165,0.3)',
   },
+
   pillBtnText: {
     color: Colors.lightGreen,
     fontSize: ms(12),
     fontWeight: '600',
   },
+
   headerTitle: {
     color: Colors.white,
     fontSize: ms(24),
     fontWeight: '700',
     marginBottom: vs(4),
   },
+
   headerSubtitle: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: ms(12),
@@ -202,6 +210,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderColor: Colors.borderLight,
   },
+
   tab: {
     flex: 1,
     alignItems: 'center',
@@ -209,14 +218,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
+
   tabActive: {
     borderBottomColor: Colors.primary,
   },
+
   tabLabel: {
     fontSize: ms(11),
     color: Colors.textTertiary,
     fontWeight: '500',
   },
+
   tabLabelActive: {
     color: Colors.primary,
     fontWeight: '700',
@@ -241,6 +253,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: s(16),
     paddingTop: vs(12),
   },
+
   actionBtn: {
     backgroundColor: Colors.primary,
     borderRadius: ms(12),
@@ -248,10 +261,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   actionBtnText: {
     color: Colors.white,
     fontSize: ms(15),
   },
+
 });
 
 export default MedicationScreen;

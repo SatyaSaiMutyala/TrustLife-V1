@@ -17,6 +17,7 @@ import {
 import Colors from '../../../../constants/colors';
 import AppText from '../../../../components/shared/AppText';
 import Icon from '../../../../components/shared/Icons';
+import NumpadModal from '../../../../components/BabyHealth/NumpadModal';
 
 // ──────────────────────────────────────────────
 // Data
@@ -24,7 +25,6 @@ import Icon from '../../../../components/shared/Icons';
 
 const TABS = [
   {id: 'birth', label: 'Birth data'},
-  {id: 'screens', label: 'Newborn screens'},
   {id: 'daily', label: 'Daily log'},
 ];
 
@@ -161,6 +161,42 @@ const NeonatalRecordScreen = () => {
   const [procedures, setProcedures] = useState([0, 1, 2, 3]);
   const [cordIdx, setCordIdx] = useState(0);
   const [vitDIdx, setVitDIdx] = useState(0);
+  const [temperature, setTemperature] = useState('36.8');
+  const [respRate, setRespRate] = useState('42');
+
+  // Dynamic birth stats
+  const [birthWeight, setBirthWeight] = useState('3.10');
+  const [birthLength, setBirthLength] = useState('50.0');
+  const [birthHC, setBirthHC] = useState('35.0');
+  const [gestAge, setGestAge] = useState('39');
+
+  // Numpad
+  const [numpadVisible, setNumpadVisible] = useState(false);
+  const [numpadField, setNumpadField] = useState(null);
+  const [numpadInitial, setNumpadInitial] = useState('');
+
+  const openNumpad = (field, initial) => {
+    setNumpadField(field);
+    setNumpadInitial(initial);
+    setNumpadVisible(true);
+  };
+
+  const onNumpadConfirm = (val) => {
+    if (numpadField === 'birthWeight') setBirthWeight(val);
+    else if (numpadField === 'birthLength') setBirthLength(val);
+    else if (numpadField === 'birthHC') setBirthHC(val);
+    else if (numpadField === 'gestAge') setGestAge(val);
+    else if (numpadField === 'temperature') setTemperature(val);
+    else if (numpadField === 'respRate') setRespRate(val);
+    setNumpadVisible(false);
+  };
+
+  const birthStats = [
+    {label: 'Birth weight', value: birthWeight, unit: 'kg', field: 'birthWeight'},
+    {label: 'Birth length', value: birthLength, unit: 'cm', field: 'birthLength'},
+    {label: 'Head circumference', value: birthHC, unit: 'cm', field: 'birthHC'},
+    {label: 'Gestational age', value: gestAge, unit: 'wk', field: 'gestAge'},
+  ];
 
   const toggleProc = (idx) => {
     setProcedures((prev) => (prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]));
@@ -171,39 +207,19 @@ const NeonatalRecordScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.85)">
-              Neonatal record
-            </AppText>
-          </View>
-          <View style={st.savePill}>
-            <Icon family="Ionicons" name="checkmark" size={ms(12)} color={Colors.white} />
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700', marginLeft: s(4)}}>
-              Save
-            </AppText>
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Neonatal record</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Baby Zara - Born 20 Feb 2026</AppText>
           </View>
         </View>
-
-        <AppText
-          variant="caption"
-          color="rgba(255,255,255,0.55)"
-          style={{fontWeight: '700', letterSpacing: 0.8, marginTop: vs(10), textTransform: 'uppercase', fontSize: ms(10)}}>
-          Baby Zara · Neonatal
-        </AppText>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(2)}}>
-          Neonatal record
-        </AppText>
-        <AppText variant="caption" color="rgba(255,255,255,0.65)" style={{marginTop: vs(4)}}>
-          Birth: 20 Feb 2026 · KIMS Hospital, Hyderabad
-        </AppText>
 
         {/* Tab bar */}
         <View style={st.tabBar}>
@@ -233,84 +249,33 @@ const NeonatalRecordScreen = () => {
         {activeTab === 'birth' && (
           <>
             {/* Birth record */}
-            <Section title="Birth record · 20 Feb 2026" />
+            <Section title="Birth record - tap to edit" />
             <View style={st.grid2}>
-              {BIRTH_STATS.map((stat, i) => (
-                <View key={i} style={st.statBox}>
+              {birthStats.map((stat, i) => (
+                <TouchableOpacity key={i} style={st.statBox} activeOpacity={0.8} onPress={() => openNumpad(stat.field, stat.value)}>
                   <AppText variant="subtext" color={Colors.textSecondary} style={{fontSize: ms(10), fontWeight: '600'}}>
                     {stat.label}
                   </AppText>
                   <View style={{flexDirection: 'row', alignItems: 'baseline', marginTop: vs(4)}}>
-                    <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(20), fontWeight: '800'}}>
-                      {stat.value}
+                    <AppText variant="bodyBold" color={stat.value ? Colors.primary : Colors.textTertiary} style={{fontSize: ms(20), fontWeight: '800'}}>
+                      {stat.value || '--'}
                     </AppText>
                     <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(4)}}>
                       {stat.unit}
                     </AppText>
                   </View>
-                  <View style={{marginTop: vs(6), alignSelf: 'flex-start'}}>
-                    <Pill text={stat.pill} tone="green" />
-                  </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
 
-            {/* APGAR scores */}
-            <Section title="APGAR scores" />
-            <View style={st.wcard}>
-              <View style={[st.apgRow, st.apgHead]}>
-                <AppText variant="caption" color={Colors.textSecondary} style={[st.apgCell, {fontWeight: '700'}]}>Criteria</AppText>
-                <AppText variant="caption" color={Colors.textSecondary} style={[st.apgCellC, {fontWeight: '700'}]}>1 min</AppText>
-                <AppText variant="caption" color={Colors.textSecondary} style={[st.apgCellC, {fontWeight: '700'}]}>5 min</AppText>
-              </View>
-              {APGAR_ROWS.map((row, i) => (
-                <View key={i} style={[st.apgRow, row.total && st.apgTotal]}>
-                  <AppText
-                    variant="caption"
-                    color={Colors.textPrimary}
-                    style={[st.apgCell, {fontWeight: row.total ? '800' : '500'}]}>
-                    {row.label}
-                  </AppText>
-                  <View style={st.apgCellC}>
-                    <View
-                      style={[
-                        st.apgScore,
-                        row.oneTone === 'amber' ? {backgroundColor: Colors.amberBg} : {backgroundColor: Colors.tealBg},
-                      ]}>
-                      <AppText
-                        variant="caption"
-                        color={row.oneTone === 'amber' ? Colors.amberText : Colors.tealText}
-                        style={{fontWeight: '800'}}>
-                        {row.oneMin}
-                      </AppText>
-                    </View>
-                  </View>
-                  <View style={st.apgCellC}>
-                    <View
-                      style={[
-                        st.apgScore,
-                        row.fiveTone === 'amber' ? {backgroundColor: Colors.amberBg} : {backgroundColor: Colors.tealBg},
-                      ]}>
-                      <AppText
-                        variant="caption"
-                        color={row.fiveTone === 'amber' ? Colors.amberText : Colors.tealText}
-                        style={{fontWeight: '800'}}>
-                        {row.fiveMin}
-                      </AppText>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
-
-            {/* Green insight box */}
-            <View style={st.greenInsight}>
-              <Icon family="Ionicons" name="checkmark-circle" size={ms(18)} color={Colors.tealDark} />
-              <AppText variant="caption" color={Colors.tealDark} style={{flex: 1, marginLeft: s(8), lineHeight: ms(17)}}>
-                <AppText color={Colors.tealDark} style={{fontWeight: '800'}}>APGAR 9/10 is excellent. </AppText>
-                An APGAR of 9-10 at 5 minutes indicates an infant in excellent condition. Score of 1 at 1 min for Appearance (hands/feet blue at birth) is normal...
-              </AppText>
-            </View>
+            <NumpadModal
+              visible={numpadVisible}
+              title={numpadField === 'birthWeight' ? 'Birth weight (kg)' : numpadField === 'birthLength' ? 'Birth length (cm)' : numpadField === 'birthHC' ? 'Head circumference (cm)' : 'Gestational age (weeks)'}
+              hint={numpadField === 'birthWeight' ? 'Enter weight in kg' : numpadField === 'birthLength' ? 'Enter length in cm' : numpadField === 'birthHC' ? 'Enter HC in cm' : 'Enter weeks'}
+              initialValue={numpadInitial}
+              onClose={() => setNumpadVisible(false)}
+              onConfirm={onNumpadConfirm}
+            />
 
             {/* Delivery details */}
             <Section title="Delivery details" />
@@ -366,17 +331,9 @@ const NeonatalRecordScreen = () => {
           </>
         )}
 
-        {activeTab === 'screens' && (
+        {false && (
           <>
-            {/* Blue insight */}
-            <View style={st.blueInsight}>
-              <Icon family="Ionicons" name="information-circle" size={ms(18)} color={Colors.blueText} />
-              <AppText variant="caption" color={Colors.blueText} style={{flex: 1, marginLeft: s(8), lineHeight: ms(17)}}>
-                Newborn screening identifies conditions that can be treated early...
-              </AppText>
-            </View>
-
-            {/* Mandatory screens */}
+            {/* Mandatory screens — moved to Records */}
             <Section title="Mandatory IAP / national screens" />
             <View style={st.wcard}>
               {MANDATORY_SCREENS.map((sc, i) => (
@@ -425,13 +382,6 @@ const NeonatalRecordScreen = () => {
                 </View>
               ))}
             </View>
-            <View style={st.greenInsight}>
-              <Icon family="Ionicons" name="checkmark-circle" size={ms(18)} color={Colors.tealDark} />
-              <AppText variant="caption" color={Colors.tealDark} style={{flex: 1, marginLeft: s(8), lineHeight: ms(17)}}>
-                Physiological jaundice resolved by Day 8 without phototherapy...
-              </AppText>
-            </View>
-
             {/* Extended screens */}
             <Section title="Extended screens (KIMS · additional)" />
             <View style={st.wcard}>
@@ -474,43 +424,7 @@ const NeonatalRecordScreen = () => {
 
         {activeTab === 'daily' && (
           <>
-            <Section title="Today's neonatal check · Day 44" />
-
-            <Section title="Jaundice visual assessment" />
-            <AppText
-              variant="caption"
-              color={Colors.textSecondary}
-              style={{fontStyle: 'italic', marginBottom: vs(8)}}>
-              Press gently on skin to check colour underneath...
-            </AppText>
-            <View>
-              {JAUNDICE_ZONES.map((z, i) => (
-                <TouchableOpacity key={i} style={st.zoneCard} activeOpacity={0.7}>
-                  <View style={st.iconBoxGreen}>
-                    <Icon family="Ionicons" name="body-outline" size={ms(16)} color={Colors.tealDark} />
-                  </View>
-                  <View style={{flex: 1, marginLeft: s(10)}}>
-                    <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700'}}>
-                      {z.name}
-                    </AppText>
-                    <AppText
-                      variant="caption"
-                      color={Colors.textSecondary}
-                      style={{marginTop: vs(2), fontSize: ms(10)}}>
-                      {z.bili}
-                    </AppText>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <View style={st.greenInsight}>
-              <Icon family="Ionicons" name="checkmark-circle" size={ms(18)} color={Colors.tealDark} />
-              <AppText variant="caption" color={Colors.tealDark} style={{flex: 1, marginLeft: s(8), lineHeight: ms(17)}}>
-                <AppText color={Colors.tealDark} style={{fontWeight: '800'}}>Physiological jaundice resolved on Day 8. </AppText>
-                No jaundice assessment needed beyond Day 21 for term infants without risk factors. Zara is Day 44 — this log section is for monitoring only...
-              </AppText>
-            </View>
+            <Section title="Today's neonatal check - Day 44" />
 
             {/* Cord */}
             <Section title="Cord / healing check" />
@@ -557,37 +471,40 @@ const NeonatalRecordScreen = () => {
             </View>
 
             {/* Daily vitals */}
-            <Section title="Daily vitals" />
+            <Section title="Daily vitals - tap to enter" />
             <View style={st.grid2}>
-              <View style={st.statBox}>
+              <TouchableOpacity style={st.statBox} activeOpacity={0.8} onPress={() => openNumpad('temperature', temperature)}>
                 <AppText variant="subtext" color={Colors.textSecondary} style={{fontSize: ms(10), fontWeight: '600'}}>
                   Temperature
                 </AppText>
                 <View style={{flexDirection: 'row', alignItems: 'baseline', marginTop: vs(4)}}>
-                  <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(20), fontWeight: '800'}}>
-                    36.8
+                  <AppText variant="bodyBold" color={temperature ? Colors.primary : Colors.textTertiary} style={{fontSize: ms(20), fontWeight: '800'}}>
+                    {temperature || '--'}
                   </AppText>
                   <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(4)}}>°C</AppText>
                 </View>
-                <View style={{marginTop: vs(6), alignSelf: 'flex-start'}}>
-                  <Pill text="Normal (36.5-37.5)" tone="green" />
-                </View>
-              </View>
-              <View style={st.statBox}>
+              </TouchableOpacity>
+              <TouchableOpacity style={st.statBox} activeOpacity={0.8} onPress={() => openNumpad('respRate', respRate)}>
                 <AppText variant="subtext" color={Colors.textSecondary} style={{fontSize: ms(10), fontWeight: '600'}}>
                   Resp. rate
                 </AppText>
                 <View style={{flexDirection: 'row', alignItems: 'baseline', marginTop: vs(4)}}>
-                  <AppText variant="bodyBold" color={Colors.textPrimary} style={{fontSize: ms(20), fontWeight: '800'}}>
-                    42
+                  <AppText variant="bodyBold" color={respRate ? Colors.primary : Colors.textTertiary} style={{fontSize: ms(20), fontWeight: '800'}}>
+                    {respRate || '--'}
                   </AppText>
                   <AppText variant="caption" color={Colors.textSecondary} style={{marginLeft: s(4)}}>/min</AppText>
                 </View>
-                <View style={{marginTop: vs(6), alignSelf: 'flex-start'}}>
-                  <Pill text="Normal (30-60)" tone="green" />
-                </View>
-              </View>
+              </TouchableOpacity>
             </View>
+
+            <NumpadModal
+              visible={numpadVisible && (numpadField === 'temperature' || numpadField === 'respRate')}
+              title={numpadField === 'temperature' ? 'Temperature (°C)' : 'Respiratory rate (/min)'}
+              hint={numpadField === 'temperature' ? 'Enter temp in °C' : 'Enter breaths per minute'}
+              initialValue={numpadInitial}
+              onClose={() => setNumpadVisible(false)}
+              onConfirm={onNumpadConfirm}
+            />
 
             {/* Vitamin D drops */}
             <Section title="Vitamin D drops" />

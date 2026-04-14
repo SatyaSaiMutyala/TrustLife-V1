@@ -24,6 +24,7 @@ import Svg, {
 import Colors from '../../../../constants/colors';
 import AppText from '../../../../components/shared/AppText';
 import Icon from '../../../../components/shared/Icons';
+import NumpadModal from '../../../../components/BabyHealth/NumpadModal';
 
 // ──────────────────────────────────────────────
 // Shared subcomponents
@@ -79,9 +80,29 @@ const Card = ({icon, iconBg, title, sub, children}) => (
 // ──────────────────────────────────────────────
 
 const LogTab = () => {
-  const [contextFeed, setContextFeed] = useState(0); // Before / After
-  const [contextClothing, setContextClothing] = useState(0); // Undressed / Nappy / Clothed
-  const [contextScale, setContextScale] = useState(0); // Home / Clinic / Pharmacy
+  const [weight, setWeight] = useState('3.82');
+  const [length, setLength] = useState('53.1');
+  const [headCirc, setHeadCirc] = useState('36.5');
+  const [numpadVisible, setNumpadVisible] = useState(false);
+  const [numpadField, setNumpadField] = useState(null);
+  const [numpadInitial, setNumpadInitial] = useState('');
+
+  const openNumpad = (field, initial) => {
+    setNumpadField(field);
+    setNumpadInitial(initial);
+    setNumpadVisible(true);
+  };
+
+  const onNumpadConfirm = (val) => {
+    if (numpadField === 'weight') setWeight(val);
+    else if (numpadField === 'length') setLength(val);
+    else if (numpadField === 'headCirc') setHeadCirc(val);
+    setNumpadVisible(false);
+  };
+
+  const [contextFeed, setContextFeed] = useState(0);
+  const [contextClothing, setContextClothing] = useState(0);
+  const [contextScale, setContextScale] = useState(0);
 
   const feedOpts = ['Before feed', 'After feed'];
   const clothingOpts = ['Undressed', 'Nappy only', 'Clothed'];
@@ -117,126 +138,55 @@ const LogTab = () => {
 
   return (
     <View>
-      {/* Percentile strip */}
-      <View style={st.percentileStrip}>
-        <View style={st.percentileCell}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.primary}
-            style={{fontSize: ms(18)}}>
-            50th
-          </AppText>
-          <AppText variant="subtext" color={Colors.textSecondary}>
-            Weight
-          </AppText>
-          <AppText
-            variant="caption"
-            color={Colors.textPrimary}
-            style={{fontWeight: '700'}}>
-            3.82 kg
-          </AppText>
-        </View>
-        <View style={st.percentileDivider} />
-        <View style={st.percentileCell}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.primary}
-            style={{fontSize: ms(18)}}>
-            55th
-          </AppText>
-          <AppText variant="subtext" color={Colors.textSecondary}>
-            Length
-          </AppText>
-          <AppText
-            variant="caption"
-            color={Colors.textPrimary}
-            style={{fontWeight: '700'}}>
-            53.1 cm
-          </AppText>
-        </View>
-        <View style={st.percentileDivider} />
-        <View style={st.percentileCell}>
-          <AppText
-            variant="bodyBold"
-            color={Colors.primary}
-            style={{fontSize: ms(18)}}>
-            45th
-          </AppText>
-          <AppText variant="subtext" color={Colors.textSecondary}>
-            Head circ.
-          </AppText>
-          <AppText
-            variant="caption"
-            color={Colors.textPrimary}
-            style={{fontWeight: '700'}}>
-            36.5 cm
-          </AppText>
-        </View>
-      </View>
-
       {/* Body measurements */}
-      <Section title="Body measurements · tap to enter" />
+      <Section title="Body measurements - tap to enter" />
       <View style={st.grid2}>
-        <TouchableOpacity style={[st.measureBox, {marginRight: s(6)}]} activeOpacity={0.8}>
+        <TouchableOpacity style={[st.measureBox, {marginRight: s(6)}]} activeOpacity={0.8} onPress={() => openNumpad('weight', weight)}>
           <View style={st.measureHeaderRow}>
             <Icon family="Ionicons" name="scale-outline" size={ms(14)} color={Colors.textSecondary} />
             <AppText variant="subtext" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '700'}}>
               Weight
             </AppText>
           </View>
-          <AppText variant="screenName" color={Colors.primary} style={{marginTop: vs(4)}}>
-            3.82 kg
-          </AppText>
-          <View style={[st.statusPill, {backgroundColor: Colors.tealBg, marginTop: vs(6)}]}>
-            <AppText variant="subtext" color={Colors.tealText} style={{fontWeight: '700'}}>
-              50th %ile · Healthy
-            </AppText>
-          </View>
-          <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(6)}}>
-            Undressed · before feed
+          <AppText variant="screenName" color={weight ? Colors.primary : Colors.textTertiary} style={{marginTop: vs(4)}}>
+            {weight ? `${weight} kg` : 'Tap to enter'}
           </AppText>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[st.measureBox, {marginLeft: s(6)}]} activeOpacity={0.8}>
+        <TouchableOpacity style={[st.measureBox, {marginLeft: s(6)}]} activeOpacity={0.8} onPress={() => openNumpad('length', length)}>
           <View style={st.measureHeaderRow}>
             <Icon family="Ionicons" name="resize-outline" size={ms(14)} color={Colors.textSecondary} />
             <AppText variant="subtext" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '700'}}>
               Length
             </AppText>
           </View>
-          <AppText variant="screenName" color={Colors.primary} style={{marginTop: vs(4)}}>
-            53.1 cm
-          </AppText>
-          <View style={[st.statusPill, {backgroundColor: Colors.tealBg, marginTop: vs(6)}]}>
-            <AppText variant="subtext" color={Colors.tealText} style={{fontWeight: '700'}}>
-              55th %ile · Normal
-            </AppText>
-          </View>
-          <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(6)}}>
-            Supine (lying flat)
+          <AppText variant="screenName" color={length ? Colors.primary : Colors.textTertiary} style={{marginTop: vs(4)}}>
+            {length ? `${length} cm` : 'Tap to enter'}
           </AppText>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={st.measureBoxFull} activeOpacity={0.8}>
+      <TouchableOpacity style={st.measureBoxFull} activeOpacity={0.8} onPress={() => openNumpad('headCirc', headCirc)}>
         <View style={st.measureHeaderRow}>
           <Icon family="Ionicons" name="ellipse-outline" size={ms(14)} color={Colors.textSecondary} />
           <AppText variant="subtext" color={Colors.textSecondary} style={{marginLeft: s(5), fontWeight: '700'}}>
             Head circumference
           </AppText>
         </View>
-        <AppText variant="screenName" color={Colors.primary} style={{marginTop: vs(4)}}>
-          36.5 cm
-        </AppText>
-        <View style={[st.statusPill, {backgroundColor: Colors.tealBg, marginTop: vs(6), alignSelf: 'flex-start'}]}>
-          <AppText variant="subtext" color={Colors.tealText} style={{fontWeight: '700'}}>
-            45th %ile · Normal
-          </AppText>
-        </View>
-        <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(6)}}>
-          Measured at widest point · OFC
+        <AppText variant="screenName" color={headCirc ? Colors.primary : Colors.textTertiary} style={{marginTop: vs(4)}}>
+          {headCirc ? `${headCirc} cm` : 'Tap to enter'}
         </AppText>
       </TouchableOpacity>
+
+      {/* Numpad Modal */}
+      <NumpadModal
+        visible={numpadVisible}
+        title={numpadField === 'weight' ? 'Weight (kg)' : numpadField === 'length' ? 'Length (cm)' : 'Head circumference (cm)'}
+        hint={numpadField === 'weight' ? 'Enter weight in kg' : numpadField === 'length' ? 'Enter length in cm' : 'Enter HC in cm'}
+        initialValue={numpadInitial}
+        onClose={() => setNumpadVisible(false)}
+        onConfirm={onNumpadConfirm}
+      />
 
       {/* Measurement context */}
       <Section title="Measurement context" />
@@ -255,100 +205,6 @@ const LogTab = () => {
         {renderChipRow(scaleOpts, contextScale, setContextScale)}
       </View>
 
-      {/* Weight gain velocity */}
-      <Section title="Weight gain velocity" />
-      <View style={st.wcard}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-          <AppText variant="caption" color={Colors.textSecondary}>
-            Gain since birth
-          </AppText>
-          <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700'}}>
-            3.1kg  →  3.82kg
-          </AppText>
-        </View>
-        <AppText
-          variant="screenName"
-          color={Colors.accent}
-          style={{marginTop: vs(6), fontSize: ms(28)}}>
-          +720g
-        </AppText>
-        <AppText variant="subtext" color={Colors.textSecondary}>
-          in 44 days
-        </AppText>
-
-        <View style={st.gainBarWrap}>
-          <View style={st.gainBarFill} />
-        </View>
-
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: vs(6)}}>
-          <AppText variant="subtext" color={Colors.textSecondary}>
-            Min: 150g/wk
-          </AppText>
-          <AppText variant="subtext" color={Colors.amberDark} style={{fontWeight: '700'}}>
-            Your gain: ~115g/wk
-          </AppText>
-          <AppText variant="subtext" color={Colors.tealText}>
-            Regained birthweight
-          </AppText>
-        </View>
-
-        <View style={st.infoBox}>
-          <Icon family="Ionicons" name="information-circle-outline" size={ms(16)} color={Colors.tealText} />
-          <AppText variant="caption" color={Colors.tealText} style={{flex: 1, lineHeight: ms(17), marginLeft: s(8)}}>
-            Zara has regained her birthweight (expected by Day 10-14) and is gaining steadily. Her rate of ~115g/week is at the low-normal end of WHO expected ranges (150-200g/week for breastfed infants 0-3 months). Continue monitoring and discuss at the 6-week review.
-          </AppText>
-        </View>
-      </View>
-
-      {/* WHO milestones */}
-      <Section title="WHO milestones · 6 weeks" />
-      <View style={st.wcard}>
-        {[
-          {
-            title: 'Back to birthweight',
-            sub: 'Day 8 (expected by Day 10-14)',
-            status: 'Day 8',
-            statusBg: Colors.tealBg,
-            statusColor: Colors.tealText,
-          },
-          {
-            title: 'Steady weekly gain',
-            sub: '~115g/wk · target 150-200g/wk',
-            status: 'Low-normal',
-            statusBg: '#FAEEDA',
-            statusColor: Colors.amberDark,
-          },
-          {
-            title: 'Length within 2SD',
-            sub: '55th percentile · tracking well',
-            status: 'Normal',
-            statusBg: Colors.tealBg,
-            statusColor: Colors.tealText,
-          },
-        ].map((item, i) => (
-          <View key={i} style={[st.milestoneRow, i === 2 && {borderBottomWidth: 0}]}>
-            <Icon
-              family="Ionicons"
-              name="checkmark-circle-outline"
-              size={ms(20)}
-              color={Colors.accent}
-            />
-            <View style={{flex: 1, marginLeft: s(10)}}>
-              <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '700'}}>
-                {item.title}
-              </AppText>
-              <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(1)}}>
-                {item.sub}
-              </AppText>
-            </View>
-            <View style={[st.statusPill, {backgroundColor: item.statusBg}]}>
-              <AppText variant="subtext" color={item.statusColor} style={{fontWeight: '700'}}>
-                {item.status}
-              </AppText>
-            </View>
-          </View>
-        ))}
-      </View>
     </View>
   );
 };
@@ -724,88 +580,25 @@ const AyuTab = () => (
 const GrowthMonitorScreen = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState('log'); // log | chart | ayu
-
-  const tabs = [
-    {id: 'log', label: 'Log today'},
-    {id: 'chart', label: 'Chart'},
-    {id: 'ayu', label: 'Ayu'},
-  ];
+  /* Only log tab — Chart moved to Records, Ayu moved to Ayu Intel */
 
   return (
     <View style={st.container}>
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── HEADER ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon
-                family="Ionicons"
-                name="chevron-back"
-                size={18}
-                color={Colors.white}
-              />
-            </TouchableOpacity>
-            <AppText
-              variant="body"
-              color="rgba(255,255,255,0.85)">
-              Growth monitor
-            </AppText>
-          </View>
-          <TouchableOpacity style={st.savePill} activeOpacity={0.8}>
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>
-              Save
-            </AppText>
-            <Icon
-              family="Ionicons"
-              name="checkmark"
-              size={ms(14)}
-              color={Colors.white}
-              style={{marginLeft: s(4)}}
-            />
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
           </TouchableOpacity>
-        </View>
-
-        <AppText
-          variant="subtext"
-          color="rgba(255,255,255,0.7)"
-          style={{textTransform: 'uppercase', letterSpacing: 0.6, fontWeight: '700', marginTop: vs(8)}}>
-          Baby Zara · Growth
-        </AppText>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(2)}}>
-          Growth monitor
-        </AppText>
-        <AppText
-          variant="subtext"
-          color="rgba(255,255,255,0.75)"
-          style={{marginTop: vs(2)}}>
-          44 days old · WHO growth charts · 0-24 months
-        </AppText>
-
-        {/* Tab bar */}
-        <View style={st.tabBar}>
-          {tabs.map(t => {
-            const isOn = activeTab === t.id;
-            return (
-              <TouchableOpacity
-                key={t.id}
-                style={[st.tabPill, isOn && st.tabPillOn]}
-                onPress={() => setActiveTab(t.id)}
-                activeOpacity={0.8}>
-                <AppText
-                  variant="subtext"
-                  color={isOn ? Colors.primary : Colors.white}
-                  style={{fontWeight: '700'}}>
-                  {t.label}
-                </AppText>
-              </TouchableOpacity>
-            );
-          })}
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Growth monitor</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Baby Zara - 44 days</AppText>
+          </View>
         </View>
       </View>
 
@@ -814,9 +607,7 @@ const GrowthMonitorScreen = () => {
         style={st.body}
         contentContainerStyle={st.bodyContent}
         showsVerticalScrollIndicator={false}>
-        {activeTab === 'log' && <LogTab />}
-        {activeTab === 'chart' && <ChartTab />}
-        {activeTab === 'ayu' && <AyuTab />}
+        <LogTab />
         <View style={{height: vs(20)}} />
       </ScrollView>
 

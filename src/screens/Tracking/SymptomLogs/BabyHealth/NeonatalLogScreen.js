@@ -191,29 +191,6 @@ const NeonatalLogScreen = () => {
           <AppTile tile={NAPPY_TILE} fullWidth onPress={() => goTile(NAPPY_TILE.route)} />
         </View>
 
-        {/* Today's timeline */}
-        <Section title="Today's timeline" />
-        <View style={st.card}>
-          {TIMELINE.map((item, i) => (
-            <View key={i} style={[st.timelineRow, i === TIMELINE.length - 1 && {borderBottomWidth: 0}]}>
-              <AppText variant="subtext" color={Colors.textSecondary} style={{width: ms(38), fontSize: ms(9)}}>{item.time}</AppText>
-              <View style={[st.timelineDot, {backgroundColor: item.color}]} />
-              <AppText variant="caption" color={item.isNow ? Colors.primary : Colors.textPrimary} style={{flex: 1, fontWeight: item.isNow ? '600' : '400'}}>{item.text}</AppText>
-            </View>
-          ))}
-        </View>
-
-        {/* Next actions */}
-        <Section title="Next actions" />
-        {NEXT_ACTIONS.map((action, i) => (
-          <View key={i} style={[st.insight, {backgroundColor: action.bg, borderColor: action.borderColor}]}>
-            <Icon family="Ionicons" name={action.icon} size={ms(16)} color={action.iconColor} />
-            <AppText variant="caption" color={action.textColor} style={{flex: 1, lineHeight: ms(17)}}>
-              <AppText style={{fontWeight: '700'}}>{action.title}</AppText>{action.body}
-            </AppText>
-          </View>
-        ))}
-
         <View style={{height: vs(40)}} />
       </ScrollView>
     </View>

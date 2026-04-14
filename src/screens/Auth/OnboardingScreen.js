@@ -732,7 +732,7 @@ const pg = StyleSheet.create({
         fontSize: ms(14),
         fontWeight: '700',
         letterSpacing: 1,
-        marginBottom: -vs(2),
+        marginBottom: -vs(1),
     },
 
     logoBig: {

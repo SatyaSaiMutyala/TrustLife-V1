@@ -21,6 +21,7 @@ const MAIN_TABS = [
   { key: 'medical',   label: 'Medical',     ico: 'medkit-outline' },
   { key: 'symptoms',  label: 'Symptoms',    ico: 'pulse-outline' },
   { key: 'analytics', label: 'Analytics',   ico: 'bar-chart-outline' },
+  { key: 'paediatric', label: 'Paediatric', ico: 'people-outline' },
 ];
 
 // ─── 3. OVERVIEW DATA ─────────────────────────────────────────

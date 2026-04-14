@@ -194,37 +194,19 @@ const SymptomCheckerScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Fixed Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.8)">Symptom checker</AppText>
-          </View>
-          <View style={[st.alertPill, {backgroundColor: triage.pillBg}]}>
-            <Icon family="Ionicons" name={triage.icon} size={ms(12)} color={Colors.white} />
-            <AppText variant="subtext" color={Colors.white} style={{fontWeight: '700', fontSize: ms(9)}}>
-              {triage.pillText}
-            </AppText>
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Symptom checker</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Aarav - 9y 2m</AppText>
           </View>
         </View>
-
-        <AppText
-          variant="subtext"
-          color="rgba(255,255,255,0.55)"
-          style={{textTransform: 'uppercase', letterSpacing: 0.6, fontSize: ms(9), marginTop: vs(6)}}>
-          Paediatric Symptom Checker
-        </AppText>
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(2)}}>
-          Symptom checker
-        </AppText>
-        <AppText variant="subtext" color="rgba(255,255,255,0.6)" style={{marginTop: vs(2)}}>
-          Age-stratified {'\u00b7'} Indian climate {'\u00b7'} red flags {'\u00b7'} triage guide
-        </AppText>
 
         <AppText
           variant="subtext"
@@ -287,25 +269,6 @@ const SymptomCheckerScreen = () => {
           })}
         </View>
 
-        {/* Triage card (dynamic) */}
-        <View style={[st.triageCard, {backgroundColor: triage.cardBg, borderColor: triage.cardBorder}]}>
-          <View style={st.triageIconWrap}>
-            <Icon family="Ionicons" name={triage.icon} size={ms(32)} color={triage.iconColor} />
-          </View>
-          <AppText variant="bodyBold" color={triage.textColor} style={{marginTop: vs(6)}}>
-            {triage.title}
-          </AppText>
-          <AppText variant="caption" color={triage.textColor} style={{marginTop: vs(4), lineHeight: ms(17), opacity: 0.85}}>
-            {triage.body}
-          </AppText>
-          <TouchableOpacity activeOpacity={0.7} style={[st.triageBtn, {borderColor: triage.btnBorder}]}>
-            <Icon family="Ionicons" name="book-outline" size={ms(12)} color={triage.textColor} />
-            <AppText variant="subtext" color={triage.textColor} style={{fontWeight: '700', fontSize: ms(10)}}>
-              See home care guide
-            </AppText>
-          </TouchableOpacity>
-        </View>
-
         {/* Fever gauge card */}
         <View style={st.feverCard}>
           <AppText
@@ -355,8 +318,9 @@ const SymptomCheckerScreen = () => {
           </View>
         </View>
 
-        {/* Fever thresholds */}
-        <Section title="Fever thresholds \u00b7 age-stratified" />
+        {/* Fever thresholds + Emergency + Indian illnesses — moved to Ayu Intel */}
+        {false && (<>
+        <Section title="Fever thresholds - age-stratified" />
         <View style={st.card}>
           {FEVER_THRESHOLDS.map((f, i) => (
             <View
@@ -428,6 +392,8 @@ const SymptomCheckerScreen = () => {
           ))}
         </View>
 
+        </>)}
+
         <View style={{height: vs(20)}} />
       </ScrollView>
 
@@ -492,9 +458,9 @@ const st = StyleSheet.create({
   secLine: {flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: '#E5DDD3'},
 
   // Symptom grid
-  symGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: s(8)},
+  symGrid: {flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: vs(8)},
   symTile: {
-    width: '31.5%',
+    width: '31%',
     aspectRatio: 1.15,
     backgroundColor: Colors.white,
     borderRadius: ms(13),

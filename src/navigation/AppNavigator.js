@@ -517,6 +517,26 @@ const AppNavigator = () => {
         options={{animation: 'slide_from_right', headerShown: false}}
       />
       <Stack.Screen
+        name="NeonatalDetail"
+        component={require('../screens/Records/NeonatalDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
+        name="PaediatricDetail"
+        component={require('../screens/Records/PaediatricDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
+        name="PregnancyDetail"
+        component={require('../screens/Records/PregnancyDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
+        name="PaediatricAyuDetail"
+        component={require('../screens/AyuIntel/PaediatricAyuDetailScreen').default}
+        options={{animation: 'slide_from_right', headerShown: false}}
+      />
+      <Stack.Screen
         name="PregnancyLog"
         component={PregnancyLogScreen}
         options={{animation: 'slide_from_right'}}

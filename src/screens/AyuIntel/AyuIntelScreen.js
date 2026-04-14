@@ -19,6 +19,7 @@ import LifestyleTab from '../../components/AyuIntel/LifestyleTab';
 import MedicalTab from '../../components/AyuIntel/MedicalTab';
 import SymptomsTab from '../../components/AyuIntel/SymptomsTab';
 import AnalyticsTab from '../../components/AyuIntel/AnalyticsTab';
+import PaediatricTab from '../../components/AyuIntel/PaediatricTab';
 
 const AyuIntelScreen = () => {
   const insets = useSafeAreaInsets();
@@ -45,6 +46,8 @@ const AyuIntelScreen = () => {
         return <SymptomsTab />;
       case 'analytics':
         return <AnalyticsTab />;
+      case 'paediatric':
+        return <PaediatricTab />;
       default:
         return <AIOverviewTab />;
     }

@@ -17,12 +17,13 @@ import {
 import Colors from '../../../../constants/colors';
 import AppText from '../../../../components/shared/AppText';
 import Icon from '../../../../components/shared/Icons';
+import NumpadModal from '../../../../components/BabyHealth/NumpadModal';
 
 // ──────────────────────────────────────────────
 // Constants & Data
 // ──────────────────────────────────────────────
 
-const TABS = ['Breastfeed', 'Formula / bottle', 'Ayu'];
+const TABS = ['Breastfeed', 'Formula / bottle'];
 
 const FEED_ROWS = [
   {side: 'L', label: 'Breastfeed · Left 18m, Right 14m', time: '09:00 AM · Feed 1', dur: '32 min'},
@@ -111,6 +112,8 @@ const FeedingTrackerScreen = () => {
   const [feedType, setFeedType] = useState(0);
   const [formulaBrand, setFormulaBrand] = useState(0);
   const [feedGo, setFeedGo] = useState([]);
+  const [volume, setVolume] = useState('90');
+  const [volumeNumpad, setVolumeNumpad] = useState(false);
 
   const toggleMulti = (arr, setArr, idx) => {
     setArr(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
@@ -189,73 +192,6 @@ const FeedingTrackerScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Today's feeds */}
-      <Section title="Today's feeds · Apr 5" />
-      <View style={st.wcard}>
-        {FEED_ROWS.map((row, i) => {
-          const isLast = i === FEED_ROWS.length - 1;
-          const isPending = row.side === null;
-          const badgeColor = row.side === 'L' ? '#8B5CF6' : row.side === 'R' ? '#F97316' : '#D1D5DB';
-          return (
-            <View
-              key={i}
-              style={[
-                st.feedRow,
-                isLast && {borderBottomWidth: 0},
-                isPending && {opacity: 0.55},
-              ]}>
-              <View style={[st.feedBadge, {backgroundColor: badgeColor}]}>
-                {row.side && (
-                  <AppText color={Colors.white} style={{fontSize: ms(11), fontWeight: '800'}}>
-                    {row.side}
-                  </AppText>
-                )}
-              </View>
-              <View style={{flex: 1, marginLeft: s(10)}}>
-                <AppText variant="caption" color={Colors.textPrimary} style={{fontWeight: '600'}}>
-                  {row.label}
-                </AppText>
-                <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(2)}}>
-                  {row.time}
-                </AppText>
-              </View>
-              <AppText variant="caption" color={Colors.textSecondary} style={{fontWeight: '700'}}>
-                {row.dur}
-              </AppText>
-            </View>
-          );
-        })}
-      </View>
-
-      {/* Today's summary */}
-      <Section title="Today's summary" />
-      <View style={st.wcard}>
-        <View style={st.statsRow}>
-          <View style={st.statCell}>
-            <AppText color={Colors.textPrimary} style={{fontSize: ms(18), fontWeight: '800'}}>5</AppText>
-            <AppText variant="subtext" color={Colors.textSecondary}>Feeds</AppText>
-          </View>
-          <View style={st.statCell}>
-            <AppText color={Colors.textPrimary} style={{fontSize: ms(18), fontWeight: '800'}}>2h44m</AppText>
-            <AppText variant="subtext" color={Colors.textSecondary}>Total time</AppText>
-          </View>
-          <View style={st.statCell}>
-            <AppText color={Colors.textPrimary} style={{fontSize: ms(18), fontWeight: '800'}}>L+R</AppText>
-            <AppText variant="subtext" color={Colors.textSecondary}>Alternating</AppText>
-          </View>
-          <View style={st.statCell}>
-            <AppText color="#D97706" style={{fontSize: ms(18), fontWeight: '800'}}>2h14m</AppText>
-            <AppText variant="subtext" color={Colors.textSecondary}>Since last</AppText>
-          </View>
-        </View>
-        <View style={st.goodBox}>
-          <Icon family="Ionicons" name="checkmark-circle" size={ms(16)} color="#059669" />
-          <AppText variant="caption" color="#064E3B" style={{flex: 1, marginLeft: s(7), lineHeight: ms(17)}}>
-            <AppText style={{fontWeight: '700'}}>Good frequency.</AppText> At 44 days, 8-12 feeds/24h is ideal to support growth and establish milk supply.
-          </AppText>
-        </View>
-      </View>
-
       {/* After this feed */}
       <Section title="After this feed" />
       <View style={st.chipWrap}>
@@ -291,14 +227,6 @@ const FeedingTrackerScreen = () => {
 
   const renderFormulaTab = () => (
     <View>
-      {/* Insight box */}
-      <View style={st.insightBox}>
-        <Icon family="Ionicons" name="information-circle" size={ms(18)} color="#6D28D9" />
-        <AppText variant="caption" color="#4C1D95" style={{flex: 1, marginLeft: s(8), lineHeight: ms(17)}}>
-          <AppText style={{fontWeight: '700'}}>WHO recommends</AppText> exclusive breastfeeding for 6 months, with continued breastfeeding alongside complementary foods up to 2 years.
-        </AppText>
-      </View>
-
       {/* Feed type */}
       <Section title="Feed type" />
       <View style={st.chipWrap}>
@@ -322,19 +250,24 @@ const FeedingTrackerScreen = () => {
       </View>
 
       {/* Volume */}
-      <Section title="Volume · tap to enter" />
-      <TouchableOpacity style={st.volumeBox} activeOpacity={0.8}>
+      <Section title="Volume - tap to enter" />
+      <TouchableOpacity style={st.volumeBox} activeOpacity={0.8} onPress={() => setVolumeNumpad(true)}>
         <View style={{flex: 1}}>
           <AppText variant="subtext" color={Colors.textSecondary}>Amount given</AppText>
           <AppText color="#6D28D9" style={{fontSize: ms(28), fontWeight: '800', marginTop: vs(2)}}>
-            90 ml
-          </AppText>
-          <AppText variant="subtext" color={Colors.textSecondary} style={{marginTop: vs(4)}}>
-            Typical for 44-day-old: 60-90ml per feed
+            {volume ? `${volume} ml` : 'Tap to enter'}
           </AppText>
         </View>
         <Icon family="Ionicons" name="create-outline" size={ms(22)} color="#6D28D9" />
       </TouchableOpacity>
+      <NumpadModal
+        visible={volumeNumpad}
+        title="Volume (ml)"
+        hint="Enter amount in ml"
+        initialValue={volume}
+        onClose={() => setVolumeNumpad(false)}
+        onConfirm={(val) => { setVolume(val); setVolumeNumpad(false); }}
+      />
 
       {/* Formula brand */}
       <Section title="Formula brand (if formula)" />
@@ -499,33 +432,19 @@ const FeedingTrackerScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor={Colors.primary} />
 
       {/* ── Fixed Header ── */}
-      <View style={[st.header, {paddingTop: insets.top}]}>
+      <View style={[st.header, {paddingTop: insets.top + vs(10)}]}>
         <View style={st.topRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: s(10)}}>
-            <TouchableOpacity
-              style={st.backBtn}
-              onPress={() => navigation.goBack()}
-              hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-              <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
-            </TouchableOpacity>
-            <AppText variant="body" color="rgba(255,255,255,0.85)">
-              Feeding tracker
-            </AppText>
-          </View>
-          <View style={st.readyPill}>
-            <View style={st.readyDot} />
-            <AppText variant="caption" color={Colors.white} style={{fontWeight: '700', marginLeft: s(5)}}>
-              Ready
-            </AppText>
+          <TouchableOpacity
+            style={st.backBtn}
+            onPress={() => navigation.goBack()}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+            <Icon family="Ionicons" name="chevron-back" size={18} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={{flex: 1, marginLeft: s(10)}}>
+            <AppText variant="screenName" style={{color: Colors.white, fontSize: ms(18), fontWeight: '700'}}>Feeding tracker</AppText>
+            <AppText variant="caption" style={{color: 'rgba(255,255,255,0.5)', fontSize: ms(11)}}>Baby Zara - Feed 6 of today</AppText>
           </View>
         </View>
-
-        <AppText variant="screenName" color={Colors.white} style={{marginTop: vs(6)}}>
-          Feeding tracker
-        </AppText>
-        <AppText variant="subtext" color="rgba(255,255,255,0.7)" style={{marginTop: vs(2)}}>
-          Feed 6 of today · Last: 2h 14m ago · L side
-        </AppText>
 
         {/* Tab bar */}
         <View style={st.tabBar}>
@@ -553,7 +472,6 @@ const FeedingTrackerScreen = () => {
         showsVerticalScrollIndicator={false}>
         {activeTab === 0 && renderBreastfeedTab()}
         {activeTab === 1 && renderFormulaTab()}
-        {activeTab === 2 && renderAyuTab()}
         <View style={{height: vs(20)}} />
       </ScrollView>
 

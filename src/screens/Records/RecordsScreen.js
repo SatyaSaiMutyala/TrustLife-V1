@@ -9,6 +9,9 @@ import Icon from '../../components/shared/Icons';
 import VisitSummaryTab from '../../components/Records/VisitSummaryTab';
 import IndividualRecordsTab, {LifestyleSubTabs, LIFESTYLE_TAB_LIST} from '../../components/Records/IndividualRecordsTab';
 import {InsuranceClaimsBody} from '../Insurance/InsuranceClaimsScreen';
+import NeonatalRecordsTab from '../../components/Records/Paediatrics/NeonatalRecordsTab';
+import PaediatricRecordsTab from '../../components/Records/Paediatrics/PaediatricRecordsTab';
+import PregnancyRecordsTab from '../../components/Records/Paediatrics/PregnancyRecordsTab';
 import ServiceRecordsTab from '../../components/Records/ServiceRecordsTab';
 import RecordsFinalTab from '../../components/Records/RecordsFinalTab';
 import GlucoseRecordsTab from '../../components/Records/GlucoseRecordsTab';
@@ -43,8 +46,15 @@ const mainTabs = [
   {key: 'summary', label: 'Visit summary', icon: 'document-text-outline'},
   {key: 'lifestyle', label: 'Life style', icon: 'leaf-outline'},
   {key: 'healthlogs', label: 'Health Records', icon: 'pulse-outline'},
+  {key: 'paediatrics', label: 'Paediatrics', icon: 'people-outline'},
   {key: 'insurance', label: 'Insurance', icon: 'shield-checkmark-outline'},
   {key: 'services', label: 'Bills', icon: 'receipt-outline'},
+];
+
+const PAEDIATRIC_FILTERS = [
+  {key: 'neonatal', label: 'Neonatal Log', icon: 'happy-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'paediatric', label: 'Paediatric', icon: 'body-outline', bg: 'rgba(255,255,255,0.1)'},
+  {key: 'pregnancy', label: 'Pregnancy Log', icon: 'flower-outline', bg: 'rgba(255,255,255,0.1)'},
 ];
 
 const HEALTHLOG_FILTERS = [
@@ -87,6 +97,7 @@ const RecordsScreen = ({route}) => {
   const [serviceFilter, setServiceFilter] = useState('all');
   const [healthlogFilter, setHealthlogFilter] = useState(initialLogFilter);
   const [lifestyleSubTab, setLifestyleSubTab] = useState('food');
+  const [paedFilter, setPaedFilter] = useState('neonatal');
   const addRef = useRef(null);
 
   return (
@@ -155,6 +166,40 @@ const RecordsScreen = ({route}) => {
               <AppText variant="small" color={Colors.white} style={{fontWeight: '600'}}>Filter</AppText>
             </View>
           </View>
+        )}
+
+        {activeTab === 'paediatrics' && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.ribbonScroll}>
+            {PAEDIATRIC_FILTERS.map(f => {
+              const active = paedFilter === f.key;
+              return (
+                <TouchableOpacity
+                  key={f.key}
+                  style={styles.ribbonItem}
+                  onPress={() => setPaedFilter(f.key)}
+                  activeOpacity={0.7}>
+                  <View style={[styles.ribbonIcon, {backgroundColor: active ? Colors.white : f.bg}]}>
+                    <Icon
+                      family="Ionicons"
+                      name={f.icon}
+                      size={16}
+                      color={active ? Colors.primary : 'rgba(255,255,255,0.85)'}
+                    />
+                  </View>
+                  <AppText
+                    variant="small"
+                    color={active ? Colors.white : 'rgba(255,255,255,0.6)'}
+                    style={[styles.ribbonLabel, active && {fontWeight: '700'}]}
+                    numberOfLines={1}>
+                    {f.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         )}
 
         {activeTab === 'insurance' && (
@@ -323,6 +368,9 @@ const RecordsScreen = ({route}) => {
         showsVerticalScrollIndicator={false}>
         {activeTab === 'summary' && <VisitSummaryTab />}
         {activeTab === 'lifestyle' && <LifestyleSubTabs activeSubTab={lifestyleSubTab} onSubTabChange={setLifestyleSubTab} />}
+        {activeTab === 'paediatrics' && paedFilter === 'neonatal' && <NeonatalRecordsTab />}
+        {activeTab === 'paediatrics' && paedFilter === 'paediatric' && <PaediatricRecordsTab />}
+        {activeTab === 'paediatrics' && paedFilter === 'pregnancy' && <PregnancyRecordsTab />}
         {activeTab === 'insurance' && <InsuranceClaimsBody navigation={navigation} />}
         {activeTab === 'individual' && <IndividualRecordsTab activeFilter={activeFilter} />}
         {activeTab === 'services' && serviceFilter !== 'gadgets' && <ServiceRecordsTab navigation={navigation} onAddRef={addRef} activeFilter={serviceFilter} />}
