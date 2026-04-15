@@ -70,17 +70,6 @@ const AyuIntelScreen = () => {
           <AppText style={styles.ayuSub}>Priya Reddy · T2DM, HTN, Dyslipidaemia · Updated 28 Mar 2026</AppText>
         </View>
 
-        {/* Score Strip */}
-        <View style={styles.scoreStrip}>
-          {SCORE_STRIP.map((item, idx) => (
-            <View key={idx} style={[styles.scoreItem, idx < SCORE_STRIP.length - 1 && styles.scoreItemBorder]}>
-              <AppText style={styles.scoreLbl}>{item.label}</AppText>
-              <AppText style={[styles.scoreVal, {color: item.color || '#fff'}]}>{item.value}</AppText>
-              <AppText style={styles.scoreSub}>{item.sub}</AppText>
-            </View>
-          ))}
-        </View>
-
         {/* Tab Pills */}
         <ScrollView
           ref={tabScrollRef}

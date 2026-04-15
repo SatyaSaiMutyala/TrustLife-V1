@@ -222,6 +222,28 @@ const FeedingTrackerScreen = () => {
           );
         })}
       </View>
+
+      {/* How did it go */}
+      <Section title="How did the feed go?" />
+      <View style={st.chipWrap}>
+        {FEED_GO_CHIPS.map((chip, i) => {
+          const isOn = feedGo.includes(i);
+          return (
+            <TouchableOpacity
+              key={i}
+              style={[st.mchip, isOn && st.mchipOn]}
+              onPress={() => toggleMulti(feedGo, setFeedGo, i)}
+              activeOpacity={0.7}>
+              <AppText
+                variant="caption"
+                color={isOn ? '#064E3B' : '#555'}
+                style={{fontWeight: isOn ? '700' : '500'}}>
+                {chip}
+              </AppText>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 

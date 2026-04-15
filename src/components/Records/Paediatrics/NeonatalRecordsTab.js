@@ -9,83 +9,85 @@ import Icon from '../../shared/Icons';
 const NEONATAL_RECORDS = [
   {
     date: 'Today - 5 Apr 2026', day: 'Day 44',
-    feeds: 6, sleepH: '14.5h', nappies: 8, stools: 2,
+    feeds: 6, breastMins: 102, formulaMl: 0,
+    nappies: 8, stools: 2,
+    stoolColour: 'Mustard', stoolConsistency: 'Seedy/grainy',
     weight: '3.82 kg', length: '53.1 cm', hc: '36.5 cm',
-    percentile: '50th', status: 'On track',
+    feedContext: 'Before feed - Undressed - Home scale',
     timeline: [
-      {time: '09:00', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 14min'},
-      {time: '09:35', color: '#A16207', text: 'Nappy - Wet + stool (yellow, seedy)'},
-      {time: '10:00', color: '#2A5FA0', text: 'Nap - Morning nap 1h 45m'},
-      {time: '11:50', color: '#D97316', text: 'Feed - Breastfeed L 20min, R 12min'},
-      {time: '13:00', color: '#A16207', text: 'Nappy - Wet only'},
-      {time: '13:30', color: '#2A5FA0', text: 'Nap - Afternoon nap 2h 10m'},
+      {time: '09:00', color: '#D97316', text: 'Feed - Breast L 18min / R 14min - After feed: Good latch'},
+      {time: '09:35', color: '#A16207', text: 'Nappy - Wet + stool - Mustard - Seedy - Medium'},
+      {time: '11:50', color: '#D97316', text: 'Feed - Breast L 20min / R 12min'},
+      {time: '13:00', color: '#A16207', text: 'Nappy - Wet only - Heavy'},
+      {time: '14:00', color: Colors.accent, text: 'Growth log - 3.82 kg / 53.1 cm / HC 36.5 cm'},
     ],
   },
   {
     date: 'Yesterday - 4 Apr 2026', day: 'Day 43',
-    feeds: 7, sleepH: '15.2h', nappies: 9, stools: 3,
+    feeds: 7, breastMins: 118, formulaMl: 0,
+    nappies: 9, stools: 3,
+    stoolColour: 'Mustard', stoolConsistency: 'Seedy/grainy',
     weight: '3.80 kg', length: '53.0 cm', hc: '36.4 cm',
-    percentile: '50th', status: 'On track',
+    feedContext: 'After feed - Nappy only - Home scale',
     timeline: [
-      {time: '08:30', color: '#D97316', text: 'Feed - Breastfeed L 20min, R 15min'},
-      {time: '09:10', color: '#A16207', text: 'Nappy - Wet + stool (yellow)'},
-      {time: '09:30', color: '#2A5FA0', text: 'Nap - Morning nap 2h'},
-      {time: '11:45', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 16min'},
-      {time: '12:20', color: '#A16207', text: 'Nappy - Wet + stool'},
-      {time: '14:00', color: '#2A5FA0', text: 'Nap - Afternoon nap 1h 50m'},
-      {time: '16:00', color: '#D97316', text: 'Feed - Breastfeed L 15min, R 18min'},
+      {time: '08:30', color: '#D97316', text: 'Feed - Breast L 20min / R 15min'},
+      {time: '09:10', color: '#A16207', text: 'Nappy - Wet + stool - Mustard yellow'},
+      {time: '11:45', color: '#D97316', text: 'Feed - Breast L 18min / R 16min'},
+      {time: '16:00', color: '#D97316', text: 'Feed - Breast L 15min / R 18min'},
     ],
   },
   {
     date: '3 Apr 2026 - Thursday', day: 'Day 42',
-    feeds: 6, sleepH: '14.8h', nappies: 7, stools: 2,
+    feeds: 6, breastMins: 95, formulaMl: 0,
+    nappies: 7, stools: 2,
+    stoolColour: 'Golden', stoolConsistency: 'Seedy/grainy',
     weight: '3.78 kg', length: '52.9 cm', hc: '36.4 cm',
-    percentile: '49th', status: 'On track',
+    feedContext: 'Before feed - Undressed - Home scale',
     timeline: [
-      {time: '08:45', color: '#D97316', text: 'Feed - Breastfeed L 22min, R 12min'},
+      {time: '08:45', color: '#D97316', text: 'Feed - Breast L 22min / R 12min'},
       {time: '09:30', color: '#A16207', text: 'Nappy - Wet only'},
-      {time: '10:00', color: '#2A5FA0', text: 'Nap - Morning nap 1h 30m'},
-      {time: '12:00', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 14min'},
-      {time: '12:40', color: '#A16207', text: 'Nappy - Wet + stool (yellow, seedy)'},
+      {time: '12:40', color: '#A16207', text: 'Nappy - Wet + stool - Golden - Seedy'},
     ],
   },
   {
     date: '2 Apr 2026 - Wednesday', day: 'Day 41',
-    feeds: 8, sleepH: '15.5h', nappies: 10, stools: 3,
+    feeds: 8, breastMins: 130, formulaMl: 0,
+    nappies: 10, stools: 3,
+    stoolColour: 'Mustard', stoolConsistency: 'Soft paste',
     weight: '3.76 kg', length: '52.8 cm', hc: '36.3 cm',
-    percentile: '49th', status: 'On track',
+    feedContext: 'After feed - Undressed - Home scale',
     timeline: [
-      {time: '07:30', color: '#D97316', text: 'Feed - Breastfeed L 20min, R 18min'},
+      {time: '07:30', color: '#D97316', text: 'Feed - Breast L 20min / R 18min'},
       {time: '08:15', color: '#A16207', text: 'Nappy - Wet + stool'},
-      {time: '08:45', color: '#2A5FA0', text: 'Nap - Morning nap 2h 15m'},
-      {time: '11:00', color: '#D97316', text: 'Feed - Breastfeed L 16min, R 14min'},
-      {time: '13:30', color: '#2A5FA0', text: 'Nap - Afternoon nap 1h 40m'},
-      {time: '15:15', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 12min'},
+      {time: '11:00', color: '#D97316', text: 'Feed - Breast L 16min / R 14min'},
+      {time: '15:15', color: '#D97316', text: 'Feed - Breast L 18min / R 12min'},
     ],
   },
   {
     date: '1 Apr 2026 - Tuesday', day: 'Day 40',
-    feeds: 7, sleepH: '14.2h', nappies: 8, stools: 2,
+    feeds: 7, breastMins: 108, formulaMl: 0,
+    nappies: 8, stools: 2,
+    stoolColour: 'Mustard', stoolConsistency: 'Seedy/grainy',
     weight: '3.74 kg', length: '52.7 cm', hc: '36.2 cm',
-    percentile: '48th', status: 'On track',
+    feedContext: 'Before feed - Nappy only - Home scale',
     timeline: [
-      {time: '09:00', color: '#D97316', text: 'Feed - Breastfeed L 15min, R 18min'},
-      {time: '09:40', color: '#A16207', text: 'Nappy - Wet + stool (yellow)'},
-      {time: '10:15', color: '#2A5FA0', text: 'Nap - Morning nap 1h 55m'},
-      {time: '12:30', color: '#D97316', text: 'Feed - Breastfeed L 20min, R 15min'},
+      {time: '09:00', color: '#D97316', text: 'Feed - Breast L 15min / R 18min'},
+      {time: '09:40', color: '#A16207', text: 'Nappy - Wet + stool - Mustard'},
+      {time: '12:30', color: '#D97316', text: 'Feed - Breast L 20min / R 15min'},
     ],
   },
   {
     date: '31 Mar 2026 - Monday', day: 'Day 39',
-    feeds: 6, sleepH: '13.8h', nappies: 7, stools: 1,
+    feeds: 6, breastMins: 80, formulaMl: 90,
+    nappies: 7, stools: 1,
+    stoolColour: 'Tan', stoolConsistency: 'Formed',
     weight: '3.72 kg', length: '52.6 cm', hc: '36.2 cm',
-    percentile: '48th', status: 'Monitor',
+    feedContext: 'After feed - Undressed - Clinic scale',
     timeline: [
-      {time: '08:00', color: '#D97316', text: 'Feed - Breastfeed L 18min, R 14min'},
+      {time: '08:00', color: '#D97316', text: 'Feed - Breast L 18min / R 14min'},
       {time: '08:45', color: '#A16207', text: 'Nappy - Wet only'},
-      {time: '09:15', color: '#2A5FA0', text: 'Nap - Morning nap 1h 20m'},
-      {time: '11:00', color: '#D97316', text: 'Feed - Formula 90ml'},
-      {time: '14:00', color: '#2A5FA0', text: 'Nap - Afternoon nap 2h'},
+      {time: '11:00', color: '#D97316', text: 'Feed - Formula 90ml (Lactogen)'},
+      {time: '14:00', color: Colors.accent, text: 'Growth log - Clinic weigh-in'},
     ],
   },
 ];
@@ -100,12 +102,13 @@ const DateGroup = ({label}) => (
 );
 
 const NeonatalRow = ({record, onPress}) => {
-  const statusColor = record.status === 'On track' ? Colors.accent : Colors.amber;
+  const hydration = record.nappies >= 6 ? 'Good' : 'Monitor';
+  const statusColor = hydration === 'Good' ? Colors.accent : Colors.amber;
+
   return (
     <TouchableOpacity style={st.card} activeOpacity={0.7} onPress={onPress}>
       <View style={[st.leftBar, {backgroundColor: statusColor}]} />
       <View style={st.cardBody}>
-        {/* Top row: stats */}
         <View style={st.topRow}>
           <View style={[st.iconWrap, {backgroundColor: Colors.tealBg}]}>
             <Icon family="Ionicons" name="happy-outline" size={ms(16)} color={Colors.accent} />
@@ -116,30 +119,31 @@ const NeonatalRow = ({record, onPress}) => {
           </View>
           <View style={{alignItems: 'flex-end', marginRight: s(6)}}>
             <View style={[st.statusPill, {backgroundColor: statusColor + '18'}]}>
-              <AppText variant="small" color={statusColor} style={{fontWeight: '600'}}>{record.status}</AppText>
+              <AppText variant="small" color={statusColor} style={{fontWeight: '600'}}>{hydration}</AppText>
             </View>
           </View>
           <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color={Colors.textPrimary} />
         </View>
 
-        {/* Stats chips */}
         <View style={st.chipRow}>
           <View style={st.chip}>
             <Icon family="Ionicons" name="restaurant-outline" size={ms(10)} color={Colors.textTertiary} />
             <AppText variant="small" color={Colors.textSecondary}>{record.feeds} feeds</AppText>
           </View>
           <View style={st.chip}>
-            <Icon family="Ionicons" name="moon-outline" size={ms(10)} color={Colors.textTertiary} />
-            <AppText variant="small" color={Colors.textSecondary}>{record.sleepH} sleep</AppText>
-          </View>
-          <View style={st.chip}>
             <Icon family="Ionicons" name="water-outline" size={ms(10)} color={Colors.textTertiary} />
-            <AppText variant="small" color={Colors.textSecondary}>{record.nappies} nappies</AppText>
+            <AppText variant="small" color={Colors.textSecondary}>{record.nappies} wet</AppText>
           </View>
           <View style={st.chip}>
             <Icon family="Ionicons" name="ellipse-outline" size={ms(10)} color={Colors.textTertiary} />
-            <AppText variant="small" color={Colors.textSecondary}>{record.stools} stools</AppText>
+            <AppText variant="small" color={Colors.textSecondary}>{record.stools} stool · {record.stoolColour}</AppText>
           </View>
+          {record.formulaMl > 0 && (
+            <View style={[st.chip, {backgroundColor: Colors.amberBg}]}>
+              <Icon family="Ionicons" name="flask-outline" size={ms(10)} color={Colors.amberDark} />
+              <AppText variant="small" color={Colors.amberDark}>{record.formulaMl}ml formula</AppText>
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -151,12 +155,11 @@ const NeonatalRecordsTab = () => {
 
   return (
     <View>
-      {/* Ayu Intel banner */}
       <TouchableOpacity style={st.ayuBtn} activeOpacity={0.8}>
         <View style={st.ayuIconWrap}><Icon family="Ionicons" name="bulb-outline" size={ms(16)} color={Colors.white} /></View>
         <View style={{flex: 1}}>
           <AppText variant="caption" color={Colors.white} style={{fontWeight: '700'}}>Ayu Intel - Baby Health</AppText>
-          <AppText variant="subtext" color="rgba(255,255,255,0.7)">Growth patterns - Feed analysis - Sleep insights</AppText>
+          <AppText variant="subtext" color="rgba(255,255,255,0.7)">Feeding · Nappy · Growth patterns</AppText>
         </View>
         <Icon family="Ionicons" name="chevron-forward" size={ms(16)} color="rgba(255,255,255,0.6)" />
       </TouchableOpacity>

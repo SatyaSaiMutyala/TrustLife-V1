@@ -45,26 +45,6 @@ const MEDS_TILE = {
   barColor: '#534AB7', route: 'MedicinesTracker',
 };
 
-const AYU_ALERTS = [
-  {
-    icon: 'alert-circle-outline', iconColor: Colors.amberDark,
-    bg: Colors.amberBg, textColor: Colors.amberDark, borderColor: '#FDDCB5',
-    title: 'Allergen introduction: peanut is next.',
-    body: ' LEAP protocol recommends peanut introduction at 6 months in high-risk infants. Aarav is 9, meaning LEAP does not apply - but peanut should still be introduced in a supervised home setting. See Allergen Intro log for the step protocol.',
-  },
-  {
-    icon: 'bulb-outline', iconColor: '#0B3A30',
-    bg: '#E8F5F2', textColor: '#0B3A30', borderColor: '#9FD4C0',
-    title: 'School-age milestone check at 9 years.',
-    body: ' Key milestones: reading fluency, complex problem-solving, sustained attention 20+ minutes, peer friendship quality. The ASQ-3 is not validated above 5.5 years - use the SDQ (Strengths and Difficulties Questionnaire) for age 9. Tap Developmental Milestones to complete it.',
-  },
-  {
-    icon: 'happy-outline', iconColor: Colors.tealText,
-    bg: Colors.tealBg, textColor: Colors.tealText, borderColor: Colors.paleGreen,
-    title: 'Orthodontic assessment due.',
-    body: ' IAP recommends a first orthodontic review between ages 7-9 when the permanent dentition is establishing. With 20 teeth now and mixed dentition phase complete, crowding, crossbite, or spacing can be identified early. Book with a paediatric dentist.',
-  },
-];
 
 // ──────────────────────────────────────────────
 // Subcomponents
@@ -168,17 +148,6 @@ const PaediatricLogScreen = () => {
           ))}
           <AppTile tile={MEDS_TILE} fullWidth onPress={() => goTile(MEDS_TILE.route)} />
         </View>
-
-        {/* Ayu alerts */}
-        <Section title="Ayu alerts - child health" />
-        {AYU_ALERTS.map((alert, i) => (
-          <View key={i} style={[st.insight, {backgroundColor: alert.bg, borderColor: alert.borderColor}]}>
-            <Icon family="Ionicons" name={alert.icon} size={ms(16)} color={alert.iconColor} />
-            <AppText variant="caption" color={alert.textColor} style={{flex: 1, lineHeight: ms(17)}}>
-              <AppText style={{fontWeight: '700'}}>{alert.title}</AppText>{alert.body}
-            </AppText>
-          </View>
-        ))}
 
         <View style={{height: vs(40)}} />
       </ScrollView>

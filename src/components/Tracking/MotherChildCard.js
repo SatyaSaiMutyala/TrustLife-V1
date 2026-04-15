@@ -8,9 +8,9 @@ import Icon from '../shared/Icons';
 import SectionTitle from '../shared/SectionTitle';
 
 const items = [
-  {image: null, bg: '', name: 'Neonatal Log', last: '', soon: false, icon: 'happy-outline', route: 'NeonatalLog'},
-  {image: null, bg: '', name: 'Paediatric Log', last: '', soon: false, icon: 'people-outline', route: 'PaediatricLog'},
-  {image: null, bg: '', name: 'Pregnancy Log', last: '', soon: false, icon: 'flower-outline', route: 'PregnancyLog'},
+  {image: require('../../assets/img/neonatal.png'), bg: '', name: 'Neonatal Log', last: '', soon: false, icon: 'happy-outline', route: 'NeonatalLog'},
+  {image: require('../../assets/img/paediatric.png'), bg: '', name: 'Paediatric Log', last: '', soon: false, icon: 'people-outline', route: 'PaediatricLog'},
+  {image: require('../../assets/img/pregancy.png'), bg: '', name: 'Pregnancy Log', last: '', soon: false, icon: 'flower-outline', route: 'PregnancyLog'},
   {image: null, bg: '', name: 'Coming soon', last: '', soon: true},
 ];
 

@@ -242,7 +242,7 @@ const SymptomCheckerScreen = () => {
       <ScrollView style={st.body} contentContainerStyle={st.bodyContent} showsVerticalScrollIndicator={false}>
 
         {/* Symptom grid */}
-        <Section title="Presenting symptoms \u00b7 select all that apply" />
+        <Section title="Presenting symptoms select all that apply" />
         <View style={st.symGrid}>
           {SYMPTOMS.map((sym) => {
             const active = activeSymptoms.includes(sym.key);
@@ -260,8 +260,9 @@ const SymptomCheckerScreen = () => {
                 />
                 <AppText
                   variant="subtext"
+                  numberOfLines={2}
                   color={active ? Colors.redDark : Colors.textSecondary}
-                  style={{fontWeight: active ? '700' : '500', marginTop: vs(5), textAlign: 'center', fontSize: ms(10)}}>
+                  style={{fontWeight: active ? '700' : '500', marginTop: vs(5), textAlign: 'center', fontSize: ms(10), lineHeight: ms(13)}}>
                   {sym.name}
                 </AppText>
               </TouchableOpacity>
@@ -460,15 +461,16 @@ const st = StyleSheet.create({
   // Symptom grid
   symGrid: {flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: vs(8)},
   symTile: {
-    width: '31%',
-    aspectRatio: 1.15,
+    width: '31.5%',
+    minHeight: vs(70),
     backgroundColor: Colors.white,
     borderRadius: ms(13),
     borderWidth: 1,
     borderColor: '#E5DDD3',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: s(6),
+    paddingVertical: vs(10),
+    paddingHorizontal: s(4),
   },
   symTileActive: {
     backgroundColor: '#FEF0F0',
@@ -506,7 +508,7 @@ const st = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.18)',
     padding: ms(16),
-    marginTop: vs(12),
+    marginTop:ms(25)
   },
   feverRow: {
     flexDirection: 'row',
